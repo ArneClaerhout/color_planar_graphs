@@ -22,11 +22,15 @@ public class Vertex {
     }
 
     /**
-     * A method for adding a neighbour to this
-     * @param neigbour
+     * A method for adding a neighbour to this vertex.
+     * The method also adds this vertex to the list of neighbours of the given vertex.
+     *
+     * @param   neighbour
+     *          The neighbour vertex to make an edge between.
      */
-    public void addNeighbour(Vertex neigbour) {
-        neighbours.add(neigbour);
+    public void addNeighbour(Vertex neighbour) {
+        neighbours.add(neighbour);
+        neighbour.addNeighbour(this);
     }
 
     /**
@@ -76,17 +80,17 @@ public class Vertex {
 
 
 
-        /**
-         * This method checks whether the vertex is correctly colored according to a certain coloring method.
-         *
-         * @param   method
-         *          The coloring method used.
-         * @param   proper
-         *          This is true if the coloring should be proper.
-         * @param   open
-         *          This is true if open neighbourhoods are used.
-         *          This is false if closed neighbourhoods are used.
-         */
+    /**
+     * This method checks whether the vertex is correctly colored according to a certain coloring method.
+     *
+     * @param   method
+     *          The coloring method used.
+     * @param   proper
+     *          This is true if the coloring should be proper.
+     * @param   open
+     *          This is true if open neighbourhoods are used.
+     *          This is false if closed neighbourhoods are used.
+     */
     public boolean isCorrectlyColored(Coloring method, boolean proper, boolean open) {
         int[] colors = new int[10];
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
