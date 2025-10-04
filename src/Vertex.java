@@ -74,45 +74,79 @@ public class Vertex {
         this.color = color;
     }
 
-    /**
-     * A method for checking whether a vertex is proper.
-     */
-    public boolean isProper() {
-        for (Vertex vertex : neighbours) {
-            if (vertex.getColor() == color) {
-                return false;
-            }
-        }
-        return true;
-    }
 
 
-    /**
-     * A method for checking whether a vertex is odd.
-     */
-    public boolean isOdd() {
+        /**
+         * This method checks whether the vertex is correctly colored according to a certain coloring method.
+         *
+         * @param   method
+         *          The coloring method used.
+         * @param   proper
+         *          This is true if the coloring should be proper.
+         * @param   open
+         *          This is true if open neighbourhoods are used.
+         *          This is false if closed neighbourhoods are used.
+         */
+    public boolean isCorrectlyColored(Coloring method, boolean proper, boolean open) {
         int[] colors = new int[10];
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the coloring has happened.
 
-        for (Vertex vertex : neighbours) {
-            if (vertex.getColor() == color) {
+
+        ArrayList<Vertex> neighbourCheck = open ? getOpenNeighbourhood() : getClosedNeighbourhood();
+
+        for (Vertex vertex : neighbourCheck) {
+            if (proper && vertex.getColor() == color && !this.equals(vertex)) {
                 return false;
             }
             colors[vertex.getColor()-1]++;
         }
 
-        // We check whether the colors array contains an odd number.
-        for (int i = 0; i < 10; i++) {
-            if (colors[i] % 2 == 1) {
-                return true;
+        if (method == Coloring.PROPER) {
+            // Proper check
+
+            return true;
+        } else if (method == Coloring.ODD) {
+            // Odd check
+
+            for (int i = 0; i < 10; i++) {
+                if (colors[i] % 2 == 1) {
+                    return true;
+                }
+            }
+            return false;
+        } else if (method == Coloring.CONFLICTFREE) {
+            // Conflict-free check
+
+            for (int i = 0; i < 10; i++) {
+                if (colors[i] == 1) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            // Unique-maximum check
+
+            for (int i = 9; i >= 0; i--) {
+                if (colors[i] == 0) {
+                    continue;
+                }
+                if (colors[i] == 1) {
+                    return true; // == break
+                }
+                return false;
             }
         }
 
         return false;
     }
 
-    public boolean isConflictFree(boolean proper, boolean open) {
 
+    /**
+     * This method checks whether the vertex is correctly colored according to a certain coloring method.
+     * This method assumes the coloring is proper and that we use open neighbourhoods.
+     */
+    public boolean isCorrectlyColored(Coloring method) {
+        return isCorrectlyColored(method, true, true);
     }
 }
