@@ -83,7 +83,7 @@ public class Vertex {
     /**
      * This method checks whether the vertex is correctly colored according to a certain coloring method.
      *
-     * @param   method
+     * @param   coloring
      *          The coloring method used.
      * @param   proper
      *          This is true if the coloring should be proper.
@@ -91,7 +91,7 @@ public class Vertex {
      *          This is true if open neighbourhoods are used.
      *          This is false if closed neighbourhoods are used.
      */
-    public boolean isCorrectlyColored(Coloring method, boolean proper, boolean open) {
+    public boolean isCorrectlyColored(Coloring coloring, boolean proper, boolean open) {
         int[] colors = new int[10];
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the coloring has happened.
@@ -106,11 +106,11 @@ public class Vertex {
             colors[vertex.getColor()-1]++;
         }
 
-        if (method == Coloring.PROPER) {
+        if (coloring == Coloring.PROPER) {
             // Proper check
 
             return true;
-        } else if (method == Coloring.ODD) {
+        } else if (coloring == Coloring.ODD) {
             // Odd check
 
             for (int i = 0; i < 10; i++) {
@@ -119,7 +119,7 @@ public class Vertex {
                 }
             }
             return false;
-        } else if (method == Coloring.CONFLICTFREE) {
+        } else if (coloring == Coloring.CONFLICTFREE) {
             // Conflict-free check
 
             for (int i = 0; i < 10; i++) {
