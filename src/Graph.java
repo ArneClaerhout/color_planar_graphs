@@ -9,8 +9,8 @@ public class Graph {
 
 
 
-    public Graph() {
-
+    public Graph(String graph6) {
+        System.out.println(getNumberOfVertices(graph6.toCharArray()));
     }
 
     /**
@@ -52,6 +52,36 @@ public class Graph {
      */
     public boolean isCorrectlyColored(Coloring coloring) {
         return isCorrectlyColored(coloring, true, true);
+    }
+
+
+    private int getNumberOfVertices(char[] graphString) {
+        int index = 0;
+        if (graphString[index] == '>') { // Skip >>graph6<< header.
+            index += 10;
+        }
+
+        if(graphString[index] < 126) { // 0 <= n <= 62
+            return (int) graphString[index] - 63;
+        }
+
+        else if(graphString[++index] < 126) {
+            int number = 0;
+            for(int i = 2; i >= 0; i--) {
+                number |= (graphString[index++] - 63) << i*6;
+            }
+            return number;
+        }
+
+        else if (graphString[++index] < 126) {
+            int number = 0;
+            for (int i = 5; i >= 0; i--) {
+                number |= (graphString[index++] - 63) << i*6;
+            }
+            return number;
+        }
+
+        return 0;
     }
 
 
