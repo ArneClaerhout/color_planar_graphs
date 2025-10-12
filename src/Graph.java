@@ -10,7 +10,12 @@ public class Graph {
 
 
     public Graph(String graph6) {
-        System.out.println(getNumberOfVertices(graph6.toCharArray()));
+        char[] graphArray = graph6.toCharArray();
+        int n = getNumberOfVertices(graphArray);
+        int[][] adjMatrix = getAdjacencyMatrix(graphArray, n);
+
+        this.vertices = findVerticesList(adjMatrix);
+
     }
 
     /**
@@ -55,35 +60,69 @@ public class Graph {
     }
 
 
+    /**
+     * This method finds the number of vertices for a given graph6 formatted list of characters (= String).
+     * This is a simplified version of this method that only works for graphs of up to 62 vertices.
+     */
     private int getNumberOfVertices(char[] graphString) {
         int index = 0;
-        if (graphString[index] == '>') { // Skip >>graph6<< header.
+        if (graphString[index] == '>') {
             index += 10;
         }
 
-        if(graphString[index] < 126) { // 0 <= n <= 62
+        // Only works when #vertices < 63, we won't go higher than that
+        if(graphString[index] < 126) {
             return (int) graphString[index] - 63;
-        }
-
-        else if(graphString[++index] < 126) {
-            int number = 0;
-            for(int i = 2; i >= 0; i--) {
-                number |= (graphString[index++] - 63) << i*6;
-            }
-            return number;
-        }
-
-        else if (graphString[++index] < 126) {
-            int number = 0;
-            for (int i = 5; i >= 0; i--) {
-                number |= (graphString[index++] - 63) << i*6;
-            }
-            return number;
         }
 
         return 0;
     }
 
 
+
+    private int[][] getAdjacencyMatrix(char[] graphString, int n) {
+        int[][] adjMatrix = new int[n][n];
+        int index = 1; // First index as index 0 is the vertex count
+
+        int bitPos = 0; // Bit position per index
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                // Go through the entire adjacency matrix
+                int part6bits = graphString[index] - 63;
+
+                int bitShift = 5 - (bitPos % 6);
+                // The amount you have to bitshift the number to check bitPos here:
+                boolean edge = ((part6bits >> bitShift) & 1) == 1;
+                if (edge) {
+                    adjMatrix[i][j] = 1;
+                    adjMatrix[j][i] = 1;
+                    // The matrix is symmetrical
+                }
+
+                bitPos++;
+                if (bitPos % 6 == 0) index++;
+            }
+        }
+        return adjMatrix;
+    }
+
+
+    private ArrayList<Vertex> findVerticesList(int[][] adjMatrix) {
+        ArrayList<Vertex> vertices = new ArrayList<>();
+
+        for (int i = 0; i < adjMatrix.length; i++) {
+            vertices.add(new Vertex());
+        }
+
+        for (int i = 0; i < adjMatrix.length; i++) {
+            for (int j = i+1; j < adjMatrix[i].length; j++) {
+                if(adjMatrix[i][j] == 1) {
+                    vertices.get(i).addNeighbour(vertices.get(j));
+                }
+            }
+        }
+
+        return vertices;
+    }
 
 }

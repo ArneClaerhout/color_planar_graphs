@@ -30,7 +30,7 @@ public class Vertex {
      */
     public void addNeighbour(Vertex neighbour) {
         neighbours.add(neighbour);
-        neighbour.addNeighbour(this);
+        neighbour.getOpenNeighbourhood().add(this);
     }
 
     /**
