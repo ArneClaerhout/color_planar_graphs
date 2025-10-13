@@ -69,6 +69,22 @@ public enum Coloring {
     public static boolean isUniqueMaximum(Coloring color) {
         return uniqueMaximumList.contains(color);
     }
+
+    public static Coloring getColoring(String coloring) {
+        switch (coloring) {
+            case "proper": return PROPER;
+            case "odd": return ODD;
+            case "pCFo": return pCFo;
+            case "pCFc": return pCFc;
+            case "iCFo": return iCFo;
+            case "iCFc": return iCFc;
+            case "pUMo": return pUMo;
+            case "pUMc": return pUMc;
+            case "iUMo": return iUMo;
+            case "iUMc": return iUMc;
+            default: return PROPER;
+        }
+    }
 }
 
 
