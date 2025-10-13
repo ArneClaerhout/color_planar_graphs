@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Graph {
 
@@ -6,7 +8,6 @@ public class Graph {
      * The list comprised of the vertices in this graph.
      */
     private ArrayList<Vertex> vertices = new ArrayList<>();
-
 
 
     public Graph(String graph6) {
@@ -36,27 +37,14 @@ public class Graph {
      *
      * @param   coloring
      *          The coloring method used.
-     * @param   proper
-     *          This is true if the coloring should be proper.
-     * @param   open
-     *          This is true if open neighbourhoods are used.
-     *          This is false if closed neighbourhoods are used.
      */
-    public boolean isCorrectlyColored(Coloring coloring, boolean proper, boolean open) {
+    public boolean isCorrectlyColored(Coloring coloring) {
         for (Vertex v : vertices) {
-            if (!v.isCorrectlyColored(coloring, proper, open)) {
+            if (!v.isCorrectlyColored(coloring)) {
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * This method checks whether the graph is correctly colored according to a certain coloring scheme.
-     * This method assumes the coloring is proper and that we use open neighbourhoods.
-     */
-    public boolean isCorrectlyColored(Coloring coloring) {
-        return isCorrectlyColored(coloring, true, true);
     }
 
 
@@ -123,6 +111,34 @@ public class Graph {
         }
 
         return vertices;
+    }
+
+    public int findChromaticNumberNaive(Coloring coloring) {
+        int n = coloring.getMaxChromaticNumber();
+
+        for (int i = 1; i <= n; i++) {
+            if (naiveAlgorithm(coloring, i, 0)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    private boolean naiveAlgorithm(Coloring coloring, int maxColor, int index) {
+        if (index >= vertices.size()) {
+            // We reached the end of the list
+            return isCorrectlyColored(coloring);
+        }
+
+        for (int i = 1; i <= maxColor; i++) {
+            vertices.get(index).changeColor(i);
+            if (naiveAlgorithm(coloring, maxColor, index+1)) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
 }
