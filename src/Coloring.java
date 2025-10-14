@@ -24,7 +24,6 @@ public enum Coloring {
     }};
 
     private static final ArrayList<Coloring> openList = new ArrayList<>(){{
-        add(PROPER);
         add(ODD);
         add(pCFo);
         add(iCFo);
@@ -32,7 +31,7 @@ public enum Coloring {
         add(iUMo);
     }};
 
-    private static final ArrayList<Coloring> contextFreeList = new ArrayList<>(){{
+    private static final ArrayList<Coloring> conflictFreeList = new ArrayList<>(){{
         add(pCFo);
         add(pCFc);
         add(iCFo);
@@ -62,8 +61,8 @@ public enum Coloring {
         return openList.contains(color);
     }
 
-    public static boolean isContextFree(Coloring color) {
-        return contextFreeList.contains(color);
+    public static boolean isConflictFree(Coloring color) {
+        return conflictFreeList.contains(color);
     }
 
     public static boolean isUniqueMaximum(Coloring color) {

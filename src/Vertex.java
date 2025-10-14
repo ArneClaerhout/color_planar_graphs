@@ -81,33 +81,36 @@ public class Vertex {
 
 
     /**
-     * This method checks whether the vertex is correctly colored according to a certain coloring method.
+     * This method checks whether the vertex is correctly colored according to a certain inputColoring method.
      *
-     * @param   coloring
-     *          The coloring method used.
+     * @param   inputColoring
+     *          The inputColoring method used.
      */
-    public boolean isCorrectlyColored(Coloring coloring) {
-        boolean open = Coloring.isOpen(coloring);
-        boolean proper = Coloring.isProper(coloring);
+    public boolean isCorrectlyColored(Coloring inputColoring) {
+        boolean open = Coloring.isOpen(inputColoring);
+        boolean proper = Coloring.isProper(inputColoring);
         int[] colors = new int[10];
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
-        // We should therefore only use this method when the coloring has happened.
+        // We should therefore only use this method when the inputColoring has happened.
 
-
-        ArrayList<Vertex> neighbourCheck = open ? getOpenNeighbourhood() : getClosedNeighbourhood();
-
-        for (Vertex vertex : neighbourCheck) {
-            if (proper && vertex.getColor() == color && !this.equals(vertex)) {
+        for (Vertex neighbour : getClosedNeighbourhood()) {
+            if (proper && neighbour.getColor() == color && !this.equals(neighbour)) {
+                // Check if the inputColoring is proper
                 return false;
             }
-            colors[vertex.getColor()-1]++;
+            colors[neighbour.getColor()-1]++;
         }
 
-        if (coloring == Coloring.PROPER) {
+        // We should remove this vertex from the colors list
+        if(open) {
+            colors[getColor()-1]--;
+        }
+
+        if (inputColoring == Coloring.PROPER) {
             // Proper check
 
             return true;
-        } else if (coloring == Coloring.ODD) {
+        } else if (inputColoring == Coloring.ODD) {
             // Odd check
 
             for (int i = 0; i < 10; i++) {
@@ -116,7 +119,7 @@ public class Vertex {
                 }
             }
             return false;
-        } else if (Coloring.isContextFree(coloring)) {
+        } else if (Coloring.isConflictFree(inputColoring)) {
             // Conflict-free check
 
             for (int i = 0; i < 10; i++) {
@@ -133,7 +136,8 @@ public class Vertex {
                     continue;
                 }
                 if (colors[i] == 1) {
-                    return true; // == break
+                    return true;
+                    // If the first color we find (the max color) is 1, return true
                 }
                 return false;
             }
