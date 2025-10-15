@@ -70,6 +70,10 @@ public enum Coloring {
     }
 
     public static Coloring getColoring(String coloring) {
+        if (coloring == null) {
+            // When there is no coloring given, use proper coloring
+            return PROPER;
+        }
         switch (coloring) {
             case "proper": return PROPER;
             case "odd": return ODD;
