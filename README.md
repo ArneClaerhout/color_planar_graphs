@@ -1,11 +1,43 @@
 # Bachelorproef
-Een repository die gebruikt wordt om een bachelorproef in Informatica uit te werken.
+A repository used for keeping track of code and reports for my undergraduate thesis in Informatics.
+We use Java as our main programming language. We also use Unix so we can use planar graph generators such as plantri.
 
+## Setup
 
-Het uitvoeren van Main met behulp van de output van plantri kan met behulp van dit commando:
+Firstly, make sure you are working in Unix.
+
+To use the code, change the directory to the source directory:
+```
+cd src/
+```
+
+Now that we are in the source folder, we can compile the code:
 ```
 javac Main.java
-./../plantri55/plantri -g 8 | java Main "proper" | cat
 ```
-Wanneer dit wordt uitgevoerd binnen de src folder.
+
+## Usage
+The default coloring method to be used is proper coloring, this can be changed by using the flag _-c_ with the coloring method as value.
+This coloring method should be a string such as: `"proper", "odd", "pCFo", "iUMc", ...`.
+
+Example usage:
+```
+./../plantri55/plantri -g n | java Main -c "iCFo" | cat
+```
+n is the amount of vertices of the generated graphs, this should be a value so that $3 \le n \le 62$.
+
+This will print out the graph6 strings of the graphs and the chromatic number of the coloring for this graph.
+
+### Manual usage
+
+If one wants to manually enter a graph into the program, one can do so by using the flag _-m_, followed by the graph6 string.
+
+Example usage:
+```
+java Main -m "I|fIJcVFG" | cat
+java Main -m "I|fYJCv?w" -c "odd" | cat
+```
+
+
+
 
