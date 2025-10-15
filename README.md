@@ -1,5 +1,5 @@
 # Bachelorproef
-A repository used for keeping track of code and reports for my undergraduate thesis in Informatics.
+A repository used for keeping track of code and reports for my undergraduate thesis in Computer Science.
 We use Java as our main programming language. We also use Unix so we can use planar graph generators such as plantri.
 
 ## Setup
