@@ -22,7 +22,7 @@ This coloring method should be a string such as: `"proper", "odd", "pCFo", "iUMc
 
 Example usage:
 ```
-./../plantri55/plantri -g n | java Main -c "iCFo" | cat
+./../plantri55/plantri -g n | java Main -c "iCFo"
 ```
 n is the amount of vertices of the generated graphs, this should be a value so that $3 \le n \le 62$.
 
@@ -34,8 +34,8 @@ If one wants to manually enter a graph into the program, one can do so by using 
 
 Example usage:
 ```
-java Main -m "I|fIJcVFG" | cat
-java Main -m "I|fYJCv?w" -c "odd" | cat
+java Main -m "I|fIJcVFG"
+java Main -m "I|fYJCv?w" -c "odd"
 ```
 
 
