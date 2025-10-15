@@ -10,27 +10,24 @@ public class Main {
      **********************************/
 
     public static void main(String[] args) throws IOException {
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-//        String line;
-//
-//
-//        String inputColoring = args[0];
-//        System.out.println("Received coloring: " + inputColoring);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String line;
 
-        String line = "G|tIJ{";
-        String inputColoring = "proper";
+
+        String inputColoring = args[0];
+        System.out.println("Received coloring: " + inputColoring);
 
         Coloring coloring = Coloring.getColoring(inputColoring);
 
         // As long as there is something to read from stdin, we read it.
-//        while ((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
 
             Graph graph = new Graph(line);
             System.out.print(line + ": ");
             System.out.println(graph.findChromaticNumberNaive(coloring));
 
 
-//        }
+        }
 
         System.out.println("No more input");
     }

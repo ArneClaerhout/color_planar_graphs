@@ -54,9 +54,6 @@ public class Graph {
      */
     private int getNumberOfVertices(char[] graphString) {
         int index = 0;
-        if (graphString[index] == '>') {
-            index += 10;
-        }
 
         // Only works when #vertices < 63, we won't go higher than that
         if(graphString[index] < 126) {
@@ -73,12 +70,12 @@ public class Graph {
         int index = 1; // First index as index 0 is the vertex count
 
         int bitPos = 0; // Bit position per index
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
                 // Go through the entire adjacency matrix
                 int part6bits = graphString[index] - 63;
 
-                int bitShift = 5 - (bitPos % 6);
+                int bitShift = 5 - bitPos;
                 // The amount you have to bitshift the number to check bitPos here:
                 boolean edge = ((part6bits >> bitShift) & 1) == 1;
                 if (edge) {
@@ -88,10 +85,14 @@ public class Graph {
                 }
 
                 bitPos++;
-                if (bitPos % 6 == 0) index++;
+                if (bitPos % 6 == 0) {
+                    index++;
+                    bitPos = 0;
+                }
             }
         }
         return adjMatrix;
+
     }
 
 
