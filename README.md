@@ -6,6 +6,24 @@ We use Java as our main programming language. We also use Unix so we can use pla
 
 Firstly, make sure you are working in Unix.
 
+### Plantri
+To check all graphs, we will use a simple planar graph generator called `plantri`. 
+To be able to use plantri, first, change the directory to plantri55 by executing this command:
+```
+cd plantri55/
+```
+Afterwards, run this command:
+```
+cc -o plantri -O4 plantri.c
+```
+This will compile plantri and make sure you can use it.
+
+Now, return to the main directory.
+```
+cd ..
+```
+
+### Code
 To use the code, change the directory to the source directory:
 ```
 cd src/
