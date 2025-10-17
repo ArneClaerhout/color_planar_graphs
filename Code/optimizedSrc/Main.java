@@ -2,6 +2,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class Main {
 
@@ -10,39 +11,30 @@ public class Main {
      **********************************/
 
     public static void main(String[] args) throws IOException {
-        ArgumentParser argsParser = new ArgumentParser(args);
-        String line;
 
-        String inputColoring = argsParser.getValue("-c");
+        // We get the arguments from our bash script, we know the order:
+        // First: the coloring
+        Coloring coloring = Coloring.getColoring(args[0]);
+        // Second: filter
+        //TODO
 
-        Coloring coloring = Coloring.getColoring(inputColoring);
+
         System.out.println("Received coloring: " + coloring);
 
 
-        if (argsParser.getValue("-m") == null) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        // We start reading the graphs
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            // As long as there is something to read from stdin, we read it.
-            while ((line = reader.readLine()) != null) {
-
-                Graph graph = new Graph(line);
-                System.out.print(line + ": ");
-                System.out.println(graph.findChromaticNumberNaive(coloring));
-
-            }
-            System.out.println("All graphs have been processed.");
-
-
-        } else {
-            // Manual is requested
-            line = argsParser.getValue("-m");
+        String line;
+        // As long as there is something to read from stdin, we read it.
+        while ((line = reader.readLine()) != null) {
 
             Graph graph = new Graph(line);
             System.out.print(line + ": ");
             System.out.println(graph.findChromaticNumberNaive(coloring));
 
         }
-
+        System.out.println("All graphs have been processed.");
 
 
     }
