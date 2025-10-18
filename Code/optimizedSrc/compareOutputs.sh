@@ -11,6 +11,14 @@ gen_range_graphs() {
   done
 }
 
+#gen_cycle_graphs() {
+#  for n in {3..60}; do
+#    ./../../nauty2_9_1/genrang $n 1 | ./../../nauty2_9_1/listg -g
+#  done
+#}
+
+
+
 if [[ "$1" == *:* ]]; then
   # Split the argument into start and end
   IFS=':' read -r startn endn <<< "$1"
@@ -28,7 +36,7 @@ fi
 output2=$(gen_range_graphs "$startn" "$endn" | ./../../nauty2_9_1/countg --N 2>/dev/null | sed '$d' | tr -d '[:space:]')
 ## We also get rid of the extra printing to the terminal
 echo -n "Nauty done"
-output1=$(./colorScript.sh -c proper -n "$1" --raw --overview | sed '$d' | tr -d '[:space:]')
+output1=$(./colorScript.sh "$1" -c proper --raw --overview | sed '$d' | tr -d '[:space:]')
 printf ", own program done.\n\n"
 
 #echo "$output1"
@@ -41,3 +49,7 @@ if [[ "$output1" == "$output2" ]]; then
 else
   echo "Outputs differ"
 fi
+
+
+#gen_cycle_graphs
+

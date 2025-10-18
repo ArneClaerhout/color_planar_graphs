@@ -11,6 +11,12 @@ gen_range_graphs() {
   done
 }
 
+read_stdin() {
+  while IFS= read -r line; do
+      echo "$line"
+    done
+}
+
 
 # Default values for our flags
 coloring=""
@@ -99,8 +105,11 @@ fi
 if [[ -z "$manual" ]]; then
   # Manual not set
   gen_range_graphs "$startn" "$endn" "$raw" | java Main "$coloring" "$overview" "$raw"
+elif [[ "$manual" == "stream" ]]; then
+  read_stdin | java Main "$coloring" "$overview" "$raw"
 else
   echo "$manual" | java Main "$coloring" "$overview" "$raw"
 fi
+
 
 
