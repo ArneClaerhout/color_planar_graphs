@@ -65,7 +65,7 @@ public class Main {
 
         long end = System.currentTimeMillis();
 
-        String finalTime = String.format("%.2f", end - start/1000.0); // in seconds
+        String finalTime = String.format("%.2f", (end - start)/1000.0); // in seconds
 
         if (!raw) {
             System.out.println("All graphs have been processed.");
