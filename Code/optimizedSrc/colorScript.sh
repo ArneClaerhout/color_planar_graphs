@@ -1,10 +1,23 @@
 #!/bin/bash
 
+# Function that generates the plantri output in a range of vertices
+gen_range_graphs() {
+  if [[ "$raw" == false ]]; then
+    # Only if we are not in raw mode do we print this.
+    echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
+  fi
+  for num in $(seq "$1" "$2"); do
+    ./../../plantri55/plantri -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+  done
+}
+
+
 # Default values for our flags
 coloring=""
 filter=""
 manual=""
 raw=false
+overview=false
 
 # Parse options
 POSITIONAL_ARGS=()
@@ -13,7 +26,15 @@ POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
   case $1 in
     -n) # Number of vertices, is only used if there is no filter given
-      n="$2"
+      # Check if this is done as a range
+      if [[ "$2" == *:* ]]; then
+        # Split the argument into start and end
+        IFS=':' read -r startn endn <<< "$2"
+      else
+        # Only one value given; use it as both start and end
+        startn="$2"
+        endn="$2"
+      fi
       shift 2
       ;;
     -c|--coloring)
@@ -27,6 +48,10 @@ while [[ $# -gt 0 ]]; do
     -f|--filter)
       filter="$2"
       shift 2
+      ;;
+    --overview)
+      overview=true
+      shift
       ;;
     --raw)
       raw=true
@@ -53,7 +78,8 @@ fi
 
 if [[ -z "$filter" ]]; then
   # No filter given
-  if [[ -z "$n" ]]; then
+  if [[ -z "$startn" ]]; then
+    # We only check startn, as both are either filled or not filled
     echo "Error: No filter or number of vertices given."
     exit 1
   fi
@@ -66,9 +92,9 @@ fi
 
 if [[ -z "$manual" ]]; then
   # Manual not set
-  ./../../plantri55/plantri -g $n | java Main $coloring $raw
+  gen_range_graphs "$startn" "$endn" "$raw" | java Main "$coloring" "$overview" "$raw"
 else
-  echo "$manual" | java Main $coloring $raw
+  echo "$manual" | java Main "$coloring" "$overview" "$raw"
 fi
 
 
