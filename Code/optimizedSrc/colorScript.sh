@@ -1,41 +1,51 @@
 #!/bin/bash
 
-# We make sure to recompile the code
-javac Main.java
-echo "Code compiled."
-
 # Default values for our flags
 coloring=""
 filter=""
 manual=""
-
+raw=false
 
 # Parse options
-while getopts ":c:f:m:n:" opt; do
-  case $opt in
-    c)
-      # shellcheck disable=SC1068
-      coloring="$OPTARG"
+POSITIONAL_ARGS=()
+
+# Loop over all flags and their values
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -n) # Number of vertices, is only used if there is no filter given
+      n="$2"
+      shift 2
       ;;
-    f)
-      filter="$OPTARG"
+    -c|--coloring)
+      coloring="$2"
+      shift 2
       ;;
-    m)
-      manual="$OPTARG"
+    -m|--manual)
+      manual="$2"
+      shift 2
       ;;
-    n)
-      n=$OPTARG
+    -f|--filter)
+      filter="$2"
+      shift 2
       ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
+    --raw)
+      raw=true
+      shift # We only shift once as there is no value associated with raw
       ;;
-    :)
-      echo "This flag (-$OPTARG) requires an argument." >&2
+    -*|--*)
+      echo "Unknown option $1"
       exit 1
       ;;
   esac
 done
+
+# We make sure to recompile the code
+javac Main.java
+if [[ "$raw" == false ]]; then
+  # Only if we are not in raw mode do we print this.
+  echo "Code compiled."
+fi
+
 
 #echo "Coloring: $coloring"
 #echo "Filename: $filename"
@@ -56,9 +66,9 @@ fi
 
 if [[ -z "$manual" ]]; then
   # Manual not set
-  ./../../plantri55/plantri -g $n | java Main $coloring
+  ./../../plantri55/plantri -g $n | java Main $coloring $raw
 else
-  echo "$manual" | java Main $coloring
+  echo "$manual" | java Main $coloring $raw
 fi
 
 
