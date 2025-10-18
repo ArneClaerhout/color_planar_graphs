@@ -19,24 +19,29 @@ manual=""
 raw=false
 overview=false
 
+if [[ "$1" != -* ]]; then
+  # Number of vertices is given
+
+  # We extract them
+  if [[ "$1" == *:* ]]; then
+    # Split the argument into start and end
+    IFS=':' read -r startn endn <<< "$1"
+  else
+    # Only one value given; use it as both start and end
+    startn="$1"
+    endn="$1"
+  fi
+  shift 1
+
+fi
+
+
 # Parse options
 POSITIONAL_ARGS=()
 
 # Loop over all flags and their values
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -n) # Number of vertices, is only used if there is no filter given
-      # Check if this is done as a range
-      if [[ "$2" == *:* ]]; then
-        # Split the argument into start and end
-        IFS=':' read -r startn endn <<< "$2"
-      else
-        # Only one value given; use it as both start and end
-        startn="$2"
-        endn="$2"
-      fi
-      shift 2
-      ;;
     -c|--coloring)
       coloring="$2"
       shift 2
@@ -78,7 +83,8 @@ fi
 
 if [[ -z "$filter" ]]; then
   # No filter given
-  if [[ -z "$startn" ]]; then
+  if [[ -z "$startn" && -z "$manual" ]]; then
+    # There is no n given and we don't want to manually give a graph -> ERROR
     # We only check startn, as both are either filled or not filled
     echo "Error: No filter or number of vertices given."
     exit 1

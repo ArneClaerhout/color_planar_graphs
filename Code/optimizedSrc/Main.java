@@ -2,6 +2,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -64,16 +65,19 @@ public class Main {
 
         long end = System.currentTimeMillis();
 
-        long finalTime = end - start;
+        String finalTime = String.format("%.2f", end - start/1000.0); // in seconds
 
-        if (!raw) System.out.println("All graphs have been processed.");
+        if (!raw) {
+            System.out.println("All graphs have been processed.");
+            System.out.println("Final time: " + finalTime);
+        }
 
         if (overview) {
             for (Integer c : cNumbers.keySet()) {
                 System.out.println(cNumbers.get(c) + " graphs : chrom=" + c);
                 // This is in sorted order as it was stored in a TreeMap
             }
-            System.out.println(cNumbers.values().stream().mapToInt(x -> x).sum() + " graphs altogether; cpu=" + String.format("%.2f", finalTime/1000.0) + " sec");
+            System.out.println(cNumbers.values().stream().mapToInt(x -> x).sum() + " graphs altogether; cpu=" + finalTime + " sec");
         }
 
 
