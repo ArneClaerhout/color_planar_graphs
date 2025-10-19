@@ -53,8 +53,8 @@ Example usages:
 
 ### Manual usage
 
-If one wants to manually enter a graph into the program, one can do so by using the flag _-m_, followed by the graph6 string.
-Here it is important to always enter the graph6 string as a string. 
+If one wants to manually enter a graph into the program, one can do so by using the flag _-m_, followed by the _graph6_ string.
+Here it is important to always enter the _graph6_ string as a string. 
 Giving the amount of vertices is not mandatory as this isn't used in the computation.
 
 Example usage:
@@ -67,13 +67,156 @@ Example usage:
 
 > **_NOTE:_** For this section, nauty should be installed in the main directory. Nauty can be found [here](https://users.cecs.anu.edu.au/~bdm/nauty/).
 
-If one wants to check the correctness of the output of the program. This can be done by using the program `compareOutputs.sh`. This bash-script compares the output from our own program to that of the nauty file `countg`. This is only done for the (normal) chromatic numbers, as `countg` doesn't support other types.
+If one wants to check the correctness of the output of the program. This can be done by using the other programs `checkOutputs.sh` and `checkCycles.sh`. These bash-scripts do the following:
 
-The number of vertices should still be given to the program as explained before.
+ - `checkOutputs.sh` compares the output from our own program to that of the nauty file `countg`. 
+This is only done for the (normal) chromatic numbers, as `countg` doesn't support other types.
+ - `checkCycles.sh` checks the other coloring methods, by finding the amount of colors used in cycle graphs. 
+These can then be compared to the known values for these types of graphs. 
+This lets us check whether the other colorings are also correct.
+
+A quick overview of how these graphs should be colored, ordered by coloring method, can be found in the section below.
+
+> <details>
+> <summary>General other chromatic numbers for cycle graphs</summary>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Odd coloring</summary>
+>
+> | Number of vertices     | Odd chromatic number |
+> |------------------------|----------------------|
+> | `n` multiple of `3`    | 3                    |
+> | `n = 5`                | 4                    |
+> | other                  | 5                    |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Improper conflict-free coloring (open neighbourhood)</summary>
+>
+> | Number of vertices     | iCFo chromatic number |
+> |------------------------|-----------------------|
+> | `n` multiple of `4`    | 2                     |
+> | other                  | 3                     |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Improper conflict-free coloring (closed neighbourhood)</summary>
+>
+> | Number of vertices | iCFc chromatic number |
+> |--------------------|-----------------------|
+> | all                | 2                     |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Proper conflict-free coloring (open neighbourhood)</summary>
+>
+> | Number of vertices  | pCFo chromatic number |
+> |---------------------|-----------------------|
+> | `n` multiple of `3` | 3                     |
+> | `n = 5`             | 4                     |
+> | other               | 5                     |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Proper conflict-free coloring (closed neighbourhood)</summary>
+>
+> | Number of vertices  | pCFc chromatic number |
+> |---------------------|-----------------------|
+> | `n` multiple of `2` | 2                     |
+> | other               | 3                     |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Improper unique-maximum coloring (open neighbourhood)</summary>
+>
+> | Number of vertices     | iUMo chromatic number |
+> |------------------------|-----------------------|
+> | `n` multiple of `4`    | 2                     |
+> | other                  | 3                     |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Improper unique-maximum coloring (closed neighbourhood)</summary>
+>
+> | Number of vertices     | iUMo chromatic number |
+> |------------------------|-----------------------|
+> | `n` multiple of `3`    | 2                     |
+> | other                  | 3                     |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Proper unique-maximum coloring (open neighbourhood)</summary>
+>
+> | Number of vertices     | Odd chromatic number |
+> |------------------------|----------------------|
+> | `n` multiple of `3`    | 3                    |
+> | `n = 5`                | 4                    |
+> | other                  | 5                    |
+>
+> </details>
+>
+> </div>
+>
+> <div style="margin-left: 2em;">
+>
+> <details>
+> <summary>Proper unique-maximum coloring (closed neighbourhood)</summary>
+>
+> | Number of vertices     | Odd chromatic number |
+> |------------------------|----------------------|
+> | `n = 5`                | 4                    |
+> | other                  | 3                    |
+>
+> </details>
+>
+> </div>
+>
+> </details>
+
+
+The number of vertices or the coloring should still be given to the program as explained before.
 
 Example usage:
 ```
-./compareOutputs.sh NUMBER_OF_VERTICES
+./checkOutputs.sh NUMBER_OF_VERTICES
+./checkCycles.sh COLORING_METHOD
 ```
 
 

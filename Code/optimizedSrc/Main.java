@@ -31,7 +31,7 @@ public class Main {
 
         // Last: whether the output should be raw
         boolean raw = false;
-        if (args[1].equals("true")) {
+        if (args[2].equals("true")) {
             // We know there is only an extra argument if the output should be raw
             raw = true;
         }
