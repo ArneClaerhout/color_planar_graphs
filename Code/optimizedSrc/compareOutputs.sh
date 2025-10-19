@@ -11,11 +11,23 @@ gen_range_graphs() {
   done
 }
 
-#gen_cycle_graphs() {
-#  for n in {3..60}; do
-#    ./../../nauty2_9_1/genrang $n 1 | ./../../nauty2_9_1/listg -g
-#  done
-#}
+gen_cycle_graphs() {
+python3 -m venv venv && source venv/bin/activate
+pip install -q networkx
+
+python3 - <<'PY'
+import networkx as nx
+
+with open("cycles.g6", "w", encoding="utf-8") as f:
+    for n in range(3, 13):
+        s = nx.to_graph6_bytes(nx.cycle_graph(n)).decode().strip()
+        if s.startswith(">>graph6<<"):
+            s = s[len(">>graph6<<"):]
+        print(s)
+        f.write(s + "\n")
+PY
+# We generate cycle graphs in python
+}
 
 
 
@@ -45,11 +57,11 @@ printf ", own program done.\n\n"
 # The two outputs from nauty and my own program, stripped of spaces and the last line
 # We now compare the two (in terms of correctness)
 if [[ "$output1" == "$output2" ]]; then
-  echo "Outputs match, own program is correct"
+  echo "Outputs match, own program is correct."
 else
-  echo "Outputs differ"
+  echo "Outputs differ."
 fi
 
-
-#gen_cycle_graphs
+printf "\nFinding chromatic number for cycle graphs:\n"
+gen_cycle_graphs | ./colorScript.sh -c iCFo -m stream --raw --overview
 
