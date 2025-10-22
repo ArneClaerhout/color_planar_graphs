@@ -1,10 +1,6 @@
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLOutput;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 public class Main {
@@ -52,12 +48,12 @@ public class Main {
 
             Graph graph = new Graph(line);
 
+
+            int c = graph.findChromaticNumberOptimized(coloring);
             if (overview) {
-                int c = graph.findChromaticNumberNaive(coloring);
                 cNumbers.merge(c, 1, Integer::sum);
             } else {
-                if (!raw) System.out.print(line + ": ");
-                System.out.println(graph.findChromaticNumberNaive(coloring));
+                if (!raw) System.out.println(line + ": " + c);
             }
 
 
@@ -69,12 +65,11 @@ public class Main {
 
         if (!raw) {
             System.out.println("All graphs have been processed.");
-            System.out.println("Final time: " + finalTime);
         }
 
         if (overview) {
-            for (Integer c : cNumbers.keySet()) {
-                System.out.println(cNumbers.get(c) + " graphs : chrom=" + c);
+            for (Integer chrom : cNumbers.keySet()) {
+                System.out.println(cNumbers.get(chrom) + " graphs : chrom=" + chrom);
                 // This is in sorted order as it was stored in a TreeMap
             }
             System.out.println(cNumbers.values().stream().mapToInt(x -> x).sum() + " graphs altogether; cpu=" + finalTime + " sec");

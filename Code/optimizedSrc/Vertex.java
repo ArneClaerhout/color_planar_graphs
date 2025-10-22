@@ -15,6 +15,16 @@ public class Vertex {
     private ArrayList<Vertex> neighbours = new ArrayList<>();
 
     /**
+     * The available colors for this vertex.
+     */
+    private boolean[] availableColors = new boolean[10];
+
+    /**
+     * The number of available colors for this vertex.
+     */
+    private int amountOfAvailableColors = 0;
+
+    /**
      * A constructor for a vertex object.
      */
     public Vertex() {
@@ -78,6 +88,77 @@ public class Vertex {
         this.color = color;
     }
 
+    /**
+     * A method for getting the amount of available colors left for this vertex.
+     * This is equal to the amount of true values in the availableColors array.
+     */
+    public int getAmountOfAvailableColors() {
+        return amountOfAvailableColors;
+    }
+
+    /**
+     * A method for setting the amount of available colors for this vertex.
+     */
+    private void setAmountOfAvailableColors(int amountOfAvailableColors) {
+        if (amountOfAvailableColors >= 0 &&  amountOfAvailableColors <= 10) {
+            this.amountOfAvailableColors = amountOfAvailableColors;
+        }
+    }
+
+    /**
+     * A method for acquiring the available colors for this vertex.
+     */
+    public boolean[] getAvailableColors() {
+        return availableColors;
+    }
+
+    /**
+     * A method for changing the available colors to a given list.
+     */
+    public void setAvailableColors(boolean[] availableColors) {
+        int count = 0;
+        this.availableColors = availableColors;
+        for  (int i = 0; i < availableColors.length; i++) {
+            if (availableColors[i]) {
+                count++;
+            }
+        }
+        setAmountOfAvailableColors(count);
+    }
+
+    /**
+     * A method for resetting the available colors to a list with numbers from 1 to max.
+     */
+    public void setMaxAvailableColors(int max) {
+        for (int i = 0; i < max; i++) {
+            availableColors[i] = true;
+        }
+        for (int i = max; i < 10; i++) {
+            availableColors[i] = false;
+        }
+        setAmountOfAvailableColors(max);
+    }
+
+    /**
+     * Removes a color from the available color array.
+     */
+    public void removeColorFromAvailableColors(int color) {
+        if (availableColors[color]) {
+            this.availableColors[color] = false;
+            setAmountOfAvailableColors(amountOfAvailableColors - 1);
+        }
+    }
+
+    /**
+     * Adds a color to the available color array.
+     */
+    public void addColorFromAvailableColors(int color) {
+        if (!availableColors[color]) {
+            this.availableColors[color] = true;
+            setAmountOfAvailableColors(amountOfAvailableColors + 1);
+        }
+
+    }
 
 
     /**
@@ -94,6 +175,12 @@ public class Vertex {
         // We should therefore only use this method when the inputColoring has happened.
 
         for (Vertex neighbour : getClosedNeighbourhood()) {
+
+            if (neighbour.getColor() == 0) {
+                return false;
+                // Not all vertices have been colored yet, this vertex is also checked.
+            }
+
             if (proper && neighbour.getColor() == color && !this.equals(neighbour)) {
                 // Check if the inputColoring is proper
                 return false;
