@@ -88,8 +88,8 @@ A quick overview of how these graphs should be colored, ordered by coloring meth
 > | Number of vertices     | Odd chromatic number |
 > |------------------------|----------------------|
 > | `n` multiple of `3`    | 3                    |
-> | `n = 5`                | 4                    |
-> | other                  | 5                    |
+> | `n = 5`                | 5                    |
+> | other                  | 4                    |
 >
 > </details>
 >
@@ -130,8 +130,8 @@ A quick overview of how these graphs should be colored, ordered by coloring meth
 > | Number of vertices  | pCFo chromatic number |
 > |---------------------|-----------------------|
 > | `n` multiple of `3` | 3                     |
-> | `n = 5`             | 4                     |
-> | other               | 5                     |
+> | `n = 5`             | 5                     |
+> | other               | 4                     |
 >
 > </details>
 >
@@ -187,8 +187,8 @@ A quick overview of how these graphs should be colored, ordered by coloring meth
 > | Number of vertices     | Odd chromatic number |
 > |------------------------|----------------------|
 > | `n` multiple of `3`    | 3                    |
-> | `n = 5`                | 4                    |
-> | other                  | 5                    |
+> | `n = 5`                | 5                    |
+> | other                  | 4                    |
 >
 > </details>
 >

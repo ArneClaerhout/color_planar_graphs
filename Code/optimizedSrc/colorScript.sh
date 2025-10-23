@@ -24,6 +24,7 @@ filter=""
 manual=""
 raw=false
 overview=false
+progressview=false
 
 if [[ "$1" != -* ]]; then
   # Number of vertices is given
@@ -59,6 +60,10 @@ while [[ $# -gt 0 ]]; do
     -f|--filter)
       filter="$2"
       shift 2
+      ;;
+    -pv)
+      progressview=true
+      shift 1
       ;;
     --overview)
       overview=true
@@ -102,14 +107,32 @@ else
   # PLACEHOLDER
 fi
 
-if [[ -z "$manual" ]]; then
-  # Manual not set
-  gen_range_graphs "$startn" "$endn" "$raw" | java Main "$coloring" "$overview" "$raw"
-elif [[ "$manual" == "stream" ]]; then
-  read_stdin | java Main "$coloring" "$overview" "$raw"
+if [[ "$progressview" == true ]]; then
+
+  if [[ -z "$manual" ]]; then
+    # Manual not set
+    gen_range_graphs "$startn" "$endn" "$raw" | pv | java Main "$coloring" "$overview" "$raw"
+  elif [[ "$manual" == "stream" ]]; then
+    # Own stream chosen
+    read_stdin | pv | java Main "$coloring" "$overview" "$raw"
+  else
+    echo "$manual" | pv | java Main "$coloring" "$overview" "$raw"
+  fi
+
 else
-  echo "$manual" | java Main "$coloring" "$overview" "$raw"
+
+  if [[ -z "$manual" ]]; then
+      # Manual not set
+      gen_range_graphs "$startn" "$endn" "$raw" | java Main "$coloring" "$overview" "$raw"
+    elif [[ "$manual" == "stream" ]]; then
+      # Own stream chosen
+      read_stdin | java Main "$coloring" "$overview" "$raw"
+    else
+      echo "$manual" | java Main "$coloring" "$overview" "$raw"
+    fi
+
 fi
+
 
 
 

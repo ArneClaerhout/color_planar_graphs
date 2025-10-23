@@ -1,5 +1,8 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+
+import static java.util.Collections.min;
 
 public class Graph {
 
@@ -34,10 +37,12 @@ public class Graph {
      *
      * @param   coloring
      *          The coloring method used.
+     * @param   properLy
+     *          Whether the fact that the vertex is proper should get checked.
      */
-    public boolean isCorrectlyColored(Coloring coloring) {
+    public boolean isCorrectlyColored(Coloring coloring, boolean properLy) {
         for (Vertex v : vertices) {
-            if (!v.isCorrectlyColored(coloring)) {
+            if (!v.isCorrectlyColored(coloring, properLy)) {
                 return false;
             }
         }
@@ -140,11 +145,11 @@ public class Graph {
         int n = coloring.getMaxChromaticNumber();
         boolean proper = Coloring.isProper(coloring);
 
-        for (int i = 1; i <= n; i++) {
+        for (int i = 2; i <= n; i++) {
             for (Vertex v : vertices) {
                 v.setMaxAvailableColors(i);
             }
-            if (optimizedAlgorithm(coloring, proper, i, 0)) {
+            if (optimizedAlgorithm(coloring, proper, 0, i, 0)) {
                 return i;
             }
         }
@@ -166,37 +171,66 @@ public class Graph {
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
-    private boolean optimizedAlgorithm(Coloring coloring, boolean proper, int maxColor, int index) {
+    private boolean optimizedAlgorithm(Coloring coloring, boolean proper, int maxColorRec, int maxColor, int index) {
         if (index >= vertices.length) {
             // We reached the end of the list
-            return isCorrectlyColored(coloring);
+            if (coloring == Coloring.PROPER) return true; // We checked everything along the way, it should be correct
+            return isCorrectlyColored(coloring, false);
+            // If the coloring is proper, we have checked it already.
+            // If the coloring is not proper, this shouldn't get checked.
         }
 
-        Vertex v = vertices[index]; // We remove the vertex from the priority queue
+        Vertex v = vertices[index];
         boolean[] colors = v.getAvailableColors();
 
+
+//        int maxLoop = (maxColorRec < maxColor) ? maxColorRec + 1 : maxColorRec;
+        // TODO
         for (int color = 0; color < maxColor; color++) {
             if (!colors[color]) continue; // We skip this color as this can't be correct
 
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
 
             // We also change the available colors for the neighbours if the coloring is proper
+            ArrayList<Vertex> changed =  new ArrayList<>();
             if (proper) {
                 for (Vertex neighbour : v.getOpenNeighbourhood()) {
-                    neighbour.removeColorFromAvailableColors(color);
+                    if (neighbour.removeColorFromAvailableColors(color)) changed.add(neighbour);
+                    if (neighbour.getAmountOfAvailableColors() == 0) {
+                        // Early pruning
+                        for (Vertex changedNeighbour : changed) {
+                            changedNeighbour.addColorFromAvailableColors(color);
+                            // We add the colors back
+                        }
+                        return false;
+                    }
                 }
+
+                // We make sure we are not at the last index
+                if (index + 1 < vertices.length) {
+                    // Instead of sorting the entire rest of the list, we find the best candidate
+                    int bestIndex = getBestIndex(index + 1);
+
+                    // We put the best starter at the front
+                    if (index + 1 != bestIndex) {
+                        Vertex tmp = vertices[bestIndex];
+                        vertices[bestIndex] = vertices[index + 1];
+                        vertices[index + 1] = tmp;
+                    }
+                }
+
             }
 
-            // We now order the remaining vertices
-            Arrays.sort(vertices, index+1, vertices.length, Comparator.comparingInt(Vertex::getAmountOfAvailableColors));
 
-            if (optimizedAlgorithm(coloring, proper, maxColor, index + 1)) {
+            int newMaxColorRec = Math.max(maxColorRec, color + 1); // +2 as the maxColorRec is not included in the loop
+            if (optimizedAlgorithm(coloring, proper, newMaxColorRec, maxColor, index + 1)) {
                 return true;
             }
 
+
             // We add back the available colors if it didn't work out
             if (proper) {
-                for (Vertex neighbour : v.getOpenNeighbourhood()) {
+                for (Vertex neighbour : changed) {
                     neighbour.addColorFromAvailableColors(color);
                 }
             }
@@ -205,6 +239,29 @@ public class Graph {
 
         return false;
 
+    }
+
+    /**
+     * A method for finding the best candidate in the coloring of a graph
+     *
+     * @param   index
+     *          The starting index in the vertices list.
+     *          All the vertices after (including the index itself)
+     *          are considered when finding the best candidate.
+     */
+    private int getBestIndex(int index) {
+        int bestIndex = index;
+        int smallestAC = vertices[bestIndex].getAmountOfAvailableColors();
+        int testAC;
+        // We now order the remaining vertices, only for proper colorings
+        for (int i = index; i < vertices.length; i++) {
+            testAC = vertices[i].getAmountOfAvailableColors();
+            if (smallestAC > testAC) {
+                smallestAC = testAC;
+                bestIndex = i;
+            }
+        }
+        return bestIndex;
     }
 
 
@@ -222,7 +279,7 @@ public class Graph {
     private boolean naiveAlgorithm(Coloring coloring, int maxColor, int index) {
         if (index >= vertices.length) {
             // We reached the end of the list
-            return isCorrectlyColored(coloring);
+            return isCorrectlyColored(coloring, true);
         }
 
         for (int i = 1; i <= maxColor; i++) {

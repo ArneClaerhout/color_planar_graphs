@@ -25,6 +25,11 @@ public class Vertex {
     private int amountOfAvailableColors = 0;
 
     /**
+     * The degree of this vertex.
+     */
+    private int degree = 0;
+
+    /**
      * A constructor for a vertex object.
      */
     public Vertex() {
@@ -41,6 +46,8 @@ public class Vertex {
     public void addNeighbour(Vertex neighbour) {
         neighbours.add(neighbour);
         neighbour.getOpenNeighbourhood().add(this);
+        incrementDegree();
+        neighbour.incrementDegree();
     }
 
     /**
@@ -142,32 +149,50 @@ public class Vertex {
     /**
      * Removes a color from the available color array.
      */
-    public void removeColorFromAvailableColors(int color) {
+    public boolean removeColorFromAvailableColors(int color) {
         if (availableColors[color]) {
             this.availableColors[color] = false;
             setAmountOfAvailableColors(amountOfAvailableColors - 1);
+            return true;
         }
+        return false;
     }
 
     /**
      * Adds a color to the available color array.
      */
-    public void addColorFromAvailableColors(int color) {
+    public boolean addColorFromAvailableColors(int color) {
         if (!availableColors[color]) {
             this.availableColors[color] = true;
             setAmountOfAvailableColors(amountOfAvailableColors + 1);
+            return true;
         }
-
+        return false;
     }
 
+    /**
+     * A method for acquiring the degree of this vertex.
+     */
+    public int getDegree() {
+        return degree;
+    }
+
+    /**
+     * A package-private method for incrementing the degree of this vertex.
+     */
+    void incrementDegree() {
+        this.degree++;
+    }
 
     /**
      * This method checks whether the vertex is correctly colored according to a certain inputColoring method.
      *
      * @param   inputColoring
      *          The inputColoring method used.
+     * @param   properLy
+     *          Whether the fact that the vertex is proper should get checked.
      */
-    public boolean isCorrectlyColored(Coloring inputColoring) {
+    public boolean isCorrectlyColored(Coloring inputColoring, boolean properLy) {
         boolean open = Coloring.isOpen(inputColoring);
         boolean proper = Coloring.isProper(inputColoring);
         int[] colors = new int[10];
@@ -181,10 +206,13 @@ public class Vertex {
                 // Not all vertices have been colored yet, this vertex is also checked.
             }
 
-            if (proper && neighbour.getColor() == color && !this.equals(neighbour)) {
-                // Check if the inputColoring is proper
-                return false;
+            if (properLy) {
+                if (proper && neighbour.getColor() == color && !this.equals(neighbour)) {
+                    // Check if the inputColoring is proper
+                    return false;
+                }
             }
+
             colors[neighbour.getColor()-1]++;
         }
 

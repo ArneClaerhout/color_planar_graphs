@@ -8,7 +8,7 @@ python3 - <<'PY'
 import networkx as nx
 
 with open("cycles.g6", "w", encoding="utf-8") as f:
-    for n in range(3, 16):
+    for n in range(3, 21):
         s = nx.to_graph6_bytes(nx.cycle_graph(n)).decode().strip()
         if s.startswith(">>graph6<<"):
             s = s[len(">>graph6<<"):]
