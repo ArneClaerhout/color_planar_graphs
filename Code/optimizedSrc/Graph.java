@@ -184,7 +184,7 @@ public class Graph {
         boolean[] colors = v.getAvailableColors();
 
 
-//        int maxLoop = (maxColorRec < maxColor) ? maxColorRec + 1 : maxColorRec;
+//        int maxLoop = Math.min(maxColorRec + 1, maxColor);
         // TODO
         for (int color = 0; color < maxColor; color++) {
             if (!colors[color]) continue; // We skip this color as this can't be correct
@@ -222,7 +222,7 @@ public class Graph {
             }
 
 
-            int newMaxColorRec = Math.max(maxColorRec, color + 1); // +2 as the maxColorRec is not included in the loop
+            int newMaxColorRec = Math.max(maxColorRec, color + 1);
             if (optimizedAlgorithm(coloring, proper, newMaxColorRec, maxColor, index + 1)) {
                 return true;
             }
