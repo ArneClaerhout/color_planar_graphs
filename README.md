@@ -67,15 +67,33 @@ Example usage:
 
 > **_NOTE:_** For this section, nauty should be installed in the main directory. Nauty can be found [here](https://users.cecs.anu.edu.au/~bdm/nauty/).
 
-If one wants to check the correctness of the output of the program. This can be done by using the other programs `checkOutputs.sh` and `checkCycles.sh`. These bash-scripts do the following:
+If one wants to check the correctness of the output of the program. This can be done by using the other programs `checkOutputs.sh`, `checkCycles.sh` and `checkNaiveOutputs.sh`. These bash-scripts do the following:
 
- - `checkOutputs.sh` compares the output from our own program to that of the nauty file `countg`. 
-This is only done for the (normal) chromatic numbers, as `countg` doesn't support other types.
- - `checkCycles.sh` checks the other coloring methods, by finding the amount of colors used in cycle graphs. 
+ - `checkOutputs.sh` compares the output from our own program to that of the nauty file _countg_. 
+This is only done for the (normal) chromatic numbers, as _countg_ doesn't support other types.
+ - `checkCycles.sh` checks the other coloring methods, by finding the amount of colors used in cycle graphs ($C_i$). 
 These can then be compared to the known values for these types of graphs. 
-This lets us check whether the other colorings are also correct.
+This lets us check whether the other colorings are also correct. 
+An overview of how the cycle graphs should be colored can be found [here](###overview-cycle-graphs)
+ - `checkNaiveOutputs.sh` checks, as implied by the name, the outputs to those from the naive implementation.
+As the naive implementation is very simple, we can assume that the output for this algorithm will be correct.
+Therefore we can always compare our optimized algorithm to the naive algorithm.
 
-A quick overview of how these graphs should be colored, ordered by coloring method, can be found in the section below.
+
+The number of vertices or the coloring method should still be given to the program as explained before.
+
+Example usage:
+```
+./checkOutputs.sh NUMBER_OF_VERTICES
+./checkCycles.sh COLORING_METHOD
+./checkNaiveOutputs.sh NUMBER_OF_VERTICES -c COLORING_METHOD
+```
+
+
+
+### Overview cycle graphs
+
+Here one can find a quick overview of how cycle graphs ($C_i$) should be colored, ordered by coloring method, in the section below.
 
 > <details>
 > <summary>General other chromatic numbers for cycle graphs</summary>
@@ -211,13 +229,6 @@ A quick overview of how these graphs should be colored, ordered by coloring meth
 > </details>
 
 
-The number of vertices or the coloring should still be given to the program as explained before.
-
-Example usage:
-```
-./checkOutputs.sh NUMBER_OF_VERTICES
-./checkCycles.sh COLORING_METHOD
-```
 
 
 
