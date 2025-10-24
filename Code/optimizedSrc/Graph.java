@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 
 import static java.util.Collections.min;
 
@@ -144,12 +142,13 @@ public class Graph {
     public int findChromaticNumberOptimized(Coloring coloring) {
         int n = coloring.getMaxChromaticNumber();
         boolean proper = Coloring.isProper(coloring);
+        boolean um = Coloring.isUniqueMaximum(coloring);
 
         for (int i = 2; i <= n; i++) {
             for (Vertex v : vertices) {
                 v.setMaxAvailableColors(i);
             }
-            if (optimizedAlgorithm(coloring, proper, 0, i, 0)) {
+            if (optimizedAlgorithm(coloring, proper, um, 0, i, 0)) {
                 return i;
             }
         }
@@ -163,6 +162,11 @@ public class Graph {
      *          The coloring of which the algorithm should to try to find a solution for.
      * @param   proper
      *          Whether the coloring is proper.
+     * @param   um
+     *          Whether the coloring is a version of unique-maximum coloring.
+     * @param   maxColorCurrGraph
+     *          The current max color possible for this graph.
+     *          This doesn't matter for unique-maximum colorings.
      * @param   maxColor
      *          The maximum color possible for this coloring method.
      * @param   index
@@ -171,7 +175,7 @@ public class Graph {
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
-    private boolean optimizedAlgorithm(Coloring coloring, boolean proper, int maxColorRec, int maxColor, int index) {
+    private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, int index) {
         if (index >= vertices.length) {
             // We reached the end of the list
             if (coloring == Coloring.PROPER) return true; // We checked everything along the way, it should be correct
@@ -182,11 +186,12 @@ public class Graph {
 
         Vertex v = vertices[index];
         boolean[] colors = v.getAvailableColors();
+        boolean skip = false;
 
+        int maxLoop = um ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
+        // Every coloring should be tried for um, as this is different for it.
 
-//        int maxLoop = Math.min(maxColorRec + 1, maxColor);
-        // TODO
-        for (int color = 0; color < maxColor; color++) {
+        for (int color = 0; color < maxLoop; color++) {
             if (!colors[color]) continue; // We skip this color as this can't be correct
 
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
@@ -202,8 +207,14 @@ public class Graph {
                             changedNeighbour.addColorFromAvailableColors(color);
                             // We add the colors back
                         }
-                        return false;
+                        skip = true;
+                        break;
                     }
+                }
+                if (skip) {
+                    // This is used to skip this color, as it isn't possible
+                    skip = false;
+                    continue;
                 }
 
                 // We make sure we are not at the last index
@@ -221,9 +232,8 @@ public class Graph {
 
             }
 
-
-            int newMaxColorRec = Math.max(maxColorRec, color + 1);
-            if (optimizedAlgorithm(coloring, proper, newMaxColorRec, maxColor, index + 1)) {
+            int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
+            if (optimizedAlgorithm(coloring, proper, um, newMaxColorCurrGraph, maxColor, index + 1)) {
                 return true;
             }
 

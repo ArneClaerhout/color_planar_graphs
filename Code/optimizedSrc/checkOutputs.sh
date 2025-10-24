@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Change the working directory to this one.
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$script_dir" || exit 1
+
+
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
   if [[ "$raw" == false ]]; then
@@ -31,8 +36,8 @@ echo -n "Nauty done"
 output1=$(./colorScript.sh "$1" -c proper --raw --overview | sed '$d' | tr -d '[:space:]')
 printf ", own program done.\n\n"
 
-#echo "$output1"
-#echo "$output2"
+echo "$output1"
+echo "$output2"
 
 # The two outputs from nauty and my own program, stripped of spaces and the last line
 # We now compare the two (in terms of correctness)

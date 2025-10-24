@@ -77,6 +77,10 @@ while [[ $# -gt 0 ]]; do
       echo "Unknown option $1"
       exit 1
       ;;
+    *)
+      # End of the flags
+      break
+      ;;
   esac
 done
 
