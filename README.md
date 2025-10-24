@@ -74,7 +74,7 @@ This is only done for the (normal) chromatic numbers, as _countg_ doesn't suppor
  - `checkCycles.sh` checks the other coloring methods, by finding the amount of colors used in cycle graphs ($C_i$). 
 These can then be compared to the known values for these types of graphs. 
 This lets us check whether the other colorings are also correct. 
-An overview of how the cycle graphs should be colored can be found [here](###overview-cycle-graphs)
+An overview of how the cycle graphs should be colored can be found [here](#overview-cycle-graphs)
  - `checkNaiveOutputs.sh` checks, as implied by the name, the outputs to those from the naive implementation.
 As the naive implementation is very simple, we can assume that the output for this algorithm will be correct.
 Therefore we can always compare our optimized algorithm to the naive algorithm.
