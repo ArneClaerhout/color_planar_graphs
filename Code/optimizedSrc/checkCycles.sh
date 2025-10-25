@@ -4,6 +4,8 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
+
+### The generation of the cycles in graph6 format
 gen_cycle_graphs() {
   if [ ! -d "venv" ]; then
     python3 -m venv venv

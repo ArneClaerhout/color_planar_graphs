@@ -5,6 +5,10 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
 
+#######################
+###### FUNCTIONS ######
+#######################
+
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
   if [[ "$raw" == false ]]; then
@@ -36,6 +40,9 @@ else
 fi
 
 
+########################
+###### COMPARISON ######
+########################
 
 # First argument for this script is the amount of vertices
 nauty_path=$(check_nauty)

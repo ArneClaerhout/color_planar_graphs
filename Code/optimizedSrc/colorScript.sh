@@ -5,6 +5,10 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
 
+#######################
+###### FUNCTIONS ######
+#######################
+
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
   if [[ "$raw" == 0 ]]; then
@@ -34,6 +38,11 @@ java_alg() {
   java Main "$coloring" "$overview" "$raw" "$filter" | show_func
 }
 
+
+################################
+###### NUMBER OF VERTICES ######
+################################
+
 # Default values for our flags
 coloring=""
 filter=0
@@ -59,6 +68,10 @@ if [[ "$1" != -* ]]; then
 
 fi
 
+
+#######################
+###### ARGUMENTS ######
+#######################
 
 # Parse options
 POSITIONAL_ARGS=()
@@ -125,8 +138,16 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+
+#######################
+###### ALGORTIHM ######
+#######################
+
+
 # We make sure to recompile the code
 javac Main.java
+
+### RAW-CHECK
 if [[ "$raw" == 0 ]]; then
   # Only if we are not in raw mode do we print this.
   echo "Code compiled."
@@ -135,6 +156,7 @@ elif [[ "$raw" != 1 || "$raw" != 2 ]]; then
   raw=1
 fi
 
+### SHOW-CHECK
 if [[ "$show" == true ]]; then
   # If show is chosen, we always pick these values
   raw=2
@@ -146,12 +168,7 @@ if [[ "$show" == true ]]; then
   rm images/*
 fi
 
-
-
-#echo "Coloring: $coloring"
-#echo "Filename: $filename"
-#echo "Manual: $manual"
-
+### NUMBER OF VERTICES CHECK
 if [[ -z "$startn" && -z "$manual" ]]; then
   # There is no n given and we don't want to manually give a graph -> ERROR
   # We only check startn, as both are either filled or not filled
@@ -159,6 +176,8 @@ if [[ -z "$startn" && -z "$manual" ]]; then
   exit 1
 fi
 
+
+### PROGRESS BAR
 if [[ "$progressview" == true ]]; then
 
   # We add a progress bar
@@ -173,6 +192,8 @@ if [[ "$progressview" == true ]]; then
     echo "$manual" | pv | java_alg
   fi
 
+
+### NO PROGRESS BAR
 else
 
   if [[ -z "$manual" ]]; then
@@ -187,6 +208,8 @@ else
 
 fi
 
+
+# Extra output for show functionality to signal the end of the generation.
 if [[ "$show" == true ]]; then
   echo "Generated all images."
 fi

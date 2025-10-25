@@ -9,8 +9,10 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv
 fi
 
+# Enter virtual environment
 source venv/bin/activate
 
+# Install needed libraries silently
 pip install -q --upgrade pip
 pip install -q networkx
 pip install -q matplotlib
