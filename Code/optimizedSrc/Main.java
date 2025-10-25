@@ -20,10 +20,8 @@ public class Main {
             // We get the arguments from our bash script, we know the order:
             // First: the coloring
             Coloring coloring = Coloring.getColoring(args[0]);
-            // Second: filter
-            //TODO
 
-            // Third: overview
+            // Second: overview
             boolean overview = false;
             TreeMap<Integer, Integer> cNumbers = new TreeMap<>();
             if (args[1].equals("true")) {
@@ -31,12 +29,15 @@ public class Main {
                 overview = true;
             }
 
-            // Last: whether the output should be raw
+            // Third: whether the output should be raw
             boolean raw = false;
             if (args[2].equals("true")) {
                 // We know there is only an extra argument if the output should be raw
                 raw = true;
             }
+
+            // Lastly: adding a filter to the output (min. chromatic number)
+            int minChrom = Integer.parseInt(args[3]);
 
 
             if (!raw) System.out.println("Received coloring: " + coloring);
@@ -56,12 +57,15 @@ public class Main {
 
 
                 int c = graph.findChromaticNumberOptimized(coloring);
-                if (overview) {
-                    cNumbers.merge(c, 1, Integer::sum);
-                } else {
-                    if (!raw) System.out.println(line + ": " + c);
-                    else System.out.println(c);
+                if (c >= minChrom) {
+                    if (overview) {
+                        cNumbers.merge(c, 1, Integer::sum);
+                    } else {
+                        if (!raw) System.out.println(line + ": " + c);
+                        else System.out.println(c);
+                    }
                 }
+
 
 
             }

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Change the working directory to this one.
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$script_dir" || exit 1
+
+
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
   if [[ "$raw" == false ]]; then
@@ -17,14 +22,19 @@ read_stdin() {
     done
 }
 
+java_alg() {
+  java Main "$coloring" "$overview" "$raw" "$filter"
+}
+
 
 # Default values for our flags
 coloring=""
-filter=""
+filter=0
 manual=""
 raw=false
 overview=false
 progressview=false
+show=false
 
 if [[ "$1" != -* ]]; then
   # Number of vertices is given
@@ -73,6 +83,10 @@ while [[ $# -gt 0 ]]; do
       raw=true
       shift # We only shift once as there is no value associated with raw
       ;;
+    --show)
+      show=true
+      shift
+      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -96,46 +110,48 @@ fi
 #echo "Filename: $filename"
 #echo "Manual: $manual"
 
-if [[ -z "$filter" ]]; then
-  # No filter given
-  if [[ -z "$startn" && -z "$manual" ]]; then
-    # There is no n given and we don't want to manually give a graph -> ERROR
-    # We only check startn, as both are either filled or not filled
-    echo "Error: No filter or number of vertices given."
-    exit 1
-  fi
-else
-  # Filter given, we use this over number of vertices
-  # PLACEHOLDER
-  n=$((filter + 0)) # Set n to the filter
-  # PLACEHOLDER
+if [[ -z "$startn" && -z "$manual" ]]; then
+  # There is no n given and we don't want to manually give a graph -> ERROR
+  # We only check startn, as both are either filled or not filled
+  echo "Error: Number of vertices wasn't given."
+  exit 1
 fi
 
 if [[ "$progressview" == true ]]; then
 
+  # We add a progress bar
+
   if [[ -z "$manual" ]]; then
     # Manual not set
-    gen_range_graphs "$startn" "$endn" "$raw" | pv | java Main "$coloring" "$overview" "$raw"
+    gen_range_graphs "$startn" "$endn" "$raw" | pv | java_alg
   elif [[ "$manual" == "stream" ]]; then
     # Own stream chosen
-    read_stdin | pv | java Main "$coloring" "$overview" "$raw"
+    read_stdin | pv | java_alg
   else
-    echo "$manual" | pv | java Main "$coloring" "$overview" "$raw"
+    echo "$manual" | pv | java_alg
   fi
 
 else
 
   if [[ -z "$manual" ]]; then
       # Manual not set
-      gen_range_graphs "$startn" "$endn" "$raw" | java Main "$coloring" "$overview" "$raw"
+      gen_range_graphs "$startn" "$endn" "$raw" | java_alg
     elif [[ "$manual" == "stream" ]]; then
       # Own stream chosen
-      read_stdin | java Main "$coloring" "$overview" "$raw"
+      read_stdin | java_alg
     else
-      echo "$manual" | java Main "$coloring" "$overview" "$raw"
+      echo "$manual" |java_alg
     fi
 
 fi
+
+#
+## Our output is going to stdout
+## We can now show the graphs if requested
+#
+#if [[ "$show" ]]; then
+#  ./showOutput.sh
+#fi
 
 
 

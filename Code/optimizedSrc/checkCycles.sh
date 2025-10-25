@@ -5,8 +5,11 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
 gen_cycle_graphs() {
-python3 -m venv venv && source venv/bin/activate
-pip install -q networkx
+  if [ ! -d "venv" ]; then
+    python3 -m venv venv
+  fi
+  source venv/bin/activate
+  pip install -q networkx
 
 python3 - <<'PY'
 import networkx as nx
