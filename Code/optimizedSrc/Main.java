@@ -30,17 +30,13 @@ public class Main {
             }
 
             // Third: whether the output should be raw
-            boolean raw = false;
-            if (args[2].equals("true")) {
-                // We know there is only an extra argument if the output should be raw
-                raw = true;
-            }
+            int raw = Integer.parseInt(args[2]);
 
             // Lastly: adding a filter to the output (min. chromatic number)
             int minChrom = Integer.parseInt(args[3]);
 
 
-            if (!raw) System.out.println("Received coloring: " + coloring);
+            if (raw == 0) System.out.println("Received coloring: " + coloring);
 
 
             // We start reading the graphs
@@ -61,8 +57,12 @@ public class Main {
                     if (overview) {
                         cNumbers.merge(c, 1, Integer::sum);
                     } else {
-                        if (!raw) System.out.println(line + ": " + c);
-                        else System.out.println(c);
+                        switch (raw) {
+                            // We break here as we don't want to also output the default option
+                            case 1: System.out.println(c); break;
+                            case 2: System.out.println(line); break;
+                            default: System.out.println(line + ": " + c);
+                        }
                     }
                 }
 
@@ -74,7 +74,7 @@ public class Main {
 
             String finalTime = String.format("%.2f", (end - start)/1000.0); // in seconds
 
-            if (!raw) {
+            if (raw == 0) {
                 System.out.println("All graphs have been processed.");
             }
 

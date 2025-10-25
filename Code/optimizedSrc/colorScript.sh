@@ -7,7 +7,7 @@ cd "$script_dir" || exit 1
 
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
-  if [[ "$raw" == false ]]; then
+  if [[ "$raw" == 0 ]]; then
     # Only if we are not in raw mode do we print this.
     echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
   fi
@@ -18,20 +18,27 @@ gen_range_graphs() {
 
 read_stdin() {
   while IFS= read -r line; do
-      echo "$line"
-    done
+    echo "$line"
+  done
+}
+
+show_func() {
+  if [[ "$show" == true ]]; then
+  ./showOutput.sh
+  else
+    cat
+  fi
 }
 
 java_alg() {
-  java Main "$coloring" "$overview" "$raw" "$filter"
+  java Main "$coloring" "$overview" "$raw" "$filter" | show_func
 }
-
 
 # Default values for our flags
 coloring=""
 filter=0
 manual=""
-raw=false
+raw=0
 overview=false
 progressview=false
 show=false
@@ -60,14 +67,30 @@ POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
   case $1 in
     -c|--coloring)
+      if [[ -z "${2:-}" || "$2" == -* ]]; then
+          echo "Error: option $1 requires a value"
+          exit 1
+      fi
       coloring="$2"
       shift 2
       ;;
     -m|--manual)
+      if [[ -z "${2:-}" || "$2" == -* ]]; then
+          echo "Error: option $1 requires a value"
+          exit 1
+      fi
       manual="$2"
+      if [[ -z "${2:-}" || "$2" == -* ]]; then
+          echo "Error: option $1 requires a value"
+          exit 1
+      fi
       shift 2
       ;;
     -f|--filter)
+      if [[ -z "${2:-}" || "$2" == -* ]]; then
+          echo "Error: option $1 requires a value"
+          exit 1
+      fi
       filter="$2"
       shift 2
       ;;
@@ -80,8 +103,12 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --raw)
-      raw=true
-      shift # We only shift once as there is no value associated with raw
+      if [[ -z "${2:-}" || "$2" == -* ]]; then
+          echo "Error: option $1 requires a value"
+          exit 1
+      fi
+      raw="$2"
+      shift 2
       ;;
     --show)
       show=true
@@ -100,10 +127,25 @@ done
 
 # We make sure to recompile the code
 javac Main.java
-if [[ "$raw" == false ]]; then
+if [[ "$raw" == 0 ]]; then
   # Only if we are not in raw mode do we print this.
   echo "Code compiled."
+elif [[ "$raw" != 1 || "$raw" != 2 ]]; then
+  # We only want two raw options
+  raw=1
 fi
+
+if [[ "$show" == true ]]; then
+  # If show is chosen, we always pick these values
+  raw=2
+  overview=false
+  progressview=false
+  showcommand=./showOutput.sh
+
+  # We also remove all previous files from the directory
+  rm images/*
+fi
+
 
 
 #echo "Coloring: $coloring"
@@ -140,18 +182,14 @@ else
       # Own stream chosen
       read_stdin | java_alg
     else
-      echo "$manual" |java_alg
+      echo "$manual" | java_alg
     fi
 
 fi
 
-#
-## Our output is going to stdout
-## We can now show the graphs if requested
-#
-#if [[ "$show" ]]; then
-#  ./showOutput.sh
-#fi
+if [[ "$show" == true ]]; then
+  echo "Generated all images."
+fi
 
 
 
