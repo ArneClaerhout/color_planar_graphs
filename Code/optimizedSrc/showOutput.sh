@@ -12,7 +12,7 @@ fi
 # Enter virtual environment
 source venv/bin/activate
 
-# Install needed libraries silently
+# Install needed libraries silently (-q)
 pip install -q --upgrade pip
 pip install -q networkx
 pip install -q matplotlib
@@ -20,7 +20,10 @@ pip install -q matplotlib
 # Make sure the images folder is created.
 mkdir -p images
 
+# We also remove all previous files from the directory (-f ignores no file error)
+rm -f images/*
+
 # Run Python script with stdin
-python3 graph6_to_svg.py
+"venv/bin/python" graph6_to_image.py "$1"
 
 

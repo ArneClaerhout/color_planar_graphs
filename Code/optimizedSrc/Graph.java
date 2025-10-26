@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import static java.util.Collections.min;
 
@@ -45,6 +47,21 @@ public class Graph {
             }
         }
         return true;
+    }
+
+    /**
+     * A method for getting the colors of the final graph, in the order of the adjacency matrix.
+     *
+     * @note    This method should only ever get used after coloring the graph.
+     *          Otherwise, it will return nonsense.
+     */
+    public int[] getColors() {
+        return Arrays.stream(vertices).sorted(Comparator.comparingInt(Vertex::getIndex))
+                .map(v -> v.getColor()).mapToInt(Integer::intValue).toArray();
+        // We first make our vertices a stream
+        // Then we sort them according to their indices
+        // Afterward, we map all of our vertices to their respective color
+        // To lastly convert the stream of Integers into an array of ints
     }
 
 
@@ -115,7 +132,7 @@ public class Graph {
         Vertex[] vertices = new Vertex[n];
 
         for (int i = 0; i < n; i++) {
-            vertices[i] = new Vertex();
+            vertices[i] = new Vertex(i);
         }
 
         for (int i = 0; i < adjMatrix.length; i++) {

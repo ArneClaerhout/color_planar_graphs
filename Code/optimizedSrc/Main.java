@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.TreeMap;
 
 public class Main {
@@ -60,7 +62,9 @@ public class Main {
                         switch (raw) {
                             // We break here as we don't want to also output the default option
                             case 1: System.out.println(c); break;
-                            case 2: System.out.println(line); break;
+                            case 2:
+                                System.out.println(line + " " + Arrays.toString(graph.getColors()));
+                                break;
                             default: System.out.println(line + ": " + c);
                         }
                     }

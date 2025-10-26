@@ -30,10 +30,18 @@ public class Vertex {
     private int degree = 0;
 
     /**
+     * The index of this vertex.
+     *
+     * @note    This variable is only needed for the show option in colorScript.sh.
+     *          As we use this to correctly color the shown graph.
+     */
+    private final int index;
+
+    /**
      * A constructor for a vertex object.
      */
-    public Vertex() {
-
+    public Vertex(int index) {
+        this.index = index;
     }
 
     /**
@@ -168,6 +176,14 @@ public class Vertex {
             return true;
         }
         return false;
+    }
+
+    /**
+     * A method for acquiring the index of this vertex,
+     * according to the adjacency list of the graph6 string given to the Graph class.
+     */
+    public int getIndex() {
+        return index;
     }
 
     /**

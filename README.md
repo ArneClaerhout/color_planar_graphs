@@ -49,7 +49,7 @@ Example usages:
 ./colorScript.sh 9 -c iCFo --overview
 ```
 
-> **_NOTE:_**  When giving flags to the program, the order of these flags don't matter.
+> **_NOTE:_**  When giving flags to the program, the order of these flags doesn't matter.
 
 ### Manual usage
 

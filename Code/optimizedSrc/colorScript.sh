@@ -28,7 +28,7 @@ read_stdin() {
 
 show_func() {
   if [[ "$show" == true ]]; then
-  ./showOutput.sh
+    ./showOutput.sh "$show_value"
   else
     cat
   fi
@@ -51,6 +51,7 @@ raw=0
 overview=false
 progressview=false
 show=false
+show_value="svg"
 
 if [[ "$1" != -* ]]; then
   # Number of vertices is given
@@ -93,10 +94,6 @@ while [[ $# -gt 0 ]]; do
           exit 1
       fi
       manual="$2"
-      if [[ -z "${2:-}" || "$2" == -* ]]; then
-          echo "Error: option $1 requires a value"
-          exit 1
-      fi
       shift 2
       ;;
     -f|--filter)
@@ -125,7 +122,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --show)
       show=true
-      shift
+      if [[ -z "${2:-}" || "$2" == -* ]]; then
+        # We didn't get a value
+        show_value="svg"
+        shift 1
+      else
+        show_value="$2"
+        shift 2
+      fi
       ;;
     -*|--*)
       echo "Unknown option $1"
@@ -151,7 +155,7 @@ javac Main.java
 if [[ "$raw" == 0 ]]; then
   # Only if we are not in raw mode do we print this.
   echo "Code compiled."
-elif [[ "$raw" != 1 || "$raw" != 2 ]]; then
+elif [[ "$raw" -ne 1 && "$raw" -ne 2 ]]; then
   # We only want two raw options
   raw=1
 fi
@@ -163,9 +167,6 @@ if [[ "$show" == true ]]; then
   overview=false
   progressview=false
   showcommand=./showOutput.sh
-
-  # We also remove all previous files from the directory
-  rm images/*
 fi
 
 ### NUMBER OF VERTICES CHECK
