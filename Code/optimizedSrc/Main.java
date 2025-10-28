@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         boolean debugging = false;
-//        debugging = true;
+        debugging = true;
 
         if (!debugging) {
 
@@ -51,7 +51,7 @@ public class Main {
             // As long as there is something to read from stdin, we read it.
             while ((line = reader.readLine()) != null) {
 
-                Graph graph = new Graph(line);
+                GraphPQ graph = new GraphPQ(line);
 
 
                 int c = graph.findChromaticNumberOptimized(coloring);
@@ -98,11 +98,12 @@ public class Main {
 //                add("L|eKKEDoJxk@@w");
 //                add("L|eKKF`WI?kBNw");
 //                add("L~eKKF@oI@j{?M");
-                add("I|~KMLKBG");
+//                add("I|~KMLKBG");
+                add("E|tw");
             }};
 
             for (String line : graphs) {
-                Graph graph = new Graph(line);
+                GraphPQ graph = new GraphPQ(line);
 
                 int c = graph.findChromaticNumberOptimized(Coloring.getColoring("pUMo"));
                 System.out.println(c);
