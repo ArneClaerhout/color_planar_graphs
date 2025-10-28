@@ -49,7 +49,7 @@ public class VertexPQ {
         this.color = v.color;
         // We don't have to make a new copy of the list and the array, as they don't
         this.neighbours = v.neighbours;
-        this.availableColors = v.availableColors;
+        this.availableColors = v.availableColors.clone();
 
         this.amountOfAvailableColors = v.amountOfAvailableColors;
         this.degree = v.degree;

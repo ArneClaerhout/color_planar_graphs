@@ -1,6 +1,8 @@
 import java.util.*;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+
 public class GraphPQ {
 
     /**
@@ -167,6 +169,8 @@ public class GraphPQ {
 
         for (int i = 2; i <= n; i++) {
             Arrays.fill(vertexIsColored, false);
+            vertices.clear();
+            vertices.addAll(List.of(this.verticesIndexed));
             for (VertexPQ v : vertices) {
                 v.setMaxAvailableColors(i);
                 // Note that this changes the amount of available colors
@@ -257,6 +261,7 @@ public class GraphPQ {
 
         // We add the vertex back to be chosen
         vertices.add(v);
+        vertexIsColored[v.getIndex()] = false;
 
         return false;
 

@@ -99,7 +99,8 @@ public class Main {
 //                add("L|eKKF`WI?kBNw");
 //                add("L~eKKF@oI@j{?M");
 //                add("I|~KMLKBG");
-                add("E|tw");
+//                add("E|tw");
+                add("G|mnMC");
             }};
 
             for (String line : graphs) {
