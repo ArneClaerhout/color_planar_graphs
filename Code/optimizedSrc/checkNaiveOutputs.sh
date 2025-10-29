@@ -38,28 +38,31 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+echo "Starting comparison."
+
 # First argument for this script is the amount of vertices
+diff=false
 
+while IFS= read -r line1 && IFS= read -r line2 <&3; do
+  case "$line1" in
+    (*:*)
+      if [[ "$line1" != "$line2" ]]; then
+          echo "Difference:"
+          echo "  Naive: $line1"
+          echo "  Optimized: $line2"
+          diff=true
+      fi
+      ;;
+    (*)
+      # The line is not useful, we skip it
+      ;;
+  esac
+done < <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) 3< <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null)
 
-output2=$(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" --raw --overview 2>/dev/null)
-## We also get rid of the extra printing to the terminal
-# We get the time it took to run
-
-rest2=$(echo "$output2" | sed '$d')
-time_taken=$(echo "$output2" | tail -1 | grep -oG '[0-9.]* sec')
-echo "Naive algorithm done in ${time_taken}onds."
-
-output1=$(./colorScript.sh "$numvertices" -c "$coloring" --raw --overview 2>/dev/null)
-rest1=$(echo "$output1" | sed '$d')
-time_taken=$(echo "$output1" | tail -1 | grep -oG '[0-9.]* sec')
-echo "Optimized algorithm done in ${time_taken}onds."
-
-# The two outputs from nauty and my own program, stripped of spaces and the last line
-# We now compare the two (in terms of correctness)
-if [[ "$rest1" == "$rest2" ]]; then
-  echo "Outputs match, optimized algorithm is correct."
-else
+if [[ "$diff" == true ]]; then
   echo "Outputs differ."
+else
+  echo "Outputs match, optimized algorithm is correct."
 fi
 
 

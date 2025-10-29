@@ -212,7 +212,7 @@ public class GraphPQ {
 
         VertexPQ v = vertices.poll();
         // The second check is to see if this vertex is real
-        while (!vertices.isEmpty() && vertexIsColored[v.getIndex()] && v != (verticesIndexed[v.getIndex()]) ) v = vertices.poll();
+        while (!vertices.isEmpty() && (vertexIsColored[v.getIndex()] || v != (verticesIndexed[v.getIndex()])) ) v = vertices.poll();
 
         // We either end the loop if the vertices are empty or if the vertex is real
         // We have to recheck whether we ended on the case where the last vertex is not real

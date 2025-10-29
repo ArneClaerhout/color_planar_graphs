@@ -114,11 +114,13 @@ while [[ $# -gt 0 ]]; do
       ;;
     --raw)
       if [[ -z "${2:-}" || "$2" == -* ]]; then
-          echo "Error: option $1 requires a value"
-          exit 1
+          # No value given, we give it 1
+          raw=1
+          shift 1
+      else
+        raw="$2"
+        shift 2
       fi
-      raw="$2"
-      shift 2
       ;;
     --show)
       show=true
