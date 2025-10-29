@@ -4,6 +4,7 @@ import os
 import networkx as nx
 import matplotlib.pyplot as plt
 import urllib.parse
+import tikzplotlib
 
 
 def convert_color(color_number):
@@ -43,14 +44,20 @@ for line in sys.stdin:
         G.nodes[i]['color'] = colors_numbers[i]
 
     # Plot the graph
-    plt.figure(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=(4, 4))
     pos = nx.planar_layout(G)
-    # Draw the graph, with the respective color
-    nx.draw(G, pos, with_labels=False, node_color=colors, edge_color='gray', node_size=700)
-    # Give each vertex a label equal to the color
-    nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(G, 'color'), font_color='white')
 
-    # We take the format as the second argument (the first is always the name of the program)
-    plt.savefig(output_path, format=input_format)
-    plt.close()
+    # Give each vertex the respective color
+    nx.draw(G, pos, ax=ax, with_labels=False, node_color=colors, edge_color='gray', node_size=700)
+    # Give the labels as well
+    nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(G, 'color'), font_color='white', ax=ax)
+
+    if (input_format == "tex"):
+        tikzplotlib.save(f"{output_path}", figure=fig)
+        plt.close()
+    else:
+        # We take the format as the second argument (the first is always the name of the program)
+        plt.savefig(output_path, format=input_format)
+        plt.close()
+
     count = count + 1

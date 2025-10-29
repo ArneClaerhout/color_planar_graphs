@@ -15,7 +15,9 @@ source venv/bin/activate
 # Install needed libraries silently (-q)
 pip install -q --upgrade pip
 pip install -q networkx
-pip install -q matplotlib
+pip install -q "matplotlib<3.8"
+pip install -q tikzplotlib
+pip install -q "webcolors<1.12"
 
 # Make sure the images folder is created.
 mkdir -p images
