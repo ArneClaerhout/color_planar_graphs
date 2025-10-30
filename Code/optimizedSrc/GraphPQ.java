@@ -25,6 +25,16 @@ public class GraphPQ {
         vertexIsColored = new boolean[n];
     }
 
+    /**
+     * A constructor for the graph class using the adjacency matrix of a graph.
+     */
+    public GraphPQ(int[][] adjMatrix) {
+        int n = adjMatrix.length;
+        this.verticesIndexed = findVerticesList(adjMatrix, n);
+        vertices.addAll(List.of(this.verticesIndexed));
+        vertexIsColored = new boolean[n];
+    }
+
 //    /**
 //     * A method for adding a vertex to a graph.
 //     */
@@ -62,10 +72,10 @@ public class GraphPQ {
      *          Otherwise, it will return nonsense.
      */
     public int[] getColors() {
-        return vertices.stream().sorted(Comparator.comparingInt(VertexPQ::getIndex))
+        return Arrays.stream(verticesIndexed)
                 .map(v -> v.getColor()).mapToInt(Integer::intValue).toArray();
         // We first make our vertices a stream
-        // Then we sort them according to their indices
+        // We don't have to sort them according to indices
         // Afterward, we map all of our vertices to their respective color
         // To lastly convert the stream of Integers into an array of ints
     }
@@ -267,12 +277,36 @@ public class GraphPQ {
 
     }
 
+    /**
+     * A method for updating the neighbours of a chosen vertex.
+     * This method makes sure that only the actual real neighbours (in verticesIndexed) are changed.
+     * It also only changes those neighbours that aren't colored yet.
+     *
+     * @param   neighbourhood
+     *          The neighbourhood to update.
+     * @param   color
+     *          The color that should get added or removed
+     *          from the neighbours available colors array.
+     * @param   addColor
+     *          Whether the color should get added back to the neighbours.
+     *          This only does it for the neighbours given in the ArrayList changed.
+     * @param   changed
+     *          When addColor is true, these are the neighbours
+     *          already changed before when removing the color.
+     *          When addColor is false, this should be an empty list
+     *          to be filled with the vertices that were changed.
+     *          This will contain the old vertices that were removed from verticesIndexed.
+     * @return  Whether we should skip this color
+     *          as we already found a neighbour with zero possible colors.
+     */
     private boolean updateNeighbours(boolean[] neighbourhood, int color, boolean addColor, ArrayList<VertexPQ> changed) {
         if (addColor) {
             // We need to undo everything in changed
             for (VertexPQ changedNeighbour : changed) {
                 // This readds the changed neighbours to the actual vertices array
                 verticesIndexed[changedNeighbour.getIndex()] = changedNeighbour;
+                vertices.add(changedNeighbour);
+                // We also readd the changedNeighbours back as they could have been removed already.
             }
             return false; // This doesn't matter as we don't use this in this context
         }

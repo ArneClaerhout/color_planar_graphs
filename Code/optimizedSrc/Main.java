@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         boolean debugging = false;
-        debugging = true;
+//        debugging = true;
 
         if (!debugging) {
 
@@ -51,10 +51,24 @@ public class Main {
             // As long as there is something to read from stdin, we read it.
             while ((line = reader.readLine()) != null) {
 
-                GraphPQ graph = new GraphPQ(line);
+
+                int[][] adjM = Graph.getAdjacencyMatrix(line);
+
+                Graph graph = new Graph(adjM);
+//                int count = 0;
+//                for (int v = 0; v < adjM.length; v++) {
+//                    count = count + graph.vertices[v].getDegree();
+//                }
+                int c;
+//                if (Math.pow(adjM.length, 2)/count > 4) {
+//                    GraphPQ graphPQ = new GraphPQ(adjM);
+//                    c = graphPQ.findChromaticNumberOptimized(coloring);
+//                } else {
+                    c = graph.findChromaticNumberOptimized(coloring);
+//                }
 
 
-                int c = graph.findChromaticNumberOptimized(coloring);
+
                 if (c >= minChrom) {
                     if (overview) {
                         cNumbers.merge(c, 1, Integer::sum);
@@ -100,13 +114,15 @@ public class Main {
 //                add("L~eKKF@oI@j{?M");
 //                add("I|~KMLKBG");
 //                add("E|tw");
-                add("G|mnMC");
+//                add("G|mnMC");
+                add("H~eKMD^");
             }};
 
             for (String line : graphs) {
                 GraphPQ graph = new GraphPQ(line);
 
-                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("pUMo"));
+                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
+                System.out.println(Arrays.toString(graph.getColors()));
                 System.out.println(c);
             }
 

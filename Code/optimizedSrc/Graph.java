@@ -9,7 +9,7 @@ public class Graph {
     /**
      * The array comprised of the vertices in this graph.
      */
-    private Vertex[] vertices;
+    Vertex[] vertices;
 
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
@@ -17,6 +17,13 @@ public class Graph {
         int[][] adjMatrix = getAdjacencyMatrix(graphArray, n);
 
         this.vertices = findVerticesList(adjMatrix, n);
+    }
+
+    /**
+     * A constructor for the graph class using the adjacency matrix of a graph.
+     */
+    public Graph(int[][] adjMatrix) {
+        this.vertices = findVerticesList(adjMatrix, adjMatrix.length);
     }
 
 //    /**
@@ -69,7 +76,7 @@ public class Graph {
      * This method finds the number of vertices for a given graph6 formatted list of characters (= String).
      * This is a simplified version of this method that only works for graphs of up to 62 vertices.
      */
-    private int getNumberOfVertices(char[] graphString) {
+    private static int getNumberOfVertices(char[] graphString) {
         int index = 0;
 
         // Only works when #vertices < 63, we won't go higher than that
@@ -89,7 +96,7 @@ public class Graph {
      * @param   n
      *          The amount of vertices for this graph.
      */
-    private int[][] getAdjacencyMatrix(char[] graphString, int n) {
+    private static int[][] getAdjacencyMatrix(char[] graphString, int n) {
         int[][] adjMatrix = new int[n][n];
         int index = 1; // First index as index 0 is the vertex count
 
@@ -117,6 +124,18 @@ public class Graph {
         }
         return adjMatrix;
 
+    }
+
+    /**
+     * A different method for finding the adjacency matrix.
+     * This method finds the matrix using the graph6 string itself.
+     * @param   graph6
+     *          The graph6 string to decode.
+     */
+    public static int[][] getAdjacencyMatrix(String graph6) {
+        char[] graphArray = graph6.toCharArray();
+        int n = getNumberOfVertices(graphArray);
+        return getAdjacencyMatrix(graphArray, n);
     }
 
     /**

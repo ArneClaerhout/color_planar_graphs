@@ -43,10 +43,13 @@ echo "Starting comparison."
 # First argument for this script is the amount of vertices
 diff=false
 
-while IFS= read -r line1 && IFS= read -r line2 <&3; do
+# We first pipe these outputs, this will make sure that even if the length is incorrect, it will still output
+paste <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
+      <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) |
+while IFS=$'\t' read -r line1 line2; do
   case "$line1" in
     (*:*)
-      if [[ "$line1" != "$line2" ]]; then
+      if [[ "$line1" != "$line2" && "$line1" != *"coloring"* && "$line1" != *"time"* ]]; then
           echo "Difference:"
           echo "  Naive: $line1"
           echo "  Optimized: $line2"
@@ -54,10 +57,9 @@ while IFS= read -r line1 && IFS= read -r line2 <&3; do
       fi
       ;;
     (*)
-      # The line is not useful, we skip it
       ;;
   esac
-done < <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) 3< <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null)
+done
 
 if [[ "$diff" == true ]]; then
   echo "Outputs differ."
