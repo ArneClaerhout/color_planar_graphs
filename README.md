@@ -40,18 +40,23 @@ This will print out the graph6 strings of the graphs and the corresponding chrom
 
 The output for `colorScript.sh` can be altered in three ways.
 
- - The first way is by using the flag `--raw`. 
+ - The first way is by using the flag `-r` or `--raw`. 
 This will make sure the only output outputted to the standard out are the corresponding chromatic numbers for the colorings.
- - The second way is by using a different flag, `--overview`. 
+One can also give this option a value: 1, 2 or 3.
+   - A value of 1 makes sure the output is only the chromatic numbers of the graphs.
+   - A value of 2 only outputs the graph6 strings of the graphs (only useful when filtering, explained later in this section).
+   - A value of 3 only outputs the graph6 strings followed by the used colors ordered by index
+   (this is used by the show function, also explained [later](#showing-graphs)).
+ - The second way is by using a different flag, `-o` or `--overview`. 
 This will give an overview of the corresponding chromatic numbers for the colorings of the graphs. 
 Showing the amount of graphs with a certain chromatic number, similar to how _nauty_ does it with `countg`.
- - And lastly, one can also use the flag `-f`, followed by a value.
+ - And lastly, one can also use the flag `-f` or `--filter`, followed by a value.
 This will make it so that only the graphs with a minimum chromatic number, specified by the value, will be shown.
 
 Example usages: 
 ```
 ./colorScript.sh 6 -c proper --raw
-./colorScript.sh 9 -c iCFo --overview
+./colorScript.sh 9 -c iCFo -o
 ./colorScript.sh 10 --overview -f 4
 ```
 
@@ -61,7 +66,7 @@ Example usages:
 ### Showing graphs
 
 One can choose to generate graph images for the outputted graphs by `colorScript.sh`.
-This can be done by using the flag `--show`, followed by an optional value.
+This can be done by using the flag `-s` or `--show`, followed by an optional value.
 This value should be the format for the graph images. 
 Possible formats for these images include: _emf, eps, pdf, png, ps, raw, rgba, svg, svgz, tex_.
 The default value for show is _svg_.
@@ -72,7 +77,7 @@ it has to install all the needed libraries in the used python virtual environmen
 Example usage:
 ```
 ./colorScript.sh 3:10 -c pUMo -f 6 --show
-./colorScript.sh 6 --show pdf
+./colorScript.sh 6 -s pdf
 ./colorScript.sh 8 -f 4 -c odd --show tex
 ```
 
@@ -83,14 +88,20 @@ Each time this option is chosen, all the existing images already in `images/` ar
 
 ### Manual usage
 
-If one wants to manually enter a graph into the program, one can do so by using the flag _-m_, followed by the _graph6_ string.
+If one wants to manually enter a graph into the program, one can do so by using the flag `-m` or `--manual`, followed by the _graph6_ string.
 Here it is important to always enter the _graph6_ string as a string. 
 Giving the amount of vertices is not mandatory as this isn't used in the computation.
 
+One can also choose to pipe their own graphs into the algorithm.
+This is possible by giving a specific value with the manual option.
+This value being `"pipe"`.
+Do note that the piped strings should also be _graph6_ strings and should be divided by new lines (\n).
+
 Example usage:
 ```
-./colorScript.sh -m "H|tIIL|" -c proper
+./colorScript.sh --manual "H|tIIL|" -c proper
 ./colorScript.sh -m "I|tYJL`LO" -c pUMc --raw
+echo "H~eKMD^" | ./colorScript.sh -m pipe -c odd --overview
 ```
 
 ## Checking Correctness

@@ -75,8 +75,12 @@ public class Main {
                     } else {
                         switch (raw) {
                             // We break here as we don't want to also output the default option
-                            case 1: System.out.println(c); break;
+                            case 1:
+                                System.out.println(c); break;
                             case 2:
+                                System.out.println(line); break;
+                                // This option is only useful when filtering
+                            case 3:
                                 System.out.println(line + " " + Arrays.toString(graph.getColors()));
                                 break;
                             default: System.out.println(line + ": " + c);

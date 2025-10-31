@@ -31,7 +31,7 @@ coloring="$1"
 
 echo "Finding $1 chromatic numbers for cycle graphs:"
 index=3
-gen_cycle_graphs | ./colorScript.sh -c "$coloring" -m stream --raw |  while read -r line ; do
+gen_cycle_graphs | ./colorScript.sh -c "$coloring" -m pipe --raw |  while read -r line ; do
                                                                           echo "  C_$index: $line"
                                                                           index=$((index+1))
                                                                       done

@@ -1,8 +1,87 @@
 #!/bin/bash
 
 # Change the working directory to this one.
+# This makes sure one can run this script from a different directory.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
+
+##################
+###### HELP ######
+##################
+
+show_help() {
+cat << EOF
+  Usage:
+    ${0##*/} NUMBER_OF_VERTICES [OPTIONS]
+
+  Description:
+    This script helps the user in running the coloring algorithm provided in Main.java.
+    The user of this script can choose to use multiple provided options.
+
+    Full explanation of the entire repository can be found here:
+        https://github.com/ArneClaerhout/Bachelorproef
+
+  Positional Arguments:
+    NUMBER_OF_VERTICES
+        The amount of vertices the to be colored graphs should have.
+        This can either be a range, or just a single number.
+        The range should be given in the following format:
+
+        MIN_VERTICES:MAX_VERTICES
+
+  Options:
+    -h, --help
+        Show this help message and exit.
+
+    -c, --coloring
+        The chosen coloring to use.
+        The default coloring is the proper coloring.
+        Examples: proper, odd, iUMo, pCFc, ...
+
+    -m, --manual GRAPH
+        Whether the user wants to manually input graphs.
+        The value for this option should be the graph to color in graph6 format.
+        If the user would like to input the graphs through a pipe,
+        the GRAPH value should be "pipe".
+
+    -f, --filter MIN_COLORS
+        Adds a filter to the outputted graphs.
+        MIN_COLORS is the minimum amount of colors needed before the graph gets to be output to the terminal.
+        When the chromatic number of a graph is strictly smaller than this value, it gets skipped.
+
+    -o, --overview
+        Gives an overview of all the outputted graphs instead of
+        actually printing all graphs and their corresponding chromatic numbers.
+        This also keeps track of the needed time for the algorithm as a whole.
+
+    -r, --raw VALUE
+        Alternates the output of the algorithm to a more raw output.
+        VALUE should be a value equal to 1, 2 or 3.
+          - A value of 1 makes sure the output is only the chromatic numbers of the graphs.
+          - A value of 2 only outputs the graph6 strings of the graphs (only useful when filtering).
+          - A value of 3 only outputs the graph6 strings followed by the used colors ordered by index.
+
+    -s, --show FORMAT
+        Outputs an image of the outputted graphs to the directory images/ .
+        The file extension of these images should be given by FORMAT.
+        The default value for FORMAT is svg.
+
+  Examples:
+    Run the script with a file of graph6 strings:
+        cat input.txt | ./${0##*/} --manual pipe
+
+    Run the script with common options:
+        ./${0##*/} 3:10 -c pUMo -f 6 --show
+
+    Other examples can be found on the Github page.
+
+  Notes:
+    - Arguments can be combined with both short and long forms. The order of the arguments doesn't matter either.
+
+  Author:
+    Arne Claerhout
+EOF
+}
 
 
 #######################
@@ -80,6 +159,10 @@ POSITIONAL_ARGS=()
 # Loop over all flags and their values
 while [[ $# -gt 0 ]]; do
   case $1 in
+    -h|--help)
+      show_help
+      exit 0
+      ;;
     -c|--coloring)
       if [[ -z "${2:-}" || "$2" == -* ]]; then
           echo "Error: option $1 requires a value"
@@ -104,15 +187,15 @@ while [[ $# -gt 0 ]]; do
       filter="$2"
       shift 2
       ;;
-    -pv)
+    -pv|progressview)
       progressview=true
       shift 1
       ;;
-    --overview)
+    -o|--overview)
       overview=true
       shift
       ;;
-    --raw)
+    -r|--raw)
       if [[ -z "${2:-}" || "$2" == -* ]]; then
           # No value given, we give it 1
           raw=1
@@ -122,7 +205,7 @@ while [[ $# -gt 0 ]]; do
         shift 2
       fi
       ;;
-    --show)
+    -s|--show)
       show=true
       if [[ -z "${2:-}" || "$2" == -* ]]; then
         # We didn't get a value
@@ -165,7 +248,7 @@ fi
 ### SHOW-CHECK
 if [[ "$show" == true ]]; then
   # If show is chosen, we always pick these values
-  raw=2
+  raw=3
   overview=false
   progressview=false
   showcommand=./showOutput.sh
@@ -188,7 +271,7 @@ if [[ "$progressview" == true ]]; then
   if [[ -z "$manual" ]]; then
     # Manual not set
     gen_range_graphs "$startn" "$endn" "$raw" | pv | java_alg
-  elif [[ "$manual" == "stream" ]]; then
+  elif [[ "$manual" == "pipe" ]]; then
     # Own stream chosen
     read_stdin | pv | java_alg
   else
@@ -202,7 +285,7 @@ else
   if [[ -z "$manual" ]]; then
       # Manual not set
       gen_range_graphs "$startn" "$endn" "$raw" | java_alg
-    elif [[ "$manual" == "stream" ]]; then
+    elif [[ "$manual" == "pipe" ]]; then
       # Own stream chosen
       read_stdin | java_alg
     else
