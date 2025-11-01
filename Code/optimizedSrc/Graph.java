@@ -47,7 +47,10 @@ public class Graph {
      * @param   properLy
      *          Whether the fact that the vertex is proper should get checked.
      */
-    public boolean isCorrectlyColored(Coloring coloring, boolean properLy) {
+    private boolean isCorrectlyColored(Coloring coloring, boolean properLy) {
+        // This method only gets called after coloring properLy
+        if (!properLy && coloring == Coloring.PROPER) return true;
+
         for (Vertex v : vertices) {
             if (!v.isCorrectlyColored(coloring, properLy)) {
                 return false;
@@ -184,7 +187,7 @@ public class Graph {
             for (Vertex v : vertices) {
                 v.setMaxAvailableColors(i);
             }
-            if (optimizedAlgorithm(coloring, proper, um, 0, i, 0)) {
+            if (optimizedAlgorithm(coloring, proper, um, 1, i, 0)) {
                 return i;
             }
         }
@@ -213,11 +216,8 @@ public class Graph {
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, int index) {
         if (index >= vertices.length) {
-            // We reached the end of the list
-            if (coloring == Coloring.PROPER) return true; // We checked everything along the way, it should be correct
-            return isCorrectlyColored(coloring, false);
-            // If the coloring is proper, we have checked it already.
-            // If the coloring is not proper, this shouldn't get checked.
+            // We check if the coloring is correct
+            return (maxColorCurrGraph < maxColor) ? false : isCorrectlyColored(coloring, false);
         }
 
         Vertex v = vertices[index];

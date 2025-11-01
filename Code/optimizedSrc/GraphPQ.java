@@ -55,8 +55,13 @@ public class GraphPQ {
      *          The coloring method used.
      * @param   properLy
      *          Whether the fact that the vertex is proper should get checked.
+     * @param   vertices
+     *          The vertices to check this property on.
      */
-    public boolean isCorrectlyColored(Coloring coloring, boolean properLy, VertexPQ[] vertices) {
+    private boolean isCorrectlyColored(Coloring coloring, boolean properLy, VertexPQ[] vertices) {
+        // We know that proper colorings are correct when this method is called
+        if (!properLy && coloring == Coloring.PROPER) return true;
+
         for (VertexPQ v : vertices) {
             if (!v.isCorrectlyColored(coloring, this.verticesIndexed, properLy)) {
                 return false;
@@ -214,10 +219,8 @@ public class GraphPQ {
     private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um,
                                        int maxColorCurrGraph, int maxColor) {
         if (vertices.isEmpty()) {
-            // A proper coloring is always correct
-            if (coloring == Coloring.PROPER) return true;
-            // A non-proper coloring has to be checked
-            return isCorrectlyColored(coloring, false, verticesIndexed);
+            // We check the coloring
+            return (maxColorCurrGraph < maxColor) ? false : isCorrectlyColored(coloring, false, verticesIndexed);
         }
 
         VertexPQ v = vertices.poll();
@@ -228,10 +231,8 @@ public class GraphPQ {
         // We have to recheck whether we ended on the case where the last vertex is not real
         // (If the last vertex is real, we just do another loop of the algorithm)
         if (vertices.isEmpty() && v != (verticesIndexed[v.getIndex()])) {
-            // A proper coloring is always correct
-            if (coloring == Coloring.PROPER) return true;
-            // A non-proper coloring has to be checked
-            return isCorrectlyColored(coloring, false, verticesIndexed);
+            // We check the coloring
+            return (maxColorCurrGraph < maxColor) ? false : isCorrectlyColored(coloring, false, verticesIndexed);
         }
 
         boolean[] colors = v.getAvailableColors();
