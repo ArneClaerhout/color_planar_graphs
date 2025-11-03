@@ -30,6 +30,31 @@ check_nauty() {
   echo "$dir"
 }
 
+
+use_nauty() {
+
+  # First argument for this script is the amount of vertices
+  nauty_path=$(check_nauty)
+  #echo "$nauty_path"
+
+  output2=$(gen_range_graphs "$startn" "$endn" | "./$nauty_path/countg" --N 2>/dev/null | sed '$d' | tr -d '[:space:]')
+  ## We also get rid of the extra printing to the terminal
+  echo -n "Nauty done"
+  output1=$(./colorScript.sh "$startn:$endn" -c proper --raw --overview | sed '$d' | tr -d '[:space:]')
+  printf ", own program done.\n\n"
+
+  # The two outputs from nauty and my own program, stripped of spaces and the last line
+  # We now compare the two (in terms of correctness)
+  if [[ "$output1" == "$output2" ]]; then
+    echo "Outputs match, own program is correct."
+  else
+    echo "Outputs differ."
+  fi
+
+}
+
+
+# We get the number of vertices
 if [[ "$1" == *:* ]]; then
   # Split the argument into start and end
   IFS=':' read -r startn endn <<< "$1"
@@ -38,32 +63,40 @@ else
   startn="$1"
   endn="$1"
 fi
+shift 1
 
 
 ########################
 ###### COMPARISON ######
 ########################
 
-# First argument for this script is the amount of vertices
-nauty_path=$(check_nauty)
-#echo "$nauty_path"
+declare -a colorings=()
 
-output2=$(gen_range_graphs "$startn" "$endn" | "./$nauty_path/countg" --N 2>/dev/null | sed '$d' | tr -d '[:space:]')
-## We also get rid of the extra printing to the terminal
-echo -n "Nauty done"
-output1=$(./colorScript.sh "$1" -c proper --raw --overview | sed '$d' | tr -d '[:space:]')
-printf ", own program done.\n\n"
+# "iCFo" "pCFo" "pCFc" "pUMo" "pUMc" "odd" "proper"
+# Proper has been checked from 3:17, it is correct
+# Others have been checked from 3:11
+# iCFo, iCFc, iUMo, iUMc to 14
 
-#echo "$output1"
-#echo "$output2"
+while [[ $# -gt 0 ]]; do
+  colorings+=("$1")
+  shift 1
+  # We add all arguments as colorings
+done
 
-# The two outputs from nauty and my own program, stripped of spaces and the last line
-# We now compare the two (in terms of correctness)
-if [[ "$output1" == "$output2" ]]; then
-  echo "Outputs match, own program is correct."
-else
-  echo "Outputs differ."
-fi
+## loop through above array
+for i in "${colorings[@]}"
+do
+  if [[ "$i" == "proper" ]]
+  # With proper colorings, we can use nauty
+  then
+    use_nauty | sed 's/^/  /'
+  fi
+  echo "$i:"
+  ./checkNaiveOutputs.sh "$startn:$endn" -c "$i" | sed 's/^/  /'
+done
+
+
+
 
 
 

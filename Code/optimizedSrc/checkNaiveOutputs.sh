@@ -42,11 +42,16 @@ echo "Starting comparison."
 
 # First argument for this script is the amount of vertices
 diff=false
+count=0
 
 # We first pipe these outputs, this will make sure that even if the length is incorrect, it will still output
 paste <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
       <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) |
 while IFS=$'\t' read -r line1 line2; do
+  if [[ $((count % 1000)) == 0 ]]; then
+    echo "count: $count"
+  fi
+  ((count=count+1))
   case "$line1" in
     (*:*)
       if [[ "$line1" != "$line2" && "$line1" != *"coloring"* && "$line1" != *"time"* ]]; then
