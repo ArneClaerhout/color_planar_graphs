@@ -110,8 +110,13 @@ echo "H~eKMD^" | ./colorScript.sh -m pipe -c odd --overview
 
 If one wants to check the correctness of the output of the program. This can be done by using the other programs `checkOutputs.sh`, `checkCycles.sh` and `checkNaiveOutputs.sh`. These bash-scripts do the following:
 
- - `checkOutputs.sh` compares the output from our own program to that of the nauty file _countg_. 
-This is only done for the (normal) chromatic numbers, as _countg_ doesn't support other types.
+ - `checkOutputs.sh` compares the output from our own program in two ways:
+   - If a proper coloring is given to be compared. Our own output is compared to that of the nauty file _countg_. 
+   This is only done for the (normal) chromatic numbers, as _countg_ doesn't support other types.
+   - If other colorings are given, we compare the optimized script to the output of the naive algorithm.
+   This is done by using checkNaiveOutputs.sh, explained later.
+   
+   The script should be run with multiple arguments: the number of vertices and then each coloring method one wishes to use as a different argument.
  - `checkCycles.sh` checks the other coloring methods, by finding the amount of colors used in cycle graphs ($C_i$). 
 These can then be compared to the known values for these types of graphs. 
 This lets us check whether the other colorings are also correct. 
@@ -124,12 +129,23 @@ The found differences between the two will be displayed.
 
 The number of vertices or the coloring method should still be given to the program as explained before.
 
-Example usage:
+Usage:
 ```
-./checkOutputs.sh NUMBER_OF_VERTICES
+./checkOutputs.sh NUMBER_OF_VERTICES COLORING_METHOD1 COLORING_METHOD2 ...
 ./checkCycles.sh COLORING_METHOD
 ./checkNaiveOutputs.sh NUMBER_OF_VERTICES -c COLORING_METHOD
 ```
+
+Example usage:
+```
+./checkOutputs.sh 11 proper iUMo iCFo iCFc odd
+./checkOutputs.sh 5:13 proper odd pCFc iUMc
+./checkNaiveOutputs.sh 3:11 -c pUMo
+./checkNaiveOutputs.sh 10
+./checkCycles.sh pUMc
+```
+
+
 
 
 

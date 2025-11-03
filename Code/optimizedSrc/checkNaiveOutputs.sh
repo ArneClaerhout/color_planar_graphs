@@ -48,7 +48,7 @@ count=0
 paste <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
       <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) |
 while IFS=$'\t' read -r line1 line2; do
-  if [[ $((count % 1000)) == 0 ]]; then
+  if [[ $((count % 10000)) == 0 && "$count" != 0 ]]; then
     echo "count: $count"
   fi
   ((count=count+1))

@@ -39,16 +39,16 @@ use_nauty() {
 
   output2=$(gen_range_graphs "$startn" "$endn" | "./$nauty_path/countg" --N 2>/dev/null | sed '$d' | tr -d '[:space:]')
   ## We also get rid of the extra printing to the terminal
-  echo -n "Nauty done"
+  echo -n "  Nauty done"
   output1=$(./colorScript.sh "$startn:$endn" -c proper --raw --overview | sed '$d' | tr -d '[:space:]')
   printf ", own program done.\n\n"
 
   # The two outputs from nauty and my own program, stripped of spaces and the last line
   # We now compare the two (in terms of correctness)
   if [[ "$output1" == "$output2" ]]; then
-    echo "Outputs match, own program is correct."
+    echo "  Outputs match, optimized algorithm is correct."
   else
-    echo "Outputs differ."
+    echo "  Outputs differ."
   fi
 
 }
@@ -86,13 +86,14 @@ done
 ## loop through above array
 for i in "${colorings[@]}"
 do
+  echo "$i:"
   if [[ "$i" == "proper" ]]
   # With proper colorings, we can use nauty
   then
-    use_nauty | sed 's/^/  /'
+    use_nauty
+  else
+    ./checkNaiveOutputs.sh "$startn:$endn" -c "$i" | sed 's/^/  /'
   fi
-  echo "$i:"
-  ./checkNaiveOutputs.sh "$startn:$endn" -c "$i" | sed 's/^/  /'
 done
 
 
