@@ -35,7 +35,13 @@ public class Main {
             int raw = Integer.parseInt(args[2]);
 
             // Lastly: adding a filter to the output (min. chromatic number)
-            int minChrom = Integer.parseInt(args[3]);
+            int minChrom = 0;
+            try {
+                minChrom = Integer.parseInt(args[3]);
+            } catch(NumberFormatException e) {
+                // Filter isn't a number: we set it to 0
+                minChrom = 0;
+            }
 
 
             if (raw == 0) System.out.println("Received coloring: " + coloring);
@@ -51,6 +57,47 @@ public class Main {
             // As long as there is something to read from stdin, we read it.
             while ((line = reader.readLine()) != null) {
 
+                // Check if the line is an option to change
+                if (line.startsWith(":")) {
+                    String[] parts = line.split(" ");
+
+                    switch (parts[0]) {
+                        case ":coloring":
+                            coloring = Coloring.getColoring(parts[1]);
+                            continue;
+                        case ":minChrom":
+                            minChrom = Integer.parseInt(parts[1]);
+                            continue;
+                        case ":raw":
+                            raw = Integer.parseInt(parts[1]);
+                            continue;
+                        case ":overview":
+                            overview = Boolean.parseBoolean(parts[1]);
+                            continue;
+                        case ":print":
+                            System.out.println(parts[1] + ":");
+                            continue;
+                        case ":update":
+                            // We are changing filter, output the overview
+                            long end = System.currentTimeMillis();
+                            String finalTime = String.format("%.2f", (end - start)/1000.0); // in seconds
+                            if (overview) {
+                                for (Integer chrom : cNumbers.keySet()) {
+                                    System.out.println("  " + cNumbers.get(chrom) + " graphs : chrom=" + chrom);
+                                    // This is in sorted order as it was stored in a TreeMap
+                                }
+                                System.out.println("  " + cNumbers.values().stream().mapToInt(x -> x).sum() + " graphs altogether; cpu=" + finalTime + " sec");
+                                // Reset
+                                cNumbers = new TreeMap<>();
+                            }
+                            if (raw == 0) {
+                                System.out.println("All graphs have been processed for this filter.");
+                            }
+                            // Restart the start
+                            start = System.currentTimeMillis();
+                            continue;
+                    }
+                }
 
                 int[][] adjM = Graph.getAdjacencyMatrix(line);
 
@@ -96,16 +143,16 @@ public class Main {
 
             String finalTime = String.format("%.2f", (end - start)/1000.0); // in seconds
 
-            if (raw == 0) {
-                System.out.println("All graphs have been processed.");
-            }
-
             if (overview) {
                 for (Integer chrom : cNumbers.keySet()) {
-                    System.out.println(cNumbers.get(chrom) + " graphs : chrom=" + chrom);
+                    System.out.println("  " + cNumbers.get(chrom) + " graphs : chrom=" + chrom);
                     // This is in sorted order as it was stored in a TreeMap
                 }
-                System.out.println(cNumbers.values().stream().mapToInt(x -> x).sum() + " graphs altogether; cpu=" + finalTime + " sec");
+                System.out.println("  " + cNumbers.values().stream().mapToInt(x -> x).sum() + " graphs altogether; cpu=" + finalTime + " sec");
+            }
+
+            if (raw == 0) {
+                System.out.println("All graphs have been processed.");
             }
 
         } else {
@@ -125,10 +172,17 @@ public class Main {
             for (String line : graphs) {
                 GraphPQ graph = new GraphPQ(line);
 
+
                 int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
                 System.out.println(Arrays.toString(graph.getColors()));
                 System.out.println(c);
             }
+
+//            Graph graphnew = new Graph("O~eK]f@SOuA@EBE?_X?AP");
+//            System.out.println(Arrays.deepToString(Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));
+//            graphnew.colorGraph(new int[]{1, 2, 3, 2, 2, 3, 4, 3, 5, 1, 5, 4, 2, 1, 1, 3});
+//            graphnew.isCorrectlyColored(Coloring.pUMc);
+
 
 
 

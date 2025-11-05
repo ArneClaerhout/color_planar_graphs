@@ -83,6 +83,25 @@ cat << EOF
 EOF
 }
 
+#########################
+###### DIRECTORIES ######
+#########################
+
+pattern="nauty"
+nauty_path=$(find ../.. -maxdepth 1 -type d -name "*${pattern}*" | head -n 1)
+if [[ -z "$nauty_path" ]]; then
+  >&2 echo "Error: Nauty not found."
+  exit 1
+fi
+
+
+pattern="plantri"
+plantri_path=$(find ../.. -maxdepth 1 -type d -name "*${pattern}*" | head -n 1)
+if [[ -z "$plantri_path" ]]; then
+  >&2 echo "Error: Plantri not found."
+  exit 1
+fi
+
 
 #######################
 ###### FUNCTIONS ######
@@ -95,7 +114,7 @@ gen_range_graphs() {
     echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
   fi
   for num in $(seq "$1" "$2"); do
-    ./../../plantri55/plantri -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+    "./$plantri_path/plantri" -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
   done
 }
 
@@ -114,7 +133,72 @@ show_func() {
 }
 
 java_alg() {
-  java Main "$coloring" "$overview" "$raw" "$filter" | show_func
+  if [[ "$progressview" == true ]]; then
+    pv | java Main "$coloring" "$overview" "$raw" "$minChrom" | show_func
+  else
+    java Main "$coloring" "$overview" "$raw" "$minChrom" | show_func
+  fi
+
+}
+
+
+choose_incoming_graphs() {
+  # First we check whether we have a filter file
+
+  if ! [[ "$filter" =~ ^-?[0-9]+$ ]]; then
+    # The filter is not an integer
+    # We parse the given filter
+    # Check if venv has been created
+      if [ ! -d "venv" ]; then
+          echo "Error: venv hasn't been created yet."
+          exit 1
+      fi
+      source venv/bin/activate
+
+      change=""
+      changeoverview=false
+      "venv/bin/python" parseFilter.py "$filter" | while read -r line; do
+          # We first parse the line
+          # This changes all the variables to the ones given in the filter
+          read -r raw overview n coloring minChrom rest <<< "$line"
+          if [[ "$change" != "" ]]; then
+
+            # Last cycle we got a filter name
+            echo ":raw $raw"
+            echo ":overview $overview"
+            echo ":coloring $coloring"
+            echo ":minChrom $minChrom"
+            if [[ "$changeoverview" == true ]]; then
+              echo ":update overview"
+              changeoverview=false
+            fi
+            echo ":print $change"
+            change=""
+          fi
+          if [[ "$overview" != True && "$overview" != False ]]; then
+            # overview isn't a boolean, we update the arguments
+            change="$overview"
+            if [[ "$raw" != 0 ]]; then
+              changeoverview=true
+            fi
+          fi
+
+          "./$plantri_path/plantri" -g "$n" 2>/dev/null | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
+      done
+
+      # We deactivate the venv
+      deactivate
+  elif [[ -z "$manual" ]]; then
+    # Not manual
+    gen_range_graphs "$startn" "$endn" "$raw"
+  elif [[ "$manual" == "pipe" ]]; then
+    # Own stream chosen
+    read_stdin
+  else
+    echo "$manual"
+  fi
+
+
 }
 
 
@@ -125,6 +209,7 @@ java_alg() {
 # Default values for our flags
 coloring=""
 filter=0
+minChrom=0
 manual=""
 raw=0
 overview=false
@@ -251,52 +336,31 @@ if [[ "$show" == true ]]; then
   raw=3
   overview=false
   progressview=false
-  showcommand=./showOutput.sh
+fi
+
+### FILTER CHECK
+if [[ "$filter" =~ ^-?[0-9]+$ ]]; then
+  # Filter is a number
+  minChrom="$filter"
 fi
 
 ### NUMBER OF VERTICES CHECK
-if [[ -z "$startn" && -z "$manual" ]]; then
-  # There is no n given and we don't want to manually give a graph -> ERROR
+if [[ -z "$startn" && -z "$manual" && "$filter" =~ ^-?[0-9]+$ ]]; then
+  # There is no n given and we don't want to manually give a graph
+  # And we also haven't recieved a filter file (as it is just a number) -> ERROR
   # We only check startn, as both are either filled or not filled
   echo "Error: Number of vertices wasn't given."
   exit 1
 fi
 
+### EXECUTION
 
-### PROGRESS BAR
-if [[ "$progressview" == true ]]; then
-
-  # We add a progress bar
-
-  if [[ -z "$manual" ]]; then
-    # Manual not set
-    gen_range_graphs "$startn" "$endn" "$raw" | pv | java_alg
-  elif [[ "$manual" == "pipe" ]]; then
-    # Own stream chosen
-    read_stdin | pv | java_alg
-  else
-    echo "$manual" | pv | java_alg
-  fi
-
-
-### NO PROGRESS BAR
-else
-
-  if [[ -z "$manual" ]]; then
-      # Manual not set
-      gen_range_graphs "$startn" "$endn" "$raw" | java_alg
-    elif [[ "$manual" == "pipe" ]]; then
-      # Own stream chosen
-      read_stdin | java_alg
-    else
-      echo "$manual" | java_alg
-    fi
-
-fi
+choose_incoming_graphs | java_alg
 
 
 # Extra output for show functionality to signal the end of the generation.
 if [[ "$show" == true ]]; then
+  ./showOutput.sh
   echo "Generated all images."
 fi
 

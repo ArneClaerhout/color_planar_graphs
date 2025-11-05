@@ -7,11 +7,12 @@ cd "$script_dir" || exit 1
 
 ### The generation of the cycles in graph6 format
 gen_cycle_graphs() {
+  # Check if venv has been created
   if [ ! -d "venv" ]; then
-    python3 -m venv venv
+      echo "Error: venv hasn't been created yet."
+      exit 1
   fi
   source venv/bin/activate
-  pip install -q networkx
 
 python3 - <<'PY'
 import networkx as nx

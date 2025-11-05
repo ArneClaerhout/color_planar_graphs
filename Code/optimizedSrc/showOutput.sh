@@ -4,20 +4,14 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
-# Create virtual environment if missing
+# Check if venv has been created
 if [ ! -d "venv" ]; then
-    python3 -m venv venv
+    echo "Error: venv hasn't been created yet."
+    exit 1
 fi
 
 # Enter virtual environment
 source venv/bin/activate
-
-# Install needed libraries silently (-q)
-pip install -q --upgrade pip
-pip install -q networkx
-pip install -q "matplotlib<3.8"
-pip install -q tikzplotlib
-pip install -q "webcolors<1.12"
 
 # Make sure the images folder is created.
 mkdir -p images
