@@ -2,9 +2,7 @@
   "filter1": {
     "output": {
       "raw": 2,
-      "overview": true,
-      "show": true,
-      "pv": true
+      "overview": true
     },
     "coloring": "proper",
     "n": "3:5",
