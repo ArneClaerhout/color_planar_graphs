@@ -71,6 +71,18 @@ public class GraphPQ {
     }
 
     /**
+     * A method for checking whether this graph is correctly colored when using a given coloring method.
+     *
+     * @param   coloring
+     *          The coloring method used.
+     * @param   vertices
+     *          The vertices to check this property on.
+     */
+    public boolean isCorrectlyColored(Coloring coloring, VertexPQ[] vertices) {
+        return isCorrectlyColored(coloring, true, vertices);
+    }
+
+    /**
      * A method for getting the colors of the final graph, in the order of the adjacency matrix.
      *
      * @note    This method should only ever get used after coloring the graph.

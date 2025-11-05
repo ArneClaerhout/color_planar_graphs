@@ -26,6 +26,25 @@ public class Graph {
         this.vertices = findVerticesList(adjMatrix, adjMatrix.length);
     }
 
+    /**
+     * A method for coloring the graph,
+     * this should only be used for testing the correctness of certain colorings.
+     *
+     * @param   colors
+     *          The colors to assign to the vertices (with the correct vertices)
+     */
+    public void colorGraph(int[] colors) throws IllegalArgumentException {
+        if (colors.length != vertices.length) {
+            throw new IllegalArgumentException("Colors length is not equal to vertices length.");
+        }
+        for (int i = 0; i < vertices.length; i++) {
+            if (colors[i] > 10 || colors[i] < 0) {
+                throw new IllegalArgumentException("Colors are not in correct range.");
+            }
+            vertices[i].changeColor(colors[i]);
+        }
+    }
+
 //    /**
 //     * A method for adding a vertex to a graph.
 //     */
@@ -40,7 +59,10 @@ public class Graph {
 //    }
 
     /**
-     * A method for checking whether this graph is correctly colored when using a given coloring method.
+     * A method for checking whether this graph
+     * is correctly colored when using a given coloring method.
+     * This method is private as we want to be able to choose
+     * the proper check.
      *
      * @param   coloring
      *          The coloring method used.
@@ -57,6 +79,16 @@ public class Graph {
             }
         }
         return true;
+    }
+
+    /**
+     * A method for checking whether this graph is correctly colored when using a given coloring method.
+     *
+     * @param   coloring
+     *          The coloring method used.
+     */
+    public boolean isCorrectlyColored(Coloring coloring) {
+        return isCorrectlyColored(coloring, true);
     }
 
     /**
