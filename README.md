@@ -23,6 +23,13 @@ Now, go straight to the source directory.
 cd ../Code/optimizedSrc/
 ```
 
+Once there, make sure a python virtual environment is created by running the following command:
+```
+./setupVenv.sh
+```
+This will create the venv and install all needed libraries.
+Now you're ready to use the algorithm!
+
 ## General Usage
 
 Example usage:
