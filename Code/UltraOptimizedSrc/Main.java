@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         boolean debugging = false;
-//        debugging = true;
+        debugging = true;
 
         if (!debugging) {
 
@@ -166,7 +166,7 @@ public class Main {
 //                add("I|~KMLKBG");
 //                add("E|tw");
 //                add("G|mnMC");
-                add("H~eKMD^");
+                add("E|tw");
             }};
 
             for (String line : graphs) {

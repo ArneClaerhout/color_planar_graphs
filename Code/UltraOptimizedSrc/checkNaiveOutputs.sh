@@ -44,9 +44,7 @@ echo "Starting comparison."
 diff=false
 count=0
 
-# We first pipe these outputs, this will make sure that even if the length is incorrect, it will still output
-paste <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
-      <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) |
+
 while IFS=$'\t' read -r line1 line2; do
   if [[ $((count % 10000)) == 0 && "$count" != 0 ]]; then
     echo "count: $count"
@@ -58,13 +56,16 @@ while IFS=$'\t' read -r line1 line2; do
           echo "Difference:"
           echo "  Naive: $line1"
           echo "  Optimized: $line2"
+          # This variable assignment now persists
           diff=true
       fi
       ;;
     (*)
       ;;
   esac
-done
+  # We pipe these outputs, this will make sure that even if the length is incorrect, it will still output
+done < <(paste <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
+      <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null))
 
 if [[ "$diff" == true ]]; then
   echo "Outputs differ."

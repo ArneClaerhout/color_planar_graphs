@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Vertex {
 
     /**
@@ -10,9 +8,9 @@ public class Vertex {
     private int color = 0;
 
     /**
-     * The neighbours of a vertex.
+     * The neighbours of a vertex, presented with bitsets.
      */
-    private boolean[] neighbours;
+    private int neighbours = 0;
 
     /**
      * The available colors for this vertex.
@@ -40,8 +38,7 @@ public class Vertex {
     /**
      * A constructor for a vertex object.
      */
-    public Vertex(int index, int numberOfVertices) {
-        this.neighbours = new boolean[numberOfVertices];
+    public Vertex(int index) {
         this.index = index;
     }
 
@@ -64,10 +61,20 @@ public class Vertex {
      *          The neighbour vertex to make an edge between.
      */
     public void addNeighbour(Vertex neighbour) {
-        neighbours[neighbour.index] = true;
-        neighbour.getOpenNeighbourhood()[this.index] = true;
+        neighbours |= (1 << neighbour.index);
+        neighbour.addSingleNeighbour(this);
         incrementDegree();
-        neighbour.incrementDegree();
+    }
+
+    /**
+     * A method for adding a single neighbour. This is only used for adding bidirectional neighbours.
+     *
+     * @param   neighbour
+     *          The neighbour to add to the neighbours number.
+     */
+    void addSingleNeighbour(Vertex neighbour) {
+        neighbours |= (1 << neighbour.index);
+        incrementDegree();
     }
 
     /**
@@ -78,24 +85,9 @@ public class Vertex {
      * @note    This method gives the neighbour list directly,
      *          changing the given list changes the actual list of neighbours.
      */
-    public boolean[] getOpenNeighbourhood() {
+    public int getOpenNeighbourhood() {
         return neighbours;
     }
-
-//    /**
-//     * A method for acquiring a list of neighbours of a vertex.
-//     * This method returns the closed neighbourhood of a vertex,
-//     * therefore this does include this vertex.
-//     *
-//     * @note    As we are adding this vertex to the list of neighbours,
-//     *          we create a copy of the neighbour list first.
-//     */
-//    public boolean[] getClosedNeighbourhood() {
-//        return
-//        ArrayList<Vertex> returnList = new ArrayList<>(neighbours);
-//        returnList.add(this);
-//        return returnList;
-//    }
 
 
     /**
@@ -224,13 +216,12 @@ public class Vertex {
     public boolean isCorrectlyColored(Coloring inputColoring, Vertex[] verticesIndexed, boolean properLy) {
         boolean open = Coloring.isOpen(inputColoring);
         boolean proper = Coloring.isProper(inputColoring);
-        boolean[] neighbours = getOpenNeighbourhood();
         int[] colors = new int[10];
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the inputColoring has happened.
 
-        for (int i = 0; i < neighbours.length; i++) {
-            if (!neighbours[i]) continue;
+        for (int i = 0; i < 31 - Integer.numberOfLeadingZeros(neighbours); i++) {
+            if ((neighbours & 1 << i) == 0) continue;
 
             Vertex neighbour = verticesIndexed[i];
 
@@ -239,11 +230,8 @@ public class Vertex {
                 // Not all vertices have been colored yet, this vertex is also checked.
             }
 
-            if (properLy) {
-                if (proper && neighbour.getColor() == color && !this.equals(neighbour)) {
-                    // Check if the inputColoring is proper
-                    return false;
-                }
+            if (properLy && proper && neighbour.getColor() == color && !this.equals(neighbour)) {
+                return false;
             }
 
             colors[neighbour.getColor()-1]++;
@@ -283,11 +271,7 @@ public class Vertex {
                 if (colors[i] == 0) {
                     continue;
                 }
-                if (colors[i] == 1) {
-                    return true;
-                    // If the first color we find (the max color) is 1, return true
-                }
-                return false;
+                return colors[i] == 1;
             }
         }
 

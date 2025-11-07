@@ -194,7 +194,7 @@ public class Graph {
         Vertex[] vertices = new Vertex[n];
 
         for (int i = 0; i < n; i++) {
-            vertices[i] = new Vertex(i, n);
+            vertices[i] = new Vertex(i);
         }
 
         for (int i = 0; i < adjMatrix.length; i++) {
@@ -275,9 +275,9 @@ public class Graph {
             // We also change the available colors for the neighbours if the coloring is proper
             ArrayList<Vertex> changed =  new ArrayList<>();
             if (proper) {
-                for (int i = 0; i < v.getOpenNeighbourhood().length; i++) {
+                for (int i = 0; i < 31 - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
                     Vertex neighbour;
-                    if (v.getOpenNeighbourhood()[i]) {
+                    if ((v.getOpenNeighbourhood() & 1 << i) > 0) {
                         neighbour = verticesIndexed[i];
                     } else {
                         continue;
