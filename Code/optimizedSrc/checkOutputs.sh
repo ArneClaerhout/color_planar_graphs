@@ -72,9 +72,9 @@ shift 1
 
 declare -a colorings=()
 
-# "iCFo" "pCFo" "pCFc" "pUMo" "pUMc" "odd" "proper"
+# "pCFo" "pCFc" "pUMo" "pUMc" "odd" "proper"
 # Proper has been checked from 3:17, it is correct
-# Others have been checked from 3:11
+# Others have been checked from 3:12
 # iCFo, iCFc, iUMo, iUMc to 14
 
 while [[ $# -gt 0 ]]; do

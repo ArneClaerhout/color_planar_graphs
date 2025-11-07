@@ -172,7 +172,9 @@ choose_incoming_graphs() {
               echo ":update overview"
               changeoverview=false
             fi
-            echo ":print $change"
+            if [[ "$raw" == 0 ]]; then
+              echo ":print $change"
+            fi
             change=""
           fi
           if [[ "$overview" != True && "$overview" != False ]]; then
