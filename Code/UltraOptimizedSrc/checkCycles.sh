@@ -4,17 +4,16 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
-
 ### The generation of the cycles in graph6 format
 gen_cycle_graphs() {
-  # Check if venv has been created
-  if [ ! -d "venv" ]; then
-      echo "Error: venv hasn't been created yet."
-      exit 1
-  fi
-  source venv/bin/activate
+	# Check if venv has been created
+	if [ ! -d "venv" ]; then
+		echo "Error: venv hasn't been created yet."
+		exit 1
+	fi
+	source venv/bin/activate
 
-python3 - <<'PY'
+	python3 - <<'PY'
 import networkx as nx
 
 with open("cycles.g6", "w", encoding="utf-8") as f:
@@ -25,14 +24,14 @@ with open("cycles.g6", "w", encoding="utf-8") as f:
         print(s)
         f.write(s + "\n")
 PY
-# We generate cycle graphs in python
+	# We generate cycle graphs in python
 }
 
 coloring="$1"
 
 echo "Finding $1 chromatic numbers for cycle graphs:"
 index=3
-gen_cycle_graphs | ./colorScript.sh -c "$coloring" -m pipe --raw |  while read -r line ; do
-                                                                          echo "  C_$index: $line"
-                                                                          index=$((index+1))
-                                                                      done
+gen_cycle_graphs | ./colorScript.sh -c "$coloring" -m pipe --raw | while read -r line; do
+	echo "  C_$index: $line"
+	index=$((index + 1))
+done

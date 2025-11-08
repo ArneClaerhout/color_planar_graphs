@@ -3,3 +3,13 @@ plantri55/*:Zone.Identifier
 *:Zone.Identifier
 Code/*/*.class
 Code/*/out/
+.idea/
+out/
+Code/*/venv/
+Code/*/images/
+nauty*/
+nauty*.tar.gz
+*.iml
+Verslagen/~$*.docx
+.bashrc.local
+.vscode/

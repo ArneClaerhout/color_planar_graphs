@@ -6,8 +6,8 @@ cd "$script_dir" || exit 1
 
 # Check if venv has been created
 if [ ! -d "venv" ]; then
-    echo "Error: venv hasn't been created yet."
-    exit 1
+	echo "Error: venv hasn't been created yet."
+	exit 1
 fi
 
 # Enter virtual environment
@@ -21,5 +21,3 @@ rm -f images/*
 
 # Run Python script with stdin
 "venv/bin/python" graph6_to_image.py "$1"
-
-
