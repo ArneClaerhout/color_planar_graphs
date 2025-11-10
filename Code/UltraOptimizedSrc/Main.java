@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         boolean debugging = false;
-        debugging = true;
+//        debugging = true;
 
         if (!debugging) {
 
@@ -170,7 +170,7 @@ public class Main {
             }};
 
             for (String line : graphs) {
-                GraphPQ graph = new GraphPQ(line);
+                Graph graph = new Graph(line);
 
 
                 int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
