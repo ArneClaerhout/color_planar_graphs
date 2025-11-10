@@ -216,7 +216,8 @@ public class Vertex {
     public boolean isCorrectlyColored(Coloring inputColoring, Vertex[] verticesIndexed, boolean properLy) {
         boolean open = Coloring.isOpen(inputColoring);
         boolean proper = Coloring.isProper(inputColoring);
-        int[] colors = new int[10];
+        int n = inputColoring.getMaxChromaticNumber();
+        int[] colors = new int[n];
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the inputColoring has happened.
 
@@ -249,7 +250,7 @@ public class Vertex {
         } else if (inputColoring == Coloring.ODD) {
             // Odd check
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < n; i++) {
                 if (colors[i] % 2 == 1) {
                     return true;
                 }
@@ -258,7 +259,7 @@ public class Vertex {
         } else if (Coloring.isConflictFree(inputColoring)) {
             // Conflict-free check
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < n; i++) {
                 if (colors[i] == 1) {
                     return true;
                 }
@@ -267,7 +268,7 @@ public class Vertex {
         } else {
             // Unique-maximum check
 
-            for (int i = 9; i >= 0; i--) {
+            for (int i = n-1; i >= 0; i--) {
                 if (colors[i] == 0) {
                     continue;
                 }
