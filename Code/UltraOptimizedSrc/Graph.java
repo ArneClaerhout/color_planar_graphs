@@ -1,8 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-
-import static java.util.Collections.min;
 
 public class Graph {
 
@@ -12,9 +9,14 @@ public class Graph {
     Vertex[] vertices;
 
     /**
-     * The indexed array that stays by index
+     * The indexed array that stays by index.
      */
     Vertex[] verticesIndexed;
+
+    /**
+     * A help-bitset for the verticesIndexed array that tracks which vertices have been colored.
+     */
+    private int vertexIsColored = 0;
 
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
@@ -227,7 +229,9 @@ public class Graph {
             for (Vertex v : vertices) {
                 v.setMaxAvailableColors(i);
             }
-            if (optimizedAlgorithm(coloring, proper, um, 1, i, 0)) {
+            // Each time we reset which vertices are colored.
+//            vertexIsColored = 0;
+            if (optimizedAlgorithm(coloring, proper, um, 0, i, 0)) {
                 return i;
             }
         }
@@ -255,64 +259,66 @@ public class Graph {
      *          False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, int index) {
-        if (index >= vertices.length) {
+        if (index >= vertices.length-1 && !um && maxColorCurrGraph + 1 < maxColor) {
             // We check if the coloring is correct
-            return (maxColorCurrGraph < maxColor) ? false : isCorrectlyColored(coloring, false);
+            // This doesn't have to happen as we check it while we are doing the algorithm
+            return false;
+        }
+        if (index == vertices.length) {
+            // We reached the end
+            return true;
         }
 
         Vertex v = vertices[index];
+        int vertexIndex = v.getIndex(); // Actual index
         boolean[] colors = v.getAvailableColors();
-        boolean skip = false;
+
+        boolean neighboursColored = (v.getOpenNeighbourhood() & vertexIsColored) == v.getOpenNeighbourhood();
 
         int maxLoop = um ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
         // Every coloring should be tried for um, as this is different for it.
 
+        // We are coloring this index
+        vertexIsColored |= 1 << vertexIndex;
+
         for (int color = 0; color < maxLoop; color++) {
             if (!colors[color]) continue; // We skip this color as this can't be correct
 
+            // We check if it's the last vertex to color, and if we have gotten to the max color
+            if (index >= vertices.length-1 && maxColorCurrGraph + 1 < maxColor && color != maxLoop - 1) continue; // This is um
+            if (index >= vertices.length-1 && maxColorCurrGraph < maxColor && color != maxLoop -1) continue; // This is not um
+
+
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
+
+            // We have to now check if all our neighbours are colored, as this isn't checked in updateNeighbours
+            // This is an extra check for correctness
+            if (neighboursColored && !v.isCorrectlyColored(coloring,  verticesIndexed, false)) {
+                // This color isn't correct, we pick another
+                continue;
+            }
 
             // We also change the available colors for the neighbours if the coloring is proper
             ArrayList<Vertex> changed =  new ArrayList<>();
-            if (proper) {
-                for (int i = 0; i <= 31 - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
-                    Vertex neighbour;
-                    if ((v.getOpenNeighbourhood() & 1 << i) > 0) {
-                        neighbour = verticesIndexed[i];
-                    } else {
-                        continue;
-                    }
-                    if (neighbour.removeColorFromAvailableColors(color)) changed.add(neighbour);
-                    if (neighbour.getAmountOfAvailableColors() == 0) {
-                        // Early pruning
-                        for (Vertex changedNeighbour : changed) {
-                            changedNeighbour.addColorFromAvailableColors(color);
-                            // We add the colors back
-                        }
-                        skip = true;
-                        break;
-                    }
-                }
-                if (skip) {
-                    // This is used to skip this color, as it isn't possible
-                    skip = false;
-                    continue;
-                }
 
-                // We make sure we are not at the last index
-                if (index + 1 < vertices.length) {
-                    // Instead of sorting the entire rest of the list, we find the best candidate
-                    int bestIndex = getBestIndex(index + 1);
-
-                    // We put the best starter at the front
-                    if (index + 1 != bestIndex) {
-                        Vertex tmp = vertices[bestIndex];
-                        vertices[bestIndex] = vertices[index + 1];
-                        vertices[index + 1] = tmp;
-                    }
-                }
-
+            if (updateNeighbours(v, color, coloring, changed)) {
+                // This is used to skip this color, as it isn't possible
+                continue;
             }
+
+            // We make sure we are not at the last index
+            if (index + 1 < vertices.length) {
+                // Instead of sorting the entire rest of the list, we find the best candidate
+                int bestIndex = getBestIndex(index + 1);
+
+                // We put the best starter at the front
+                if (index + 1 != bestIndex) {
+                    Vertex tmp = vertices[bestIndex];
+                    vertices[bestIndex] = vertices[index + 1];
+                    vertices[index + 1] = tmp;
+                }
+            }
+
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
             if (optimizedAlgorithm(coloring, proper, um, newMaxColorCurrGraph, maxColor, index + 1)) {
@@ -328,6 +334,10 @@ public class Graph {
             }
 
         }
+
+        // We decolor this vertex
+        vertexIsColored &= ~(1 << vertexIndex);
+        v.changeColor(0);
 
         return false;
 
@@ -354,6 +364,73 @@ public class Graph {
             }
         }
         return bestIndex;
+    }
+
+    /**
+     * A method for updating the neighbours of a chosen vertex.
+     * This method makes sure that only the actual real neighbours (in verticesIndexed) are changed.
+     * It also only changes those neighbours that aren't colored yet.
+     *
+     * @param   v
+     *          The vertex to update.
+     * @param   color
+     *          The color that should get added or removed
+     *          from the neighbours available colors array.
+     * @param   coloring
+     *          The coloring to use, this is needed for the color-checking
+     *          of neighbours while the algorithm is being run.
+     * @param   changed
+     *          This should be an empty list
+     *          to be filled with the vertices that were changed.
+     *          This will contain the old vertices that were removed from verticesIndexed.
+     * @return  Whether we should skip this color
+     *          as we already found a neighbour with zero possible colors.
+     */
+    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, ArrayList<Vertex> changed) {
+        boolean skip = false;
+        boolean proper = Coloring.isProper(coloring);
+        for (int i = 0; i <= 31 - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
+            Vertex neighbour;
+            if ((v.getOpenNeighbourhood() & 1 << i) > 0) {
+                neighbour = verticesIndexed[i];
+            } else {
+                continue;
+            }
+
+            boolean neighbourIsColored = ((1 << neighbour.getIndex()) & vertexIsColored) > 0;
+
+            if ((neighbour.getOpenNeighbourhood() & vertexIsColored) == neighbour.getOpenNeighbourhood() &&
+                    neighbourIsColored) {
+                // All the neighbours neighbours are colored and the neighbour itself is colored
+                // We want to check if the neighbour is CORRECTLY colored
+                if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
+                    skip = true;
+                    break;
+                    // We skip the rest, as this color is incorrect
+                }
+                // It doesn't have to be checked on whether it's proper, as this is done by the next section
+            }
+
+            if (proper) {
+                // This section removes the color from the available colors
+
+                // We check if the neighbour is already colored, as we don't have to do anything if this is the case
+                if (neighbourIsColored) continue;
+
+                // We compare the neighbours neighbourhood with the already colored vertices
+                if (neighbour.removeColorFromAvailableColors(color)) changed.add(neighbour);
+                if (neighbour.getAmountOfAvailableColors() == 0) {
+                    // Early pruning
+                    for (Vertex changedNeighbour : changed) {
+                        changedNeighbour.addColorFromAvailableColors(color);
+                        // We add the colors back
+                    }
+                    skip = true;
+                    break;
+                }
+            }
+        }
+        return skip;
     }
 
 

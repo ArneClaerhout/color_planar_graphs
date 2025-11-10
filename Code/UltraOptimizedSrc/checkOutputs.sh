@@ -85,6 +85,6 @@ for i in "${colorings[@]}"; do
 	if [[ "$i" == "proper" ]]; then # With proper colorings, we can use nauty
 		use_nauty
 	else
-		./checkNaiveOutputs.sh "$startn:$endn" -c "$i" | sed 's/^/  /'
+		./checkCorrectOutputs.sh "$startn:$endn" -c "$i" | sed 's/^/  /'
 	fi
 done

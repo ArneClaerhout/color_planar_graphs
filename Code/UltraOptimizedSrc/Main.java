@@ -166,7 +166,7 @@ public class Main {
 //                add("I|~KMLKBG");
 //                add("E|tw");
 //                add("G|mnMC");
-                add("E|tw");
+                add("I~fIIDBVg");
             }};
 
             for (String line : graphs) {

@@ -52,8 +52,8 @@ while IFS=$'\t' read -r line1 line2; do
 	*:*)
 		if [[ "$line1" != "$line2" && "$line1" != *"coloring"* && "$line1" != *"time"* ]]; then
 			echo "Difference:"
-			echo "  Naive: $line1"
-			echo "  Optimized: $line2"
+			echo "  Correct: $line1"
+			echo "  Incorrect: $line2"
 			# This variable assignment now persists
 			diff=true
 		fi
@@ -62,7 +62,7 @@ while IFS=$'\t' read -r line1 line2; do
 
 	esac
 	# We pipe these outputs, this will make sure that even if the length is incorrect, it will still output
-done < <(paste <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
+done < <(paste <(./../optimizedSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
 	<(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null))
 
 if [[ "$diff" == true ]]; then
