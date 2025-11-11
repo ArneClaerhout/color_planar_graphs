@@ -319,8 +319,8 @@ javac Main.java
 if [[ "$raw" == 0 ]]; then
 	# Only if we are not in raw mode do we print this.
 	echo "Code compiled."
-elif [[ "$raw" -ne 1 && "$raw" -ne 2 ]]; then
-	# We only want two raw options
+elif [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 ]]; then
+	# We only want three raw options
 	raw=1
 fi
 

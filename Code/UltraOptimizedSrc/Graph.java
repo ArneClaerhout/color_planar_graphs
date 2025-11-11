@@ -230,7 +230,7 @@ public class Graph {
                 v.setMaxAvailableColors(i);
             }
             // Each time we reset which vertices are colored.
-//            vertexIsColored = 0;
+            vertexIsColored = 0;
             if (optimizedAlgorithm(coloring, proper, um, 0, i, 0)) {
                 return i;
             }
@@ -273,13 +273,13 @@ public class Graph {
         int vertexIndex = v.getIndex(); // Actual index
         boolean[] colors = v.getAvailableColors();
 
-        boolean neighboursColored = (v.getOpenNeighbourhood() & vertexIsColored) == v.getOpenNeighbourhood();
-
         int maxLoop = um ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
         // Every coloring should be tried for um, as this is different for it.
 
         // We are coloring this index
         vertexIsColored |= 1 << vertexIndex;
+
+        boolean neighboursColored = (v.getOpenNeighbourhood() & vertexIsColored) == v.getOpenNeighbourhood();
 
         for (int color = 0; color < maxLoop; color++) {
             if (!colors[color]) continue; // We skip this color as this can't be correct
@@ -354,6 +354,7 @@ public class Graph {
     private int getBestIndex(int index) {
         int bestIndex = index;
         int smallestAC = vertices[bestIndex].getAmountOfAvailableColors();
+        if (smallestAC == 1) return index;
         int testAC;
         // We now order the remaining vertices, only for proper colorings
         for (int i = index; i < vertices.length; i++) {
@@ -404,6 +405,11 @@ public class Graph {
                 // All the neighbours neighbours are colored and the neighbour itself is colored
                 // We want to check if the neighbour is CORRECTLY colored
                 if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
+                    // Early pruning
+                    for (Vertex changedNeighbour : changed) {
+                        changedNeighbour.addColorFromAvailableColors(color);
+                        // We add the colors back
+                    }
                     skip = true;
                     break;
                     // We skip the rest, as this color is incorrect
