@@ -210,6 +210,9 @@ public class Vertex {
      *
      * @param   inputColoring
      *          The inputColoring method used.
+     * @param   verticesIndexed
+     *          The vertices array of the indexed vertices.
+     *          These are the actual correct vertices to be used.
      * @param   properLy
      *          Whether the fact that the vertex is proper should get checked.
      */

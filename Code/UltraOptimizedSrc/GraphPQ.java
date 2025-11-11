@@ -13,7 +13,7 @@ public class GraphPQ {
 
     private final VertexPQ[] verticesIndexed;
 
-    private boolean[] vertexIsColored;
+    private int vertexIsColored = 0;
 
     public GraphPQ(String graph6) {
         char[] graphArray = graph6.toCharArray();
@@ -22,7 +22,6 @@ public class GraphPQ {
 
         this.verticesIndexed = findVerticesList(adjMatrix, n);
         vertices.addAll(List.of(this.verticesIndexed));
-        vertexIsColored = new boolean[n];
     }
 
     /**
@@ -32,7 +31,6 @@ public class GraphPQ {
         int n = adjMatrix.length;
         this.verticesIndexed = findVerticesList(adjMatrix, n);
         vertices.addAll(List.of(this.verticesIndexed));
-        vertexIsColored = new boolean[n];
     }
 
 //    /**
@@ -195,7 +193,7 @@ public class GraphPQ {
         boolean um = Coloring.isUniqueMaximum(coloring);
 
         for (int i = 2; i <= n; i++) {
-            Arrays.fill(vertexIsColored, false);
+            vertexIsColored = 0;
             vertices.clear();
             vertices.addAll(List.of(this.verticesIndexed));
             for (VertexPQ v : vertices) {
@@ -232,19 +230,29 @@ public class GraphPQ {
                                        int maxColorCurrGraph, int maxColor) {
         if (vertices.isEmpty()) {
             // We check the coloring
-            return (maxColorCurrGraph < maxColor) ? false : isCorrectlyColored(coloring, false, verticesIndexed);
+            return true;
+
+        }
+
+        for (VertexPQ v : verticesIndexed) {
+            if ((vertexIsColored & (1 << v.getIndex())) == 0 && !vertices.contains(v)) {
+                System.out.println(v.getIndex());
+            }
         }
 
         VertexPQ v = vertices.poll();
+        int vertexIndex = v.getIndex(); // Actual index
+
+        boolean vIsColored = (vertexIsColored & (1 << vertexIndex)) > 0;
         // The second check is to see if this vertex is real
-        while (!vertices.isEmpty() && (vertexIsColored[v.getIndex()] || v != (verticesIndexed[v.getIndex()])) ) v = vertices.poll();
+        while (!vertices.isEmpty() && (vIsColored || v != (verticesIndexed[v.getIndex()])) ) v = vertices.poll();
 
         // We either end the loop if the vertices are empty or if the vertex is real
         // We have to recheck whether we ended on the case where the last vertex is not real
         // (If the last vertex is real, we just do another loop of the algorithm)
         if (vertices.isEmpty() && v != (verticesIndexed[v.getIndex()])) {
             // We check the coloring
-            return (maxColorCurrGraph < maxColor) ? false : isCorrectlyColored(coloring, false, verticesIndexed);
+            return true;
         }
 
         boolean[] colors = v.getAvailableColors();
@@ -252,18 +260,29 @@ public class GraphPQ {
         int maxLoop = um ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
         // Every coloring should be tried for um, as this is different for it.
 
+        // We are coloring this index
+        vertexIsColored |= 1 << vertexIndex;
+
+        boolean neighboursColored = (v.getOpenNeighbourhood() & vertexIsColored) == v.getOpenNeighbourhood();
+
         for (int color = 0; color < maxLoop; color++) {
             if (!colors[color]) continue; // We skip this color as this can't be correct
 
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
-            vertexIsColored[v.getIndex()] = true;
+
+            // We have to now check if all our neighbours are colored, as this isn't checked in updateNeighbours
+            // This is an extra check for correctness
+            if (neighboursColored && !v.isCorrectlyColored(coloring,  verticesIndexed, false)) {
+                // This color isn't correct, we pick another
+                continue;
+            }
 
             // We create the changed ArrayList for this vertex here, as we can use this later on
             ArrayList<VertexPQ> changed = new ArrayList<>();
 
 
             // We also change the available colors for the neighbours if the coloring is proper
-            if (proper && updateNeighbours(v.getOpenNeighbourhood(), color, false, changed)) {
+            if (updateNeighbours(v.getOpenNeighbourhood(), coloring, color, false, changed)) {
                 // We enter this if statement when we find an early prune, found by updateNeighbours
                 continue;
             }
@@ -277,14 +296,15 @@ public class GraphPQ {
 
             // We add back the available colors if it didn't work out
             if (proper) {
-                updateNeighbours(v.getOpenNeighbourhood(), color, true, changed);
+                updateNeighbours(v.getOpenNeighbourhood(), coloring, color, true, changed);
             }
 
         }
 
         // We add the vertex back to be chosen
         vertices.add(v);
-        vertexIsColored[v.getIndex()] = false;
+        v.changeColor(0);
+        vertexIsColored &= ~(1 << vertexIndex);
 
         return false;
 
@@ -297,6 +317,8 @@ public class GraphPQ {
      *
      * @param   neighbourhood
      *          The neighbourhood to update.
+     * @param   coloring
+     *          The coloring used.
      * @param   color
      *          The color that should get added or removed
      *          from the neighbours available colors array.
@@ -312,7 +334,7 @@ public class GraphPQ {
      * @return  Whether we should skip this color
      *          as we already found a neighbour with zero possible colors.
      */
-    private boolean updateNeighbours(boolean[] neighbourhood, int color, boolean addColor, ArrayList<VertexPQ> changed) {
+    private boolean updateNeighbours(int neighbourhood, Coloring coloring, int color, boolean addColor, ArrayList<VertexPQ> changed) {
         if (addColor) {
             // We need to undo everything in changed
             for (VertexPQ changedNeighbour : changed) {
@@ -325,31 +347,59 @@ public class GraphPQ {
         }
 
         boolean skip = false;
-        for (int i = 0; i < neighbourhood.length; i++) {
-            if (!neighbourhood[i]) continue; // We skip the vertices we shouldn't change
-            VertexPQ neighbour = verticesIndexed[i];
-            if (vertexIsColored[neighbour.getIndex()]) continue;
-            // The old neighbour is invalidated, we add the new one
-            VertexPQ newNeighbour = new VertexPQ(neighbour);
+        boolean proper = Coloring.isProper(coloring);
+        for (int i = 0; i <= 31 - Integer.numberOfLeadingZeros(neighbourhood); i++) {
+            VertexPQ neighbour;
+            if ((neighbourhood & 1 << i) > 0) {
+                neighbour = verticesIndexed[i];
+            } else {
+                continue;
+            }
 
-            // We remove the colors and check for early pruning
-            if (newNeighbour.removeColorFromAvailableColors(color)) {
-                if (newNeighbour.getAmountOfAvailableColors() == 0) {
+            boolean neighbourIsColored = ((1 << neighbour.getIndex()) & vertexIsColored) > 0;
+
+            if ((neighbour.getOpenNeighbourhood() & vertexIsColored) == neighbour.getOpenNeighbourhood() &&
+                    neighbourIsColored) {
+                // All the neighbours neighbours are colored and the neighbour itself is colored
+                // We want to check if the neighbour is CORRECTLY colored
+                if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
+                    // Early pruning
                     for (VertexPQ changedNeighbour : changed) {
                         // This readds the changed neighbours to the actual vertices array
                         verticesIndexed[changedNeighbour.getIndex()] = changedNeighbour;
                     }
                     skip = true;
                     break;
+                    // We skip the rest, as this color is incorrect
                 }
-                verticesIndexed[newNeighbour.getIndex()] = newNeighbour;
-                vertices.add(newNeighbour);
-
-                // We keep track of the new and old neighbours
-                changed.add(neighbour);
-
+                // It doesn't have to be checked on whether it's proper, as this is done by the next section
             }
-            // If no color is removed, we can keep the old vertex
+
+
+            if (proper) {
+                if (neighbourIsColored) continue;
+                // The old neighbour is invalidated, we add the new one
+                VertexPQ newNeighbour = new VertexPQ(neighbour);
+
+                // We remove the colors and check for early pruning
+                if (newNeighbour.removeColorFromAvailableColors(color)) {
+                    if (newNeighbour.getAmountOfAvailableColors() == 0) {
+                        for (VertexPQ changedNeighbour : changed) {
+                            // This readds the changed neighbours to the actual vertices array
+                            verticesIndexed[changedNeighbour.getIndex()] = changedNeighbour;
+                        }
+                        skip = true;
+                        break;
+                    }
+                    verticesIndexed[newNeighbour.getIndex()] = newNeighbour;
+                    vertices.add(newNeighbour);
+
+                    // We keep track of the new and old neighbours
+                    changed.add(neighbour);
+
+                }
+            }
+
         }
         return skip;
     }

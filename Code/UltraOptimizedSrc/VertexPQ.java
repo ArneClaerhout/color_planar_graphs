@@ -12,7 +12,7 @@ public class VertexPQ {
     /**
      * The neighbours of a vertex.
      */
-    private boolean[] neighbours;
+    private int neighbours = 0;
 
     /**
      * The available colors for this vertex.
@@ -41,7 +41,6 @@ public class VertexPQ {
      * A constructor for a vertex object.
      */
     public VertexPQ(int index, int numberOfVertices) {
-        this.neighbours = new boolean[numberOfVertices];
         this.index = index;
     }
 
@@ -64,10 +63,20 @@ public class VertexPQ {
      *          The neighbour vertex to make an edge between.
      */
     public void addNeighbour(VertexPQ neighbour) {
-        neighbours[neighbour.index] = true;
-        neighbour.getOpenNeighbourhood()[this.index] = true;
+        neighbours |= (1 << neighbour.index);
+        neighbour.addSingleNeighbour(this);
         incrementDegree();
-        neighbour.incrementDegree();
+    }
+
+    /**
+     * A method for adding a single neighbour. This is only used for adding bidirectional neighbours.
+     *
+     * @param   neighbour
+     *          The neighbour to add to the neighbours number.
+     */
+    void addSingleNeighbour(VertexPQ neighbour) {
+        neighbours |= (1 << neighbour.index);
+        incrementDegree();
     }
 
     /**
@@ -78,7 +87,7 @@ public class VertexPQ {
      * @note    This method gives the neighbour list directly,
      *          changing the given list changes the actual list of neighbours.
      */
-    public boolean[] getOpenNeighbourhood() {
+    public int getOpenNeighbourhood() {
         return neighbours;
     }
 
@@ -218,19 +227,22 @@ public class VertexPQ {
      *
      * @param   inputColoring
      *          The inputColoring method used.
+     * @param   verticesIndexed
+     *          The vertices array of the indexed vertices.
+     *          These are the actual correct vertices to be used.
      * @param   properLy
      *          Whether the fact that the vertex is proper should get checked.
      */
     public boolean isCorrectlyColored(Coloring inputColoring, VertexPQ[] verticesIndexed, boolean properLy) {
         boolean open = Coloring.isOpen(inputColoring);
         boolean proper = Coloring.isProper(inputColoring);
-        boolean[] neighbours = getOpenNeighbourhood();
-        int[] colors = new int[10];
+        int n = inputColoring.getMaxChromaticNumber();
+        int[] colors = new int[n];
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the inputColoring has happened.
 
-        for (int i = 0; i < neighbours.length; i++) {
-            if (!neighbours[i]) continue;
+        for (int i = 0; i <= 31 - Integer.numberOfLeadingZeros(neighbours); i++) {
+            if ((neighbours & 1 << i) == 0) continue;
 
             VertexPQ neighbour = verticesIndexed[i];
 
@@ -239,11 +251,8 @@ public class VertexPQ {
                 // Not all vertices have been colored yet, this vertex is also checked.
             }
 
-            if (properLy) {
-                if (proper && neighbour.getColor() == color && !this.equals(neighbour)) {
-                    // Check if the inputColoring is proper
-                    return false;
-                }
+            if (properLy && proper && neighbour.getColor() == color && !this.equals(neighbour)) {
+                return false;
             }
 
             colors[neighbour.getColor()-1]++;
@@ -261,7 +270,7 @@ public class VertexPQ {
         } else if (inputColoring == Coloring.ODD) {
             // Odd check
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < n; i++) {
                 if (colors[i] % 2 == 1) {
                     return true;
                 }
@@ -270,7 +279,7 @@ public class VertexPQ {
         } else if (Coloring.isConflictFree(inputColoring)) {
             // Conflict-free check
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < n; i++) {
                 if (colors[i] == 1) {
                     return true;
                 }
@@ -279,15 +288,11 @@ public class VertexPQ {
         } else {
             // Unique-maximum check
 
-            for (int i = 9; i >= 0; i--) {
+            for (int i = n-1; i >= 0; i--) {
                 if (colors[i] == 0) {
                     continue;
                 }
-                if (colors[i] == 1) {
-                    return true;
-                    // If the first color we find (the max color) is 1, return true
-                }
-                return false;
+                return colors[i] == 1;
             }
         }
 
