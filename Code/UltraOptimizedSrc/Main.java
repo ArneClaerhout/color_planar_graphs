@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         boolean debugging = false;
-        debugging = true;
+//        debugging = true;
 
         if (!debugging) {
 
@@ -101,7 +101,7 @@ public class Main {
 
                 int[][] adjM = Graph.getAdjacencyMatrix(line);
 
-                GraphPQ graph = new GraphPQ(adjM);
+                GraphLL graph = new GraphLL(adjM);
 //                int count = 0;
 //                for (int v = 0; v < adjM.length; v++) {
 //                    count = count + graph.vertices[v].getDegree();
@@ -170,7 +170,7 @@ public class Main {
             }};
 
             for (String line : graphs) {
-                GraphPQ graph = new GraphPQ(line);
+                GraphLL graph = new GraphLL(line);
 
 
                 int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
