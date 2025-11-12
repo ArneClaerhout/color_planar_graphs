@@ -18,6 +18,7 @@ gen_range_graphs() {
 coloring="proper"
 numvertices="$1"
 shift 1
+method=""
 
 # Loop over all flags and their values
 while [[ $# -gt 0 ]]; do
@@ -26,6 +27,14 @@ while [[ $# -gt 0 ]]; do
 		coloring="$2"
 		shift 2
 		;;
+  -pq)
+    method="-pq"
+    shift 1
+    ;;
+  -ll)
+    method="-ll"
+    shift 1
+    ;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1
@@ -63,7 +72,7 @@ while IFS=$'\t' read -r line1 line2; do
 	esac
 	# We pipe these outputs, this will make sure that even if the length is incorrect, it will still output
 done < <(paste <(./../optimizedSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
-	<(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null))
+	<(./colorScript.sh "$numvertices" -c "$coloring" "$method" 2>/dev/null))
 
 if [[ "$diff" == true ]]; then
 	echo "Outputs differ."

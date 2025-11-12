@@ -228,7 +228,7 @@ public class GraphPQ {
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um,
                                        int maxColorCurrGraph, int maxColor) {
-        if (vertices.isEmpty()) {
+        if (vertices.isEmpty() || Integer.bitCount(vertexIsColored) == verticesIndexed.length) {
             // We check the coloring
             return true;
 
@@ -241,11 +241,13 @@ public class GraphPQ {
         }
 
         VertexPQ v = vertices.poll();
-        int vertexIndex = v.getIndex(); // Actual index
 
-        boolean vIsColored = (vertexIsColored & (1 << vertexIndex)) > 0;
         // The second check is to see if this vertex is real
-        while (!vertices.isEmpty() && (vIsColored || v != (verticesIndexed[v.getIndex()])) ) v = vertices.poll();
+        while (!vertices.isEmpty() &&
+                ((vertexIsColored & (1 << v.getIndex())) > 0 || v != (verticesIndexed[v.getIndex()])) )
+            v = vertices.poll();
+
+        int vertexIndex = v.getIndex(); // Actual index
 
         // We either end the loop if the vertices are empty or if the vertex is real
         // We have to recheck whether we ended on the case where the last vertex is not real
@@ -396,7 +398,6 @@ public class GraphPQ {
 
                     // We keep track of the new and old neighbours
                     changed.add(neighbour);
-
                 }
             }
 

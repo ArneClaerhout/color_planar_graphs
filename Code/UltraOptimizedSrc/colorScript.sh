@@ -132,9 +132,9 @@ show_func() {
 
 java_alg() {
 	if [[ "$progressview" == true ]]; then
-		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" | show_func
+		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" | show_func
 	else
-		java Main "$coloring" "$overview" "$raw" "$minChrom" | show_func
+		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" | show_func
 	fi
 
 }
@@ -213,6 +213,7 @@ overview=false
 progressview=false
 show=false
 show_value="svg"
+method=0
 
 if [[ "$1" != -* ]]; then
 	# Number of vertices is given
@@ -297,6 +298,14 @@ while [[ $# -gt 0 ]]; do
 			shift 2
 		fi
 		;;
+  -pq)
+    method=1
+    shift 1
+    ;;
+  -ll)
+    method=2
+    shift 1
+    ;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1

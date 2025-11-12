@@ -62,6 +62,18 @@ else
 fi
 shift 1
 
+method=""
+if [[ "$1" == -pq || "$1" == -ll ]]; then
+	method="$1"
+	if [[ "$method" == -pq ]]; then
+	  printf "Received method: Priority Queues\n\n"
+	else
+	  printf "Received method: Linked Lists\n\n"
+	fi
+	shift 1
+fi
+
+
 ########################
 ###### COMPARISON ######
 ########################
@@ -74,7 +86,11 @@ declare -a colorings=()
 # iCFo, iCFc, iUMo, iUMc to 14
 
 while [[ $# -gt 0 ]]; do
-	colorings+=("$1")
+  if [[ "$1" == "all" ]]; then
+    colorings+=("proper" "odd" "pUMo" "pUMc" "pCFo" "pCFc" "iUMo" "iUMc" "iCFo" "iCFc")
+  else
+	  colorings+=("$1")
+	fi
 	shift 1
 	# We add all arguments as colorings
 done
@@ -85,6 +101,6 @@ for i in "${colorings[@]}"; do
 	if [[ "$i" == "proper" ]]; then # With proper colorings, we can use nauty
 		use_nauty
 	else
-		./checkCorrectOutputs.sh "$startn:$endn" -c "$i" | sed 's/^/  /'
+		./checkCorrectOutputs.sh "$startn:$endn" -c "$i" "$method" | sed 's/^/  /'
 	fi
 done

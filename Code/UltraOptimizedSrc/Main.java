@@ -34,7 +34,7 @@ public class Main {
             // Third: whether the output should be raw
             int raw = Integer.parseInt(args[2]);
 
-            // Lastly: adding a filter to the output (min. chromatic number)
+            // Fourth: adding a filter to the output (min. chromatic number)
             int minChrom = 0;
             try {
                 minChrom = Integer.parseInt(args[3]);
@@ -43,8 +43,13 @@ public class Main {
                 minChrom = 0;
             }
 
+            // Lastly: choosing the method
+            int method = Integer.parseInt(args[4]);
+
 
             if (raw == 0) System.out.println("Received coloring: " + coloring);
+            if (raw == 0 && method != 0) System.err.println("Received method: " + ((method == 1) ? "Priority Queues" : "Linked Lists"));
+            // This is still done to stderr so that it doesn't interfere with other things
 
 
             // We start reading the graphs
@@ -101,20 +106,21 @@ public class Main {
 
                 int[][] adjM = Graph.getAdjacencyMatrix(line);
 
-                GraphLL graph = new GraphLL(adjM);
-//                int count = 0;
-//                for (int v = 0; v < adjM.length; v++) {
-//                    count = count + graph.vertices[v].getDegree();
-//                }
-                int c;
-//                if (Math.pow(adjM.length, 2)/count > 4) {
-//                    GraphPQ graphPQ = new GraphPQ(adjM);
-//                    c = graphPQ.findChromaticNumberOptimized(coloring);
-//                } else {
+                int c = 0;
+                String s;
+                if (method == 0) {
+                    Graph graph = new Graph(adjM);
                     c = graph.findChromaticNumberOptimized(coloring);
-//                }
-
-
+                    s = Arrays.toString(graph.getColors());
+                } else if (method == 1) {
+                    GraphPQ graph = new GraphPQ(adjM);
+                    c = graph.findChromaticNumberOptimized(coloring);
+                    s = Arrays.toString(graph.getColors());
+                } else {
+                    GraphLL graph = new GraphLL(adjM);
+                    c = graph.findChromaticNumberOptimized(coloring);
+                    s = Arrays.toString(graph.getColors());
+                }
 
                 if (c >= minChrom) {
                     if (overview) {
@@ -128,7 +134,7 @@ public class Main {
                                 System.out.println(line); break;
                                 // This option is only useful when filtering
                             case 3:
-                                System.out.println(line + " " + Arrays.toString(graph.getColors()));
+                                System.out.println(line + " " + s);
                                 break;
                             default: System.out.println(line + ": " + c);
                         }
@@ -170,7 +176,7 @@ public class Main {
             }};
 
             for (String line : graphs) {
-                GraphLL graph = new GraphLL(line);
+                GraphPQ graph = new GraphPQ(line);
 
 
                 int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
