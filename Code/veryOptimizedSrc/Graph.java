@@ -18,6 +18,8 @@ public class Graph {
      */
     private int vertexIsColored = 0;
 
+    public static final int VARIABLE_LENGTH = 32;
+
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
         int n = getNumberOfVertices(graphArray);
@@ -390,7 +392,7 @@ public class Graph {
     private boolean updateNeighbours(Vertex v, int color, Coloring coloring, ArrayList<Vertex> changed) {
         boolean skip = false;
         boolean proper = Coloring.isProper(coloring);
-        for (int i = 0; i <= 31 - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
+        for (int i = 0; i <= (VARIABLE_LENGTH - 1) - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
             Vertex neighbour;
             if ((v.getOpenNeighbourhood() & 1 << i) > 0) {
                 neighbour = verticesIndexed[i];

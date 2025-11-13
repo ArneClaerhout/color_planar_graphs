@@ -63,12 +63,14 @@ fi
 shift 1
 
 method=""
-if [[ "$1" == -pq || "$1" == -ll ]]; then
+if [[ "$1" == -pq || "$1" == -ll || "$1" == -bs ]]; then
 	method="$1"
 	if [[ "$method" == -pq ]]; then
 	  printf "Received method: Priority Queues\n\n"
-	else
+	elif [[ "$method" == -ll ]]; then
 	  printf "Received method: Linked Lists\n\n"
+	else
+	  printf "Received method: Bitsets\n\n"
 	fi
 	shift 1
 fi
@@ -98,7 +100,7 @@ done
 ## loop through above array
 for i in "${colorings[@]}"; do
 	echo "$i:"
-	if [[ "$i" == "proper" ]]; then # With proper colorings, we can use nauty
+	if [[ "$i" == "proper" || "$i" == pCFc ]]; then # With proper colorings, we can use nauty
 		use_nauty
 	else
 		./checkCorrectOutputs.sh "$startn:$endn" -c "$i" "$method" | sed 's/^/  /'

@@ -48,7 +48,7 @@ public class Main {
 
 
             if (raw == 0) System.out.println("Received coloring: " + coloring);
-            if (raw == 0 && method != 0) System.err.println("Received method: " + ((method == 1) ? "Priority Queues" : "Linked Lists"));
+            if (raw == 0 && method != 0) System.err.println("Received method: " + ((method == 1) ? "Priority Queues" : (method == 2) ? "Linked Lists" : "Bitsets"));
             // This is still done to stderr so that it doesn't interfere with other things
 
 
@@ -108,18 +108,27 @@ public class Main {
 
                 int c = 0;
                 String s;
-                if (method == 0) {
-                    Graph graph = new Graph(adjM);
-                    c = graph.findChromaticNumberOptimized(coloring);
-                    s = Arrays.toString(graph.getColors());
-                } else if (method == 1) {
-                    GraphPQ graph = new GraphPQ(adjM);
-                    c = graph.findChromaticNumberOptimized(coloring);
-                    s = Arrays.toString(graph.getColors());
-                } else {
-                    GraphLL graph = new GraphLL(adjM);
-                    c = graph.findChromaticNumberOptimized(coloring);
-                    s = Arrays.toString(graph.getColors());
+                switch (method) {
+                    case 1:
+                        GraphPQ graph1 = new GraphPQ(adjM);
+                        c = graph1.findChromaticNumberOptimized(coloring);
+                        s = Arrays.toString(graph1.getColors());
+                        break;
+                    case 2:
+                        GraphLL graph2 = new GraphLL(adjM);
+                        c = graph2.findChromaticNumberOptimized(coloring);
+                        s = Arrays.toString(graph2.getColors());
+                        break;
+                    case 3:
+                        GraphBS graph3 = new GraphBS(adjM);
+                        c = graph3.findChromaticNumberOptimized(coloring);
+                        s = Arrays.toString(graph3.getColors());
+                        break;
+                    default:
+                        Graph graph = new Graph(adjM);
+                        c = graph.findChromaticNumberOptimized(coloring);
+                        s = Arrays.toString(graph.getColors());
+                        break;
                 }
 
                 if (c >= minChrom) {

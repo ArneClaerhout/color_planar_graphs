@@ -306,6 +306,10 @@ while [[ $# -gt 0 ]]; do
     method=2
     shift 1
     ;;
+  -bs)
+    method=3
+    shift 1
+    ;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1

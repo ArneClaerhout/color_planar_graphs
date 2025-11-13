@@ -1,50 +1,50 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
-public class GraphLL {
+public class GraphBS {
 
     /**
      * The array comprised of the vertices in this graph.
      * Each index in the array is an amount of available colors starting from 1.
      * So all vertices in the linked list at index 0, have 1 available color.
      */
-    VertexLL[] vertices;
+    int[] vertices;
+
+    private int filledColors = 0;
+
+    public static final int VARIABLE_LENGTH = 32;
 
     /**
      * The indexed array that stays by index.
      */
-    VertexLL[] verticesIndexed;
+    Vertex[] verticesIndexed;
 
     /**
      * A help-bitset for the verticesIndexed array that tracks which vertices have been colored.
      */
     private int vertexIsColored = 0;
 
-    public static final int VARIABLE_LENGTH = 32;
-
     /**
      * A simple integer that keeps track of the amount of vertices.
      */
     private final int numberOfVertices;
 
-    public GraphLL(String graph6) {
+    public GraphBS(String graph6) {
         char[] graphArray = graph6.toCharArray();
         this.numberOfVertices = getNumberOfVertices(graphArray);
         int[][] adjMatrix = getAdjacencyMatrix(graphArray, numberOfVertices);
 
         this.verticesIndexed = findVerticesList(adjMatrix);
-        this.vertices = new VertexLL[10];
+        this.vertices = new int[10];
     }
 
     /**
      * A constructor for the graph class using the adjacency matrix of a graph.
      */
-    public GraphLL(int[][] adjMatrix) {
+    public GraphBS(int[][] adjMatrix) {
         this.numberOfVertices = adjMatrix.length;
         this.verticesIndexed = findVerticesList(adjMatrix);
-        this.vertices = new VertexLL[10];
+        this.vertices = new int[10];
     }
 
     /**
@@ -94,7 +94,7 @@ public class GraphLL {
         // This method only gets called after coloring properLy
         if (!properLy && coloring == Coloring.PROPER) return true;
 
-        for (VertexLL v : verticesIndexed) {
+        for (Vertex v : verticesIndexed) {
             // It's important to give the indexed vertices.
             if (!v.isCorrectlyColored(coloring, verticesIndexed, properLy)) {
                 return false;
@@ -202,11 +202,11 @@ public class GraphLL {
      *          The adjacency matrix to find the vertices for.
      * @return  The array of vertices with each vertex instantiated.
      */
-    private VertexLL[] findVerticesList(int[][] adjMatrix) {
-        VertexLL[] vertices = new VertexLL[numberOfVertices];
+    private Vertex[] findVerticesList(int[][] adjMatrix) {
+        Vertex[] vertices = new Vertex[numberOfVertices];
 
         for (int i = 0; i < numberOfVertices; i++) {
-            vertices[i] = new VertexLL(i);
+            vertices[i] = new Vertex(i);
         }
 
         for (int i = 0; i < adjMatrix.length; i++) {
@@ -237,12 +237,12 @@ public class GraphLL {
 
         for (int i = 2; i <= n; i++) {
             // We don't forget to reset the vertices array
-            vertices = new VertexLL[n];
-            for (VertexLL v : verticesIndexed) {
+            vertices = new int[n];
+            filledColors = (1 << (i - 1));
+            for (Vertex v : verticesIndexed) {
                 v.setMaxAvailableColors(i);
                 // We add the vertices to the correct LL
-                v.resetLL();
-                v.addToLL(vertices, i - 1);
+                vertices[i - 1] |= 1 << v.getIndex();
             }
             // Each time we reset which vertices are colored.
             vertexIsColored = 0;
@@ -276,14 +276,16 @@ public class GraphLL {
             return true;
         }
 
-        int index = 0;
-        VertexLL v = vertices[index];
-        while (v == null) {
-            index++;
-            v = vertices[index];
-        }
-        v.removeFromLL(vertices, v.getAmountOfAvailableColors() - 1);
-        int vertexIndex = v.getIndex(); // Actual index
+        int index = Integer.numberOfTrailingZeros(filledColors);
+        int colV = vertices[index];
+
+        int vertexIndex = Integer.numberOfTrailingZeros(colV);
+        Vertex v = verticesIndexed[vertexIndex];
+
+        vertices[index] &= ~(1 << vertexIndex);
+        changeFilledColors(index, -1);
+        // We remove this vertex from the available vertices
+
         boolean[] colors = v.getAvailableColors();
 
         int maxLoop = um ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
@@ -308,7 +310,7 @@ public class GraphLL {
             }
 
             // We also change the available colors for the neighbours if the coloring is proper
-            ArrayList<VertexLL> changed =  new ArrayList<>();
+            ArrayList<Vertex> changed =  new ArrayList<>();
 
             if (updateNeighbours(v, color, coloring, changed)) {
                 // This is used to skip this color, as it isn't possible
@@ -324,12 +326,7 @@ public class GraphLL {
 
             // We add back the available colors if it didn't work out
             if (proper) {
-                for (VertexLL neighbour : changed) {
-                    neighbour.addColorFromAvailableColors(color);
-
-                    neighbour.removeFromLL(vertices, neighbour.getAmountOfAvailableColors() - 2);
-                    neighbour.addToLL(vertices, neighbour.getAmountOfAvailableColors() - 1);
-                }
+                changeBackVertices(changed, color);
             }
 
         }
@@ -339,8 +336,8 @@ public class GraphLL {
         v.changeColor(0);
 
         // We add the vertex back to be chosen.
-        v.addToLL(vertices[v.getAmountOfAvailableColors() - 1]);
-        vertices[v.getAmountOfAvailableColors() - 1] = v;
+        vertices[index] |= 1 << vertexIndex;
+        changeFilledColors(-1, index);
 
         return false;
 
@@ -390,11 +387,11 @@ public class GraphLL {
      * @return  Whether we should skip this color
      *          as we already found a neighbour with zero possible colors.
      */
-    private boolean updateNeighbours(VertexLL v, int color, Coloring coloring, ArrayList<VertexLL> changed) {
+    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, ArrayList<Vertex> changed) {
         boolean skip = false;
         boolean proper = Coloring.isProper(coloring);
         for (int i = 0; i <= (VARIABLE_LENGTH - 1) - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
-            VertexLL neighbour;
+            Vertex neighbour;
             if ((v.getOpenNeighbourhood() & 1 << i) > 0) {
                 neighbour = verticesIndexed[i];
             } else {
@@ -409,14 +406,7 @@ public class GraphLL {
                 // We want to check if the neighbour is CORRECTLY colored
                 if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
                     // Early pruning
-                    for (VertexLL changedNeighbour : changed) {
-                        // We add the colors back
-                        changedNeighbour.addColorFromAvailableColors(color);
-
-                        // We change back the neighbour LL's
-                        changedNeighbour.removeFromLL(vertices, changedNeighbour.getAmountOfAvailableColors() - 2);
-                        changedNeighbour.addToLL(vertices, changedNeighbour.getAmountOfAvailableColors() - 1);
-                    }
+                    changeBackVertices(changed, color);
                     skip = true;
                     break;
                     // We skip the rest, as this color is incorrect
@@ -435,18 +425,13 @@ public class GraphLL {
                     int amountOfAvailableColors = neighbour.getAmountOfAvailableColors();// We removed one, but this is correct for the following indexing
                     if (amountOfAvailableColors != 0) {
                         changed.add(neighbour);
-                        neighbour.removeFromLL(vertices, amountOfAvailableColors);
-                        neighbour.addToLL(vertices, amountOfAvailableColors - 1);
+                        int amountOfAvaliableColors = neighbour.getAmountOfAvailableColors();
+                        vertices[amountOfAvaliableColors] &= ~(1 << neighbour.getIndex());
+                        vertices[amountOfAvaliableColors - 1] |= 1 << neighbour.getIndex();
+                        changeFilledColors(amountOfAvaliableColors, amountOfAvaliableColors - 1);
                     } else {
                         // Early pruning
-                        for (VertexLL changedNeighbour : changed) {
-                            // We add the colors back
-                            changedNeighbour.addColorFromAvailableColors(color);
-
-                            // We change back the neighbour LL's
-                            changedNeighbour.removeFromLL(vertices, changedNeighbour.getAmountOfAvailableColors() - 2);
-                            changedNeighbour.addToLL(vertices, changedNeighbour.getAmountOfAvailableColors() - 1);
-                        }
+                        changeBackVertices(changed, color);
                         // The neighbour here isn't added to changed, we do this separately
                         neighbour.addColorFromAvailableColors(color);
 
@@ -459,6 +444,52 @@ public class GraphLL {
             }
         }
         return skip;
+    }
+
+    /**
+     * A method for changing back those updated by updateNeighbours.
+     *
+     * @param   changed
+     *          The changed vertices to update back.
+     * @param   color
+     *          The color to add back to all the changed vertices.
+     */
+    private void changeBackVertices(ArrayList<Vertex> changed, int color) {
+        for (Vertex changedNeighbour : changed) {
+            // We add the colors back
+            changedNeighbour.addColorFromAvailableColors(color);
+            int amountOfAvaliableColors = changedNeighbour.getAmountOfAvailableColors();
+            // We change back the neighbour LL's
+            vertices[amountOfAvaliableColors - 2] &= ~(1 << changedNeighbour.getIndex());
+            vertices[amountOfAvaliableColors - 1] |= 1 << changedNeighbour.getIndex();
+            changeFilledColors(amountOfAvaliableColors - 2, amountOfAvaliableColors - 1);
+        }
+    }
+
+    /**
+     * A method for updating the filledColors variable.
+     *
+     * @param   oldIndex
+     *          The old index of the updated vertex.
+     *          This is the index in vertices where it gets removed from.
+     * @param   newIndex
+     *          The new index where the vertex is getting added into.
+     */
+    private void changeFilledColors(int oldIndex, int newIndex) {
+        if (oldIndex != -1) {
+            // Only if it doesn't get added back
+            if (Integer.bitCount(vertices[oldIndex]) == 0) {
+                // We removed the last vertex from here
+                filledColors &= ~(1 << oldIndex);
+            }
+        }
+        if (newIndex != -1) {
+            if ((filledColors & (1 << newIndex)) == 0) {
+                // It gets added to an empty list
+                filledColors |= 1 << newIndex;
+            }
+
+        }
     }
 
 }

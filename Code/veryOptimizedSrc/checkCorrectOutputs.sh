@@ -35,6 +35,10 @@ while [[ $# -gt 0 ]]; do
     method="-ll"
     shift 1
     ;;
+  -bs)
+    method="-bs"
+    shift 1
+    ;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1
