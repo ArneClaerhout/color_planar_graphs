@@ -124,7 +124,18 @@ read_stdin() {
 
 show_func() {
 	if [[ "$show" == true ]]; then
-		./showOutput.sh "$show_value"
+		# Check if venv has been created
+    if [ ! -d "venv" ]; then
+    	echo "Error: venv hasn't been created yet."
+    	exit 1
+    fi
+    source venv/bin/activate
+    mkdir -p images
+    # We also remove all previous files from the directory (-f ignores no file error)
+    rm -f images/*
+
+    # Run Python script with stdin
+    "venv/bin/python" graph6_to_image.py "$show_value" < /dev/stdin
 	else
 		cat
 	fi
@@ -132,9 +143,9 @@ show_func() {
 
 java_alg() {
 	if [[ "$progressview" == true ]]; then
-		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" | show_func
+		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method"
 	else
-		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" | show_func
+		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method"
 	fi
 
 }
@@ -362,10 +373,9 @@ fi
 
 ### EXECUTION
 
-choose_incoming_graphs | java_alg
+choose_incoming_graphs | java_alg | show_func
 
 # Extra output for show functionality to signal the end of the generation.
 if [[ "$show" == true ]]; then
-	./showOutput.sh
 	echo "Generated all images."
 fi
