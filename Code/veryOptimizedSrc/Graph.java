@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Graph {
 
@@ -18,14 +20,17 @@ public class Graph {
      */
     private int vertexIsColored = 0;
 
-    public static final int VARIABLE_LENGTH = 32;
+    /**
+     * A simple integer that keeps track of the amount of vertices.
+     */
+    private final int numberOfVertices;
 
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
-        int n = getNumberOfVertices(graphArray);
-        int[][] adjMatrix = getAdjacencyMatrix(graphArray, n);
+        this.numberOfVertices = getNumberOfVertices(graphArray);
+        int[][] adjMatrix = getAdjacencyMatrix(graphArray, this.numberOfVertices);
 
-        this.vertices = findVerticesList(adjMatrix, n);
+        this.vertices = findVerticesList(adjMatrix, this.numberOfVertices);
         verticesIndexed = this.vertices.clone();
     }
 
@@ -35,6 +40,7 @@ public class Graph {
     public Graph(int[][] adjMatrix) {
         this.vertices = findVerticesList(adjMatrix, adjMatrix.length);
         verticesIndexed = this.vertices.clone();
+        this.numberOfVertices = adjMatrix.length;
     }
 
     /**
@@ -301,7 +307,7 @@ public class Graph {
             }
 
             // We also change the available colors for the neighbours if the coloring is proper
-            ArrayList<Vertex> changed =  new ArrayList<>();
+            int[] changed = new int[numberOfVertices];
 
             if (updateNeighbours(v, color, coloring, changed)) {
                 // This is used to skip this color, as it isn't possible
@@ -327,17 +333,8 @@ public class Graph {
                 return true;
             }
 
-
             // We add back the available colors if it didn't work out
-            if (proper) {
-                for (Vertex neighbour : changed) {
-                    neighbour.addColorFromAvailableColors(color);
-                }
-            } else {
-                for (Vertex neighbour : changed) {
-                    neighbour.setMaxAvailableColors(maxColor);
-                }
-            }
+            addColorsBack(changed);
 
         }
 
@@ -393,112 +390,66 @@ public class Graph {
      * @return  Whether we should skip this color
      *          as we already found a neighbour with zero possible colors.
      */
-    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, ArrayList<Vertex> changed) {
-        boolean skip = false;
+    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, int[] changed) {
         boolean proper = Coloring.isProper(coloring);
-        for (int i = 0; i <= (VARIABLE_LENGTH - 1) - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
-            Vertex neighbour;
-            if ((v.getOpenNeighbourhood() & 1 << i) > 0) {
-                neighbour = verticesIndexed[i];
-            } else {
-                continue;
-            }
+        boolean open = Coloring.isOpen(coloring);
+        for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
+            int bit = Integer.numberOfLeadingZeros(i);
+            Vertex neighbour = verticesIndexed[bit];
 
-            boolean neighbourIsColored = ((1 << neighbour.getIndex()) & vertexIsColored) > 0;
+            boolean neighbourIsColored = ((1 << bit) & vertexIsColored) != 0;
 
-            int diff = neighbour.getOpenNeighbourhood() ^ (vertexIsColored & neighbour.getOpenNeighbourhood());
-            // TODO: We can already add the vertex itself to the neighbourhood and check that
+            int neighbourhood = neighbour.getOpenNeighbourhood();
+            neighbourhood = (open ? neighbourhood : (neighbourhood | (1 << bit)));
+
+            int diff = neighbourhood ^ (vertexIsColored & neighbourhood);
             if (diff == 0 && neighbourIsColored) {
                 // All the neighbour's neighbours are colored and the neighbour itself is colored
                 // We want to check if the neighbour is CORRECTLY colored
                 if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
                     // Early pruning
-                    for (Vertex changedNeighbour : changed) {
-                        changedNeighbour.addColorFromAvailableColors(color);
-                        // We add the colors back
-                    }
-                    skip = true;
-                    break;
+                    addColorsBack(changed);
+                    return true;
                     // We skip the rest, as this color is incorrect
                 }
                 // It doesn't have to be checked on whether it's proper, as this is done by the next section
-            } else if (diff == 0 && !Coloring.isOpen(coloring)) {
-                // The neighbour isn't colored, but we can still do something as it's a closed neighbourhood
-
-                if (Coloring.isConflictFree(coloring) && !proper) {
-                    // For proper colorings, we can't do anything extra here
-                    int colorsOccurOnce = 0;
-                    int colorsOccur = 0;
-
-                    Vertex secondNeighbour;
-
-                    int neighbourhood = neighbour.getOpenNeighbourhood();
-                    while (neighbourhood != 0) {
-                        int index = Long.numberOfTrailingZeros(neighbourhood);
-                        neighbourhood &= neighbourhood - 1; // clear the lowest set bit
-                        secondNeighbour = vertices[index];
-                        if ((colorsOccur & (1 << secondNeighbour.getColor())) > 0) {
-                            colorsOccurOnce &= ~(1 << secondNeighbour.getColor());
-                        } else {
-                            colorsOccurOnce |= (1 << secondNeighbour.getColor());
-                            colorsOccur |= (1 << secondNeighbour.getColor());
-                        }
-                    }
-
-                    int numOfSingles = Integer.bitCount(colorsOccurOnce);
-
-                    if (numOfSingles == 0) {
-                        for (int j = 0; j <= (VARIABLE_LENGTH - 1) - Integer.numberOfLeadingZeros(colorsOccur); j++) {
-                            if ((colorsOccur & 1 << j) > 0) {
-                                if (neighbour.removeColorFromAvailableColors(j)) {
-                                    changed.add(neighbour);
-                                }
-                                if (neighbour.getAmountOfAvailableColors() == 0) {
-                                    for (int m = 0; m <= (VARIABLE_LENGTH - 1) - Integer.numberOfLeadingZeros(colorsOccur); m++) {
-                                        if ((colorsOccur & 1 << m) > 0) {
-                                            neighbour.addColorFromAvailableColors(m);
-                                        }
-                                    }
-                                    changed.clear();
-                                    skip = true;
-                                    break;
-                                }
-                            }
-                        }
-                    } else if (numOfSingles == 1) {
-                        int j = Integer.numberOfTrailingZeros(colorsOccurOnce);
-                        if (neighbour.removeColorFromAvailableColors(j)) {
-                            changed.add(neighbour);
-                        }
-                        if (neighbour.getAmountOfAvailableColors() == 0) {
-                            neighbour.addColorFromAvailableColors(j);
-                            skip = true;
-                            break;
-                        }
-                    }
-
-                } else if (Coloring.isUniqueMaximum(coloring)) {
-                    // We need to find the maximum and the amount of times it occurs
-                    // If it occurs once, don't use this color, if it occurs more than once
-                    //  Only allow colors bigger than the max
-                    // Otherwise, do nothing.
-                }
-
-
-            } else if ((diff & (diff - 1)) == 0) {
-                // There's one bit difference, either the neighbour itself is not colored or one of the neighbour's neighbours
-                if (coloring == Coloring.ODD) {
-                    // TODO: We can take a bitset and flip the bit for every color
-                    //  -> The ones are the odd colors
-                } else if (Coloring.isConflictFree(coloring)) {
-                    // TODO: We can still do the same thing as in the previous if-statement
-                } else if (!proper) {
-                    // This is unique-maximum
-                    // TODO: Maybe this can be universally done for all diffs
-                    // We can do the same thing as described previously
-                }
             }
+            else if (diff == 1) {
+                int toColorNeighbourIndex = Integer.numberOfTrailingZeros(diff);
+                Vertex toColorNeighbour = verticesIndexed[toColorNeighbourIndex];
+                // There's one vertex that isn't colored yet.
+                if (Coloring.isConflictFree(coloring) && (neighbourIsColored || !proper) ) {
+                    if (handleCF(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                        return true;
+                    }
 
+                } else if (Coloring.isUniqueMaximum(coloring) && (neighbourIsColored || !proper)) {
+                    if (handleUM(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                        return true;
+                    }
+
+                } else if (coloring == Coloring.ODD && neighbourIsColored) {
+                    // It shouldn't be the neighbour itself,
+                    // as otherwise we can do the proper update
+
+                    int colorsOccurOdd = 0;
+
+                    // Here the neighbour itself shouldn't be considered (open coloring)
+                    neighbourhood = neighbourhood & vertexIsColored;
+                    while (neighbourhood != 0) {
+                        int index = Integer.numberOfTrailingZeros(neighbourhood);
+                        neighbourhood &= neighbourhood - 1; // clear the lowest set bit
+                        colorsOccurOdd ^= (1 << vertices[index].getColor());
+                    }
+
+                    if (Integer.bitCount(colorsOccurOdd) == 1) {
+                        // Don't take this color
+                        int index = Integer.numberOfTrailingZeros(colorsOccurOdd);
+                        if (restrictColor(toColorNeighbour, toColorNeighbourIndex, index, changed)) return true;
+                    }
+                }
+                // Proper colorings are done later
+            }
 
             if (proper) {
                 // This section removes the color from the available colors
@@ -507,19 +458,116 @@ public class Graph {
                 if (neighbourIsColored) continue;
 
                 // We compare the neighbours neighbourhood with the already colored vertices
-                if (neighbour.removeColorFromAvailableColors(color)) changed.add(neighbour);
-                if (neighbour.getAmountOfAvailableColors() == 0) {
-                    // Early pruning
-                    for (Vertex changedNeighbour : changed) {
-                        changedNeighbour.addColorFromAvailableColors(color);
-                        // We add the colors back
+                if (neighbour.removeColorFromAvailableColors(color)) {
+                    changed[bit] |= (1 << color);
+                    if (neighbour.getAmountOfAvailableColors() == 0) {
+                        // Early pruning
+                        addColorsBack(changed);
+                        return true;
                     }
-                    skip = true;
-                    break;
                 }
             }
         }
-        return skip;
+        return false;
+    }
+
+    /**
+     * A method for adding the colors back to changed vertices.
+     *
+     * @param   changed
+     *          The changed array containing the vertices changed,
+     *          paired with the colors that were removed (and thus have to get added back).
+     */
+    private void addColorsBack(int[] changed) {
+        for (int i = 0; i < changed.length; i++) {
+            int value = changed[i];
+            if (value != 0) {
+                Vertex changedNeighbour = verticesIndexed[i];
+                while (value != 0) {
+                    int valueIndex = Integer.numberOfTrailingZeros(value);
+                    value &= value - 1; // clear the lowest set bit
+                    changedNeighbour.addColorFromAvailableColors(valueIndex);
+                }
+            }
+        }
+    }
+
+
+    private boolean handleCF(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
+        int colorsOccurOnce = 0;
+        int colorsOccur = 0;
+
+        Vertex secondNeighbour;
+
+        neighbourhood = neighbourhood & vertexIsColored;
+        while (neighbourhood != 0) {
+            int index = Integer.numberOfTrailingZeros(neighbourhood);
+            neighbourhood &= neighbourhood - 1; // clear the lowest set bit
+            secondNeighbour = vertices[index];
+            int color = secondNeighbour.getColor();
+            if ((colorsOccur & (1 << color)) != 0) {
+                colorsOccurOnce &= ~(1 << color);
+            } else {
+                colorsOccurOnce |= (1 << color);
+                colorsOccur |= (1 << color);
+            }
+        }
+
+        int numOfSingles = Integer.bitCount(colorsOccurOnce);
+        if (numOfSingles == 0) {
+            for (int j = colorsOccur; j != 0; j &= j - 1) {
+                int bit = Integer.numberOfLeadingZeros(j);
+                if (restrictColor(toColorNeighbour, toColorNeighbourIndex, bit, changed)) return true;
+            }
+        } else if (numOfSingles == 1) {
+            int j = Integer.numberOfTrailingZeros(colorsOccurOnce);
+            if (restrictColor(toColorNeighbour, toColorNeighbourIndex, j, changed)) return true;
+        }
+        return false;
+    }
+
+    private boolean handleUM(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
+        int max = 1;
+        int amountOfMax = 0;
+
+        Vertex secondNeighbour;
+
+        neighbourhood = neighbourhood & vertexIsColored;
+        while (neighbourhood != 0) {
+            int index = Integer.numberOfTrailingZeros(neighbourhood);
+            neighbourhood &= neighbourhood - 1; // clear the lowest set bit
+            secondNeighbour = vertices[index];
+            int color = secondNeighbour.getColor();
+            if (color == max) {
+                amountOfMax++;
+            } else if (color > max) {
+                max = color;
+                amountOfMax = 1;
+            }
+        }
+
+        // We need to find the maximum and the amount of times it occurs
+        // If it occurs once, don't use this color, if it occurs more than once
+        //  Only allow colors bigger than the max
+        // Otherwise, do nothing.
+        if (amountOfMax == 1) {
+            if (restrictColor(toColorNeighbour, toColorNeighbourIndex, max - 1, changed)) return true;
+        } else if (amountOfMax > 1) {
+            for (int colorToRemove = 0; colorToRemove < max; colorToRemove++) {
+                if (restrictColor(toColorNeighbour, toColorNeighbourIndex, colorToRemove, changed)) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean restrictColor(Vertex v, int index, int color, int[] changed) {
+        if (!v.removeColorFromAvailableColors(color)) return false;
+        changed[index] |= (1 << color);
+        if (v.getAmountOfAvailableColors() == 0) {
+            addColorsBack(changed);
+            return true;
+        }
+        return false;
     }
 
 

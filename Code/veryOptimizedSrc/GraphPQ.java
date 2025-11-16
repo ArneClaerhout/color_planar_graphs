@@ -15,8 +15,6 @@ public class GraphPQ {
 
     private int vertexIsColored = 0;
 
-    public static final int VARIABLE_LENGTH = 32;
-
     public GraphPQ(String graph6) {
         char[] graphArray = graph6.toCharArray();
         int n = getNumberOfVertices(graphArray);
@@ -350,21 +348,17 @@ public class GraphPQ {
             return false; // This doesn't matter as we don't use this in this context
         }
 
-        boolean skip = false;
         boolean proper = Coloring.isProper(coloring);
-        for (int i = 0; i <= (VARIABLE_LENGTH - 1) - Integer.numberOfLeadingZeros(neighbourhood); i++) {
-            VertexPQ neighbour;
-            if ((neighbourhood & 1 << i) > 0) {
-                neighbour = verticesIndexed[i];
-            } else {
-                continue;
-            }
 
-            boolean neighbourIsColored = ((1 << neighbour.getIndex()) & vertexIsColored) > 0;
+        for (int i = neighbourhood; i != 0; i &= i - 1) {
+            int bit = Integer.numberOfLeadingZeros(i);
+            VertexPQ neighbour = verticesIndexed[bit];
+
+            boolean neighbourIsColored = ((1 << bit) & vertexIsColored) > 0;
 
             if ((neighbour.getOpenNeighbourhood() & vertexIsColored) == neighbour.getOpenNeighbourhood() &&
                     neighbourIsColored) {
-                // All the neighbours neighbours are colored and the neighbour itself is colored
+                // All the neighbour's neighbours are colored and the neighbour itself is colored
                 // We want to check if the neighbour is CORRECTLY colored
                 if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
                     // Early pruning
@@ -372,8 +366,7 @@ public class GraphPQ {
                         // This readds the changed neighbours to the actual vertices array
                         verticesIndexed[changedNeighbour.getIndex()] = changedNeighbour;
                     }
-                    skip = true;
-                    break;
+                    return true;
                     // We skip the rest, as this color is incorrect
                 }
                 // It doesn't have to be checked on whether it's proper, as this is done by the next section
@@ -392,8 +385,7 @@ public class GraphPQ {
                             // This readds the changed neighbours to the actual vertices array
                             verticesIndexed[changedNeighbour.getIndex()] = changedNeighbour;
                         }
-                        skip = true;
-                        break;
+                        return true;
                     }
                     verticesIndexed[newNeighbour.getIndex()] = newNeighbour;
                     vertices.add(newNeighbour);
@@ -402,9 +394,8 @@ public class GraphPQ {
                     changed.add(neighbour);
                 }
             }
-
         }
-        return skip;
+        return false;
     }
 
 //    /**

@@ -316,10 +316,9 @@ public class VertexLL {
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the inputColoring has happened.
 
-        for (int i = 0; i <= (Graph.VARIABLE_LENGTH - 1) - Integer.numberOfLeadingZeros(neighbours); i++) {
-            if ((neighbours & 1 << i) == 0) continue;
-
-            VertexLL neighbour = verticesIndexed[i];
+        for (int i = neighbours; i != 0; i &= i - 1) {
+            int bit = Integer.numberOfTrailingZeros(i);
+            VertexLL neighbour = verticesIndexed[bit];
 
             if (neighbour.getColor() == 0) {
                 return false;
