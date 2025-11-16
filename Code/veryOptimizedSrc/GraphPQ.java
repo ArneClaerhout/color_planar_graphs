@@ -351,7 +351,7 @@ public class GraphPQ {
         boolean proper = Coloring.isProper(coloring);
 
         for (int i = neighbourhood; i != 0; i &= i - 1) {
-            int bit = Integer.numberOfLeadingZeros(i);
+            int bit = Integer.numberOfTrailingZeros(i);
             VertexPQ neighbour = verticesIndexed[bit];
 
             boolean neighbourIsColored = ((1 << bit) & vertexIsColored) > 0;

@@ -1,7 +1,4 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Graph {
 
@@ -262,19 +259,19 @@ public class Graph {
      *          The maximum color possible for this coloring method.
      * @param   index
      *          The index of where this algorithm is working.
+     *
      * @return  True if the algorithm found a coloring for this graph.
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, int index) {
-        if (index >= vertices.length-1 && !um && maxColorCurrGraph + 1 < maxColor) {
-            // We check if the coloring is correct
-            // This doesn't have to happen as we check it while we are doing the algorithm
-            return false;
-        }
         if (index == vertices.length) {
             // We reached the end
             return true;
+        }
+        if (!um && index >= vertices.length-1 && maxColorCurrGraph + 1 < maxColor) {
+            // We check if all available colors were used.
+            return false;
         }
 
         Vertex v = vertices[index];
@@ -287,7 +284,8 @@ public class Graph {
         // We are coloring this index
         vertexIsColored |= 1 << vertexIndex;
 
-        boolean neighboursColored = (v.getOpenNeighbourhood() & vertexIsColored) == v.getOpenNeighbourhood();
+        int neighbourhood = v.getOpenNeighbourhood();
+        boolean neighboursColored = (neighbourhood & vertexIsColored) == neighbourhood;
 
         for (int color = 0; color < maxLoop; color++) {
             if (!colors[color]) continue; // We skip this color as this can't be correct
@@ -305,11 +303,10 @@ public class Graph {
                 // This color isn't correct, we pick another
                 continue;
             }
-
             // We also change the available colors for the neighbours if the coloring is proper
             int[] changed = new int[numberOfVertices];
 
-            if (updateNeighbours(v, color, coloring, changed)) {
+            if (updateNeighbours(v, color, coloring, changed, proper)) {
                 // This is used to skip this color, as it isn't possible
                 continue;
             }
@@ -327,7 +324,6 @@ public class Graph {
                 }
             }
 
-
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
             if (optimizedAlgorithm(coloring, proper, um, newMaxColorCurrGraph, maxColor, index + 1)) {
                 return true;
@@ -335,9 +331,7 @@ public class Graph {
 
             // We add back the available colors if it didn't work out
             addColorsBack(changed);
-
         }
-
         // We decolor this vertex
         vertexIsColored &= ~(1 << vertexIndex);
         v.changeColor(0);
@@ -387,14 +381,17 @@ public class Graph {
      *          This should be an empty list
      *          to be filled with the vertices that were changed.
      *          This will contain the old vertices that were removed from verticesIndexed.
-     * @return  Whether we should skip this color
+     * @param   proper
+     *          Whether the coloring is proper.
+     *
+     * @return  True if this color should get skipped
      *          as we already found a neighbour with zero possible colors.
+     *          False otherwise.
      */
-    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, int[] changed) {
-        boolean proper = Coloring.isProper(coloring);
+    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, int[] changed, boolean proper) {
         boolean open = Coloring.isOpen(coloring);
         for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
-            int bit = Integer.numberOfLeadingZeros(i);
+            int bit = Integer.numberOfTrailingZeros(i);
             Vertex neighbour = verticesIndexed[bit];
 
             boolean neighbourIsColored = ((1 << bit) & vertexIsColored) != 0;
@@ -402,7 +399,7 @@ public class Graph {
             int neighbourhood = neighbour.getOpenNeighbourhood();
             neighbourhood = (open ? neighbourhood : (neighbourhood | (1 << bit)));
 
-            int diff = neighbourhood ^ (vertexIsColored & neighbourhood);
+            int diff = neighbourhood & ~vertexIsColored;
             if (diff == 0 && neighbourIsColored) {
                 // All the neighbour's neighbours are colored and the neighbour itself is colored
                 // We want to check if the neighbour is CORRECTLY colored
@@ -414,7 +411,7 @@ public class Graph {
                 }
                 // It doesn't have to be checked on whether it's proper, as this is done by the next section
             }
-            else if (diff == 1) {
+            else if (diff != 0 && (diff & (diff - 1)) == 0) { // bitCount(diff) == 1
                 int toColorNeighbourIndex = Integer.numberOfTrailingZeros(diff);
                 Vertex toColorNeighbour = verticesIndexed[toColorNeighbourIndex];
                 // There's one vertex that isn't colored yet.
@@ -432,20 +429,8 @@ public class Graph {
                     // It shouldn't be the neighbour itself,
                     // as otherwise we can do the proper update
 
-                    int colorsOccurOdd = 0;
-
-                    // Here the neighbour itself shouldn't be considered (open coloring)
-                    neighbourhood = neighbourhood & vertexIsColored;
-                    while (neighbourhood != 0) {
-                        int index = Integer.numberOfTrailingZeros(neighbourhood);
-                        neighbourhood &= neighbourhood - 1; // clear the lowest set bit
-                        colorsOccurOdd ^= (1 << vertices[index].getColor());
-                    }
-
-                    if (Integer.bitCount(colorsOccurOdd) == 1) {
-                        // Don't take this color
-                        int index = Integer.numberOfTrailingZeros(colorsOccurOdd);
-                        if (restrictColor(toColorNeighbour, toColorNeighbourIndex, index, changed)) return true;
+                    if (handleOdd(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                        return true;
                     }
                 }
                 // Proper colorings are done later
@@ -492,7 +477,9 @@ public class Graph {
         }
     }
 
-
+    /**
+     * A helper method for handling the Conflict-Free coloring part of the optimisation.
+     */
     private boolean handleCF(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
         int colorsOccurOnce = 0;
         int colorsOccur = 0;
@@ -513,19 +500,21 @@ public class Graph {
             }
         }
 
-        int numOfSingles = Integer.bitCount(colorsOccurOnce);
-        if (numOfSingles == 0) {
+        if (colorsOccurOnce == 0) {
             for (int j = colorsOccur; j != 0; j &= j - 1) {
-                int bit = Integer.numberOfLeadingZeros(j);
-                if (restrictColor(toColorNeighbour, toColorNeighbourIndex, bit, changed)) return true;
+                int bit = Integer.numberOfTrailingZeros(j);
+                if (removeColor(toColorNeighbour, toColorNeighbourIndex, bit, changed)) return true;
             }
-        } else if (numOfSingles == 1) {
+        } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
             int j = Integer.numberOfTrailingZeros(colorsOccurOnce);
-            if (restrictColor(toColorNeighbour, toColorNeighbourIndex, j, changed)) return true;
+            if (removeColor(toColorNeighbour, toColorNeighbourIndex, j, changed)) return true;
         }
         return false;
     }
 
+    /**
+     * A helper method for handling the Unique-Maximum coloring part of the optimisation.
+     */
     private boolean handleUM(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
         int max = 1;
         int amountOfMax = 0;
@@ -551,16 +540,57 @@ public class Graph {
         //  Only allow colors bigger than the max
         // Otherwise, do nothing.
         if (amountOfMax == 1) {
-            if (restrictColor(toColorNeighbour, toColorNeighbourIndex, max - 1, changed)) return true;
+            if (removeColor(toColorNeighbour, toColorNeighbourIndex, max - 1, changed)) return true;
         } else if (amountOfMax > 1) {
             for (int colorToRemove = 0; colorToRemove < max; colorToRemove++) {
-                if (restrictColor(toColorNeighbour, toColorNeighbourIndex, colorToRemove, changed)) return true;
+                if (removeColor(toColorNeighbour, toColorNeighbourIndex, colorToRemove, changed)) return true;
             }
         }
         return false;
     }
 
-    private boolean restrictColor(Vertex v, int index, int color, int[] changed) {
+    /**
+     * A helper method for handling the Odd coloring part of the optimisation.
+     */
+    private boolean handleOdd(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
+        int colorsOccurOdd = 0;
+
+        // Here the neighbour itself shouldn't be considered (open coloring)
+        neighbourhood = neighbourhood & vertexIsColored;
+        while (neighbourhood != 0) {
+            int index = Integer.numberOfTrailingZeros(neighbourhood);
+            neighbourhood &= neighbourhood - 1; // clear the lowest set bit
+            colorsOccurOdd ^= (1 << vertices[index].getColor());
+        }
+
+        if ((colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
+            // Don't take this color
+            int index = Integer.numberOfTrailingZeros(colorsOccurOdd);
+            if (removeColor(toColorNeighbour, toColorNeighbourIndex, index, changed)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * A method for removing the color from the available colors,
+     * while also checking to see if the vertex has 0 colors left.
+     * If this is the case,
+     * it will add all the colors back to all vertices in changed (using addColorsBack).
+     *
+     * @param   v
+     *          The vertex to remove the colors from.
+     * @param   index
+     *          The index of the given vertex.
+     * @param   color
+     *          The color to remove from the vertex.
+     * @param   changed
+     *          The changed list,
+     *          containing all the vertices that were already updated.
+     *
+     * @return  True if we can prune, meaning there was a vertex with no available colors.
+     *          False otherwise.
+     */
+    private boolean removeColor(Vertex v, int index, int color, int[] changed) {
         if (!v.removeColorFromAvailableColors(color)) return false;
         changed[index] |= (1 << color);
         if (v.getAmountOfAvailableColors() == 0) {

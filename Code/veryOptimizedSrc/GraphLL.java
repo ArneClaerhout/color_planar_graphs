@@ -391,7 +391,7 @@ public class GraphLL {
     private boolean updateNeighbours(VertexLL v, int color, Coloring coloring, ArrayList<VertexLL> changed) {
         boolean proper = Coloring.isProper(coloring);
         for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
-            int bit = Integer.numberOfLeadingZeros(i);
+            int bit = Integer.numberOfTrailingZeros(i);
             VertexLL neighbour = verticesIndexed[bit];
 
             boolean neighbourIsColored = ((1 << bit) & vertexIsColored) > 0;
