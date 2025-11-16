@@ -49,14 +49,16 @@ if __name__ == "__main__":
         pos = nx.planar_layout(G)
 
         # Give each vertex the respective color
-        nx.draw(G, pos, ax=ax, with_labels=False, node_color=colors, edge_color='gray', node_size=500)
+        nx.draw(G, pos, ax=ax, with_labels=False, node_color=colors, edge_color='gray', node_size=1000)
         # Give the labels as well
         nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(G, 'color'), font_color='white', ax=ax)
 
 
         if input_format == "tex":
             # Save as TikZ
-            tikzplotlib.save(output_path, figure=fig)
+            tikzplotlib.save(output_path, figure=fig, extra_axis_parameters={
+                "mark size=5pt",
+            })
 
         else:
             # We take the format as the second argument (the first is always the name of the program)

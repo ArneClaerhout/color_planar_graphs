@@ -20,4 +20,4 @@ mkdir -p images
 rm -f images/*
 
 # Run Python script with stdin
-"venv/bin/python" graph6_to_image.py "$1"
+"venv/bin/python" graph6_to_image.py "$1" < /dev/stdin
