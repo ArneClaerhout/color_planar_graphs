@@ -205,6 +205,10 @@ public class Vertex {
         this.degree++;
     }
 
+    public int getImportanceValue(int numberOfVertices) {
+        return getAmountOfAvailableColors() - (numberOfVertices/getDegree());
+    }
+
     /**
      * This method checks whether the vertex is correctly colored according to a certain inputColoring method.
      *

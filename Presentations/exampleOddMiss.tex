@@ -1,0 +1,33 @@
+\begin{tikzpicture}[scale=2]
+	
+	% ---- Adjustable colors ----
+	\def\centerColor{purple}
+	\def\colorA{cyan}
+	\def\colorB{orange}
+	\def\colorC{cyan}
+	\def\colorD{green}
+	\def\colorE{orange}
+	\def\colorF{green}
+	
+	% ---- Positions of outer vertices (6 around a circle) ----
+	\foreach \angle/\name/\col in {
+		90/A/\colorA,
+		30/B/\colorB,
+		-30/C/\colorC,
+		-90/D/\colorD,
+		-150/E/\colorE,
+		150/F/\colorF
+	}
+	{
+		\node[fill=\col, circle, inner sep=4pt] (v\name) at (\angle:1.7) {};
+	}
+	
+	% ---- Center vertex ----
+	\node[fill=\centerColor, circle, inner sep=4pt] (center) at (0,0) {};
+	
+	% ---- Edges to center ----
+	\foreach \name in {A,B,C,D,E,F}
+	\draw (center) -- (v\name);
+	
+\end{tikzpicture}
+

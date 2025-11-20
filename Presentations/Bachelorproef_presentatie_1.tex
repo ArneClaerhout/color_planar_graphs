@@ -1,0 +1,202 @@
+\documentclass
+[kulak] % [kulak|kul|kuleuven-brugge,handout|outline|]
+{kulakbeamer}
+
+\usepackage[dutch]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{pgfplots}	
+\pgfplotsset{compat=newest}   % or a specific version, e.g. 1.18
+\usepackage{pgfmath}
+\usepackage{graphicx}
+\usepackage[dutch]{babel}
+\usepackage{subfiles}
+\usepackage{amssymb, amsthm, amsmath,hyperref,mhchem,siunitx}
+\sisetup{output-decimal-marker = {,}}
+\usepackage[section]{placeins}
+\usepackage[gen]{eurosym}
+\usepackage{multicol}
+
+\title[Bachelorproef]{Bachelorproefvoorstelling van grafenkleuringen}
+\subtitle{Ondertitel}
+\author{Arne Claerhout} 
+\institute[Kulak]{KU Leuven Kulak}
+\date{Academiejaar 2025 -- 2026}
+
+\renewcommand{\outlineTitle}{Overzicht} % enkel met optie outline
+
+\begin{document}
+	
+	\begin{titleframe}
+		\titlepage
+	\end{titleframe}
+	
+	\begin{outlineframe}[Overzicht]
+		\tableofcontents
+	\end{outlineframe}
+	
+	
+	\section{Inleiding}
+	
+	\begin{frame}
+		\frametitle{Grafenkleuringen}
+		
+		\begin{multicols}{2}
+
+			\begin{itemize}
+				\item Knopen
+				\item 4 soorten
+				\pause
+				\begin{itemize}
+					\item Proper kleuring
+				\end{itemize}
+			\end{itemize}
+			
+			\vspace*{\fill}\null
+			
+			\pause
+			\input{simpleProper.tex}
+			
+		\end{multicols}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Andere kleuringen}
+		
+		
+		\begin{multicols}{2}
+			
+			\begin{itemize}
+				\item Odd coloring
+				\begin{itemize}
+					\item Proper
+					\item Oneven kleur
+				\end{itemize}
+			\end{itemize}
+			
+			\vspace*{\fill}\null
+			
+			\pause
+			\begin{center}
+				\scalebox{.75}{\input{exampleOdd.tex}}
+			\end{center}
+			
+			
+		\end{multicols}
+		
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Andere kleuringen}
+		
+		
+		\begin{multicols}{2}
+			
+			\begin{itemize}
+				\item Odd coloring
+				\begin{itemize}
+					\item Proper
+					\item Oneven kleur
+				\end{itemize}
+			\end{itemize}
+			
+			\vspace*{\fill}\null
+			
+			\begin{center}
+				\scalebox{.75}{\input{exampleOddMiss.tex}}
+			\end{center}
+			
+			
+		\end{multicols}
+		
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Andere kleuringen}
+		
+		
+		\begin{multicols}{2}
+			
+			\begin{itemize}
+				\item Odd coloring
+				\item Conflict free coloring
+				\pause
+				\begin{itemize}
+					\item 4 opsplitsingen
+					\item Proper $\longleftrightarrow$ Improper
+					\item Open $\longleftrightarrow$ Closed
+				\end{itemize}
+			\end{itemize}
+			
+			\vspace*{\fill}\null
+
+			
+			\pause
+			\begin{center}
+%				\scalebox{.75}{\input{exampleOdd.tex}}
+			\end{center}
+			
+			\vspace*{\fill}\null
+			
+			
+		\end{multicols}
+		
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Andere kleuringen}
+		
+		
+		\begin{multicols}{2}
+			
+			\begin{itemize}
+				\item Odd coloring
+				\item Conflict free coloring
+				\item Unique-Maximum coloring
+				\pause
+				\begin{itemize}
+					\item 4 opsplitsingen
+					\item Proper $\longleftrightarrow$ Improper
+					\item Open $\longleftrightarrow$ Closed
+				\end{itemize}
+			\end{itemize}
+			
+
+			
+			\begin{center}
+%				\scalebox{.75}{\input{exampleOddMiss.tex}}
+			\end{center}
+			
+			\vspace*{\fill}\null
+			
+		\end{multicols}
+		
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Literatuur}
+		
+		\begin{itemize}
+			\item Proper conflict-free and unique-maximum colorings of planar graphs with respect to neighborhoods
+			\begin{itemize}
+				\item Brengt resultaten samen
+				\item Voert unique-maximum kleuringen in
+			\end{itemize}
+			\item Colorings with neighborhood parity condition
+			\begin{itemize}
+				\item Bewijst bovengrens
+				\item Ondergrens door $C_5$
+			\end{itemize}
+		\end{itemize}
+		
+		
+	\end{frame}
+	
+	\section{Besluit}
+	
+\end{document}
