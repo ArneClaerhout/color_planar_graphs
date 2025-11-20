@@ -141,6 +141,15 @@ show_func() {
 	fi
 }
 
+write_to_file() {
+  if [[ "$overview" == false ]]; then
+    mkdir -p outputs
+    tee "outputs/$(date +"%F-%H-%M-%S").txt"
+  else
+    cat
+  fi
+}
+
 java_alg() {
 	if [[ "$progressview" == true ]]; then
 		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method"
@@ -373,7 +382,7 @@ fi
 
 ### EXECUTION
 
-choose_incoming_graphs | java_alg | show_func
+choose_incoming_graphs | java_alg | write_to_file | show_func
 
 # Extra output for show functionality to signal the end of the generation.
 if [[ "$show" == true ]]; then

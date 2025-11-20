@@ -7,6 +7,7 @@ Code/*/out/
 out/
 Code/*/venv/
 Code/*/images/
+Code/*/outputs/
 nauty*/
 nauty*.tar.gz
 *.iml

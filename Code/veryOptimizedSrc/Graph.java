@@ -509,7 +509,6 @@ public class Graph {
                 } else if (coloring == Coloring.ODD && neighbourIsColored) {
                     // It shouldn't be the neighbour itself,
                     // as otherwise we can do the proper update
-
                     if (handleOdd(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
                         return true;
                     }
