@@ -30,9 +30,7 @@ public class Graph {
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
         this.numberOfVertices = getNumberOfVertices(graphArray);
-        int[][] adjMatrix = getAdjacencyMatrix(graphArray, this.numberOfVertices);
-
-        this.verticesIndexed = findVerticesList(adjMatrix, this.numberOfVertices);
+        this.verticesIndexed = findFastVerticesList(graphArray, this.numberOfVertices);
         maxColoring = (1 << numberOfVertices) - 1;
         availables = maxColoring;
     }
@@ -184,6 +182,47 @@ public class Graph {
     }
 
     /**
+     * A method for getting the vertices list directly from the graph string.
+     *
+     * @param   graphString
+     *          The string in graph6 format which should be converted.
+     * @param   n
+     *          The amount of vertices for this graph.
+     */
+    private static Vertex[] findFastVerticesList(char[] graphString, int n) {
+        Vertex[] vertices = new Vertex[n];
+
+        for (int i = 0; i < n; i++) {
+            vertices[i] = new Vertex(i);
+        }
+        int index = 1; // First index as index 0 is the vertex count
+
+        int bitPos = 0; // Bit position per index
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                // Go through the entire adjacency matrix
+                int part6bits = graphString[index] - 63;
+
+                int bitShift = 5 - bitPos;
+                // The amount you have to bitshift the number to check bitPos here:
+                boolean edge = ((part6bits >> bitShift) & 1) == 1;
+                if (edge) {
+                    vertices[i].addNeighbour(vertices[j]);
+                    // The matrix is symmetrical
+                }
+
+                bitPos++;
+                if (bitPos % 6 == 0) {
+                    index++;
+                    bitPos = 0;
+                }
+            }
+        }
+        return vertices;
+
+    }
+
+    /**
      * A different method for finding the adjacency matrix.
      * This method finds the matrix using the graph6 string itself.
      * @param   graph6
@@ -204,7 +243,7 @@ public class Graph {
      *          The amount of vertices.
      * @return  The array of vertices with each vertex instantiated.
      */
-    private Vertex[] findVerticesList(int[][] adjMatrix, int n) {
+    private static Vertex[] findVerticesList(int[][] adjMatrix, int n) {
         Vertex[] vertices = new Vertex[n];
 
         for (int i = 0; i < n; i++) {

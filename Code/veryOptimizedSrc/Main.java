@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -104,28 +102,26 @@ public class Main {
                     }
                 }
 
-                int[][] adjM = Graph.getAdjacencyMatrix(line);
-
                 int c = 0;
                 String s;
                 switch (method) {
                     case 1:
-                        GraphPQ graph1 = new GraphPQ(adjM);
+                        GraphPQ graph1 = new GraphPQ(line);
                         c = graph1.findChromaticNumberOptimized(coloring);
                         s = Arrays.toString(graph1.getColors());
                         break;
                     case 2:
-                        GraphLL graph2 = new GraphLL(adjM);
+                        GraphLL graph2 = new GraphLL(line);
                         c = graph2.findChromaticNumberOptimized(coloring);
                         s = Arrays.toString(graph2.getColors());
                         break;
                     case 3:
-                        GraphBS graph3 = new GraphBS(adjM);
+                        GraphBS graph3 = new GraphBS(line);
                         c = graph3.findChromaticNumberOptimized(coloring);
                         s = Arrays.toString(graph3.getColors());
                         break;
                     default:
-                        Graph graph = new Graph(adjM);
+                        Graph graph = new Graph(line);
                         c = graph.findChromaticNumberOptimized(coloring);
                         s = Arrays.toString(graph.getColors());
                         break;
@@ -173,7 +169,15 @@ public class Main {
         } else {
             // This is the debugging code section
 
-            ArrayList<String> graphs = new ArrayList<>(){{
+            File file = new File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = br.readLine()) != null){
+                Graph graph = new Graph(line);
+                graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
+            }
+
+//            ArrayList<String> graphs = new ArrayList<>(){{
 //                add("L|eKKF`WJ?k@Nw");
 //                add("L|eKKEDoJxk@@w");
 //                add("L|eKKF`WI?kBNw");
@@ -181,17 +185,16 @@ public class Main {
 //                add("I|~KMLKBG");
 //                add("E|tw");
 //                add("G|mnMC");
-                add("I~fIIDBVg");
-            }};
-
-            for (String line : graphs) {
-                GraphPQ graph = new GraphPQ(line);
-
-
-                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
-                System.out.println(Arrays.toString(graph.getColors()));
-                System.out.println(c);
-            }
+//                add("I~fIIDBVg");
+//            }};
+//
+//            for (String line2 : graphs) {
+//                GraphPQ graph = new GraphPQ(line2);
+//
+//                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
+//                System.out.println(Arrays.toString(graph.getColors()));
+//                System.out.println(c);
+//            }
 
 //            Graph graphnew = new Graph("O~eK]f@SOuA@EBE?_X?AP");
 //            System.out.println(Arrays.deepToString(Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));
