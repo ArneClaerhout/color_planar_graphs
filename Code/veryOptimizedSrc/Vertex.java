@@ -228,12 +228,12 @@ public class Vertex {
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the inputColoring has happened.
 
-        for (int i = 0; i <= 31 - Integer.numberOfLeadingZeros(neighbours); i++) {
-            if ((neighbours & 1 << i) == 0) continue;
+        for (int i = neighbours; i != 0; i &= i - 1) {
+            int index = Integer.numberOfTrailingZeros(i);
 
-            Vertex neighbour = verticesIndexed[i];
+            Vertex neighbour = verticesIndexed[index];
 
-            if (neighbour.getColor() == 0) {
+            if (neighbour.getColor() == 0 && !open) {
                 return false;
                 // Not all vertices have been colored yet, this vertex is also checked.
             }

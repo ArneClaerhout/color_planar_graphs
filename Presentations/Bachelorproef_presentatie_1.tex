@@ -39,17 +39,25 @@
 	\section{Inleiding}
 	
 	\begin{frame}
+		\frametitle{Onderzoeksprobleem}
+		
+		\begin{itemize}
+			\item Kleuren van grafen
+			\begin{itemize}
+				\item Knopen
+				\item Vlakke grafen
+			\end{itemize}
+			\item Conjectures rond chromatische getallen weerleggen
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
 		\frametitle{Grafenkleuringen}
 		
 		\begin{multicols}{2}
 
 			\begin{itemize}
-				\item Knopen
-				\item 4 soorten
-				\pause
-				\begin{itemize}
-					\item Proper kleuring
-				\end{itemize}
+				\item Proper kleuring
 			\end{itemize}
 			
 			\vspace*{\fill}\null
@@ -68,7 +76,8 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Odd coloring
+				\item Proper kleuring
+				\item Odd kleuring
 				\begin{itemize}
 					\item Proper
 					\item Oneven kleur
@@ -95,7 +104,8 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Odd coloring
+				\item Proper kleuring
+				\item Odd kleuring
 				\begin{itemize}
 					\item Proper
 					\item Oneven kleur
@@ -121,22 +131,20 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Odd coloring
-				\item Conflict free coloring
+				\item Proper kleuring
+				\item Odd kleuring
+				\item Conflict free kleuring (CF)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
 					\item Proper $\longleftrightarrow$ Improper
-					\item Open $\longleftrightarrow$ Closed
 				\end{itemize}
 			\end{itemize}
 			
 			\vspace*{\fill}\null
 
-			
-			\pause
 			\begin{center}
-%				\scalebox{.75}{\input{exampleOdd.tex}}
+				\scalebox{.75}{\input{exampleCF.tex}}
 			\end{center}
 			
 			\vspace*{\fill}\null
@@ -154,9 +162,41 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Odd coloring
-				\item Conflict free coloring
-				\item Unique-Maximum coloring
+				\item Proper kleuring
+				\item Odd kleuring
+				\item Conflict free kleuring (CF)
+				\begin{itemize}
+					\item 4 opsplitsingen
+					\item Proper $\longleftrightarrow$ Improper
+					\item Open $\longleftrightarrow$ Closed
+				\end{itemize}
+			\end{itemize}
+			
+			\vspace*{\fill}\null
+			
+			\begin{center}
+				\scalebox{.75}{\input{exampleCFopen.tex}}
+			\end{center}
+			
+			\vspace*{\fill}\null
+			
+			
+		\end{multicols}
+		
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Andere kleuringen}
+		
+		
+		\begin{multicols}{2}
+			
+			\begin{itemize}
+				\item Proper kleuring
+				\item Odd kleuring
+				\item Conflict free kleuring (CF)
+				\item Unique-Maximum kleuring (UM)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
@@ -165,13 +205,13 @@
 				\end{itemize}
 			\end{itemize}
 			
-
+			\vspace*{\fill}\null
 			
 			\begin{center}
-%				\scalebox{.75}{\input{exampleOddMiss.tex}}
+				\scalebox{.75}{\input{exampleUM.tex}}
 			\end{center}
 			
-			\vspace*{\fill}\null
+
 			
 		\end{multicols}
 		
@@ -179,24 +219,153 @@
 	\end{frame}
 	
 	\begin{frame}
+		\frametitle{Naamgeving}
+		
+		\begin{itemize}
+			\item Proper $\rightarrow$ p
+			\item Improper $\rightarrow$ i
+			\item Open neighbourhood $\rightarrow$ o
+			\item Closed neighbourhood $\rightarrow$ c
+			\item pCFo, iUMo, iUMc, pUMo, iCFc, $\dots$
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Chromatische getallen}
+		\begin{itemize}
+			\item $\chi_{pCFo}(\mathcal{P})$, $\chi_{O}(\mathcal{P})$, $\chi(\mathcal{P})$, $\dots$
+			\item Per kleuring
+			\item Maximaal aantal kleuren die minimaal nodig is
+			
+		\end{itemize}
+	\end{frame}
+	
+	\section{Literatuur}
+	
+	
+	\begin{frame}
 		\frametitle{Literatuur}
 		
 		\begin{itemize}
 			\item Proper conflict-free and unique-maximum colorings of planar graphs with respect to neighborhoods
-			\begin{itemize}
-				\item Brengt resultaten samen
-				\item Voert unique-maximum kleuringen in
-			\end{itemize}
 			\item Colorings with neighborhood parity condition
 			\begin{itemize}
-				\item Bewijst bovengrens
-				\item Ondergrens door $C_5$
+				\item Bewijzen grenzen van chromatische getallen
+				\item Formuleren conjectures
 			\end{itemize}
+			
 		\end{itemize}
 		
 		
 	\end{frame}
 	
-	\section{Besluit}
+	\begin{frame}
+		\frametitle{Conjectures}
+		
+		\begin{block}{Odd}
+			$
+			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
+				\begin{aligned}
+					& 5 \leq \chi_{\mathrm{O}}(\mathcal{P}) \leq 9 \\
+				\end{aligned}
+				&
+				\pause
+				\Large \Rightarrow
+				&
+				\begin{aligned}
+					& \leq \chi_{\mathrm{O}}(\mathcal{P}) = 5 \\
+				\end{aligned}
+			\end{array}
+			$
+		\end{block}
+		
+		\begin{block}{Proper}
+			$
+			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
+				\begin{aligned}
+					& 6 \leq \chi_{\mathrm{PCFo}}(\mathcal{P}) \leq 8 \\
+					& \chi_{\mathrm{pCFc}}(\mathcal{P}) = 4 \\
+					& 6 \leq \chi_{\mathrm{pUMo}}(\mathcal{P}) \leq 10 \\
+					& 6 \leq \chi_{\mathrm{pUMc}}(\mathcal{P}) \leq 8
+				\end{aligned}
+				&
+				\pause
+				\Large \Rightarrow
+				&
+				\begin{aligned}
+					&\chi_{\mathrm{PCFo}}(\mathcal{P}) = 6 \\
+					&\chi_{\mathrm{pUMo}}(\mathcal{P}) \leq 7 \\
+					&\chi_{\mathrm{pUMc}}(\mathcal{P}) = 6
+				\end{aligned}
+			\end{array}
+			$
+		\end{block}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Conjectures 2}
+		
+		\begin{block}{Improper}
+			$
+			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
+				\begin{aligned}
+					& 4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5 \\ 
+					& 3 \le \chi_{\mathrm{iCFC}}(\mathcal{P}) \le 4 \\ 
+					& 5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10 \\ 
+					&4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6
+				\end{aligned}
+				&
+				\pause
+				\Large \Rightarrow
+				&
+				\begin{aligned}
+					& \chi_{\mathrm{iCFo}}(\mathcal{P}) = 4 \\ 
+					& \chi_{\mathrm{iCFc}}(\mathcal{P}) = 3 \\ 
+					& \chi_{\mathrm{iUMo}}(\mathcal{P}) = 5 \\ 
+					& \chi_{\mathrm{iUMc}}(\mathcal{P}) = 4
+				\end{aligned}
+			\end{array}
+			$
+		\end{block}
+	\end{frame}
+	
+	\section{Methodologie}
+	
+	\begin{frame}
+		\frametitle{Methodologie}
+		
+		\begin{itemize}
+			\item Grafen genereren (plantri)
+			\item Inkleuren
+			\begin{itemize}
+				\item Java
+				\item Backtracking
+				\item Pruning
+			\end{itemize}
+			\item Chromatisch getal volgens kleuring vinden
+		\end{itemize}
+	\end{frame}
+	
+	\section{Planning}
+	
+	\begin{frame}
+		\frametitle{Planning}
+		\begin{itemize}
+			\item Optimaliseren
+			\item Laten lopen
+		\end{itemize}
+	\end{frame}
+	
+	\section{Demo}
+	
+	\begin{frame}
+		\frametitle{Demo}
+	\end{frame}
+	
+	\section{Vragen}
+	
+	\begin{frame}
+		\frametitle{Vragen?}
+	\end{frame}
 	
 \end{document}

@@ -274,6 +274,7 @@ public class Graph {
     public int findChromaticNumberOptimized(Coloring coloring) {
         int n = coloring.getMaxChromaticNumber();
         boolean proper = Coloring.isProper(coloring);
+        boolean open = Coloring.isOpen(coloring);
         boolean um = Coloring.isUniqueMaximum(coloring);
 
         for (int i = 2; i <= n; i++) {
@@ -283,7 +284,7 @@ public class Graph {
             // Each time we reset which vertices are colored.
             vertexIsColored = 0;
             availables = maxColoring;
-            if (optimizedAlgorithm(coloring, proper, um, 0, i, 0)) {
+            if (optimizedAlgorithm(coloring, proper, um, open, 0, i, 0)) {
                 return i;
             }
         }
@@ -299,6 +300,9 @@ public class Graph {
      *          Whether the coloring is proper.
      * @param   um
      *          Whether the coloring is a version of unique-maximum coloring.
+     * @param   open
+     *          Whether the coloring is an open coloring,
+     *          this also includes odd coloring.
      * @param   maxColorCurrGraph
      *          The current max color possible for this graph.
      *          This doesn't matter for unique-maximum colorings.
@@ -311,7 +315,7 @@ public class Graph {
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
-    private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, int index) {
+    private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um, boolean open, int maxColorCurrGraph, int maxColor, int index) {
         if (vertexIsColored == maxColoring) {
             // We reached the end
             return true;
@@ -343,14 +347,14 @@ public class Graph {
             // We also change the available colors for the neighbours if the coloring is proper
             int[] changed = new int[numberOfVertices];
 
-            if (updateNeighbours(v, color, coloring, changed, proper)) {
+            if (updateNeighbours(v, color, coloring, open, changed, proper)) {
                 // This is used to skip this color, as it isn't possible
                 continue;
             }
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
             int newIndex = getBestIndex(index);
-            if (optimizedAlgorithm(coloring, proper, um, newMaxColorCurrGraph, maxColor, newIndex)) {
+            if (optimizedAlgorithm(coloring, proper, um, open, newMaxColorCurrGraph, maxColor, newIndex)) {
                 return true;
             }
 
@@ -497,6 +501,9 @@ public class Graph {
      * @param   coloring
      *          The coloring to use, this is needed for the color-checking
      *          of neighbours while the algorithm is being run.
+     * @param   open
+     *          Whether the coloring is an open coloring,
+     *          this also includes odd coloring.
      * @param   changed
      *          This should be an empty list
      *          to be filled with the vertices that were changed.
@@ -508,8 +515,7 @@ public class Graph {
      *          as we already found a neighbour with zero possible colors.
      *          False otherwise.
      */
-    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, int[] changed, boolean proper) {
-        boolean open = Coloring.isOpen(coloring);
+    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, boolean open, int[] changed, boolean proper) {
         for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
             int bit = Integer.numberOfTrailingZeros(i);
             Vertex neighbour = verticesIndexed[bit];
@@ -520,7 +526,7 @@ public class Graph {
             neighbourhood = (open ? neighbourhood : (neighbourhood | (1 << bit)));
 
             int diff = neighbourhood & ~vertexIsColored;
-            if (diff == 0 && neighbourIsColored) {
+            if (diff == 0 && (open || neighbourIsColored)) {
                 // All the neighbour's neighbours are colored and the neighbour itself is colored
                 // We want to check if the neighbour is CORRECTLY colored
                 if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
