@@ -346,16 +346,16 @@ done
 #######################
 
 # We make sure to recompile the code
-javac Main.java
+# javac Main.java
 
 ### RAW-CHECK
-if [[ "$raw" == 0 ]]; then
-	# Only if we are not in raw mode do we print this.
-	echo "Code compiled."
-elif [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 ]]; then
-	# We only want three raw options
-	raw=1
-fi
+#if [[ "$raw" == 0 ]]; then
+#	# Only if we are not in raw mode do we print this.
+#	echo "Code compiled."
+#elif [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 ]]; then
+#	# We only want three raw options
+#	raw=1
+#fi
 
 ### SHOW-CHECK
 if [[ "$show" == true ]]; then

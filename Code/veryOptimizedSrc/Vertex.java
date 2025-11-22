@@ -15,7 +15,7 @@ public class Vertex {
     /**
      * The available colors for this vertex.
      */
-    private boolean[] availableColors = new boolean[10];
+    private int availableColors = 0;
 
     /**
      * The number of available colors for this vertex.
@@ -27,13 +27,15 @@ public class Vertex {
      */
     private int degree = 0;
 
+    private int amountOfColoredNeighbours = 0;
+
     /**
      * The index of this vertex.
      *
      * @note    This variable is only needed for the show option in colorScript.sh.
      *          As we use this to correctly color the shown graph.
      */
-    private final int index;
+    private int index;
 
     /**
      * A constructor for a vertex object.
@@ -46,7 +48,7 @@ public class Vertex {
         this.color = v.color;
         // We don't have to make a new copy of the list and the array, as they don't
         this.neighbours = v.neighbours;
-        this.availableColors = v.availableColors.clone();
+        this.availableColors = v.availableColors;
 
         this.amountOfAvailableColors = v.amountOfAvailableColors;
         this.degree = v.degree;
@@ -128,20 +130,18 @@ public class Vertex {
     /**
      * A method for acquiring the available colors for this vertex.
      */
-    public boolean[] getAvailableColors() {
+    public int getAvailableColors() {
         return availableColors;
     }
 
     /**
      * A method for changing the available colors to a given list.
      */
-    public void setAvailableColors(boolean[] availableColors) {
+    public void setAvailableColors(int availableColors) {
         int count = 0;
         this.availableColors = availableColors;
-        for  (int i = 0; i < availableColors.length; i++) {
-            if (availableColors[i]) {
-                count++;
-            }
+        for  (int i = availableColors; i != 0; i &= i - 1) {
+            count++;
         }
         setAmountOfAvailableColors(count);
     }
@@ -150,12 +150,7 @@ public class Vertex {
      * A method for resetting the available colors to a list with numbers from 1 to max.
      */
     public void setMaxAvailableColors(int max) {
-        for (int i = 0; i < max; i++) {
-            availableColors[i] = true;
-        }
-        for (int i = max; i < 10; i++) {
-            availableColors[i] = false;
-        }
+        availableColors = (1 << max) - 1;
         setAmountOfAvailableColors(max);
     }
 
@@ -163,9 +158,9 @@ public class Vertex {
      * Removes a color from the available color array.
      */
     public boolean removeColorFromAvailableColors(int color) {
-        if (availableColors[color]) {
-            this.availableColors[color] = false;
-            setAmountOfAvailableColors(amountOfAvailableColors - 1);
+        if ((availableColors & (1 << color)) != 0) {
+            this.availableColors &= ~(1 << color);
+            amountOfAvailableColors--;
             return true;
         }
         return false;
@@ -175,9 +170,9 @@ public class Vertex {
      * Adds a color to the available color array.
      */
     public boolean addColorFromAvailableColors(int color) {
-        if (!availableColors[color]) {
-            this.availableColors[color] = true;
-            setAmountOfAvailableColors(amountOfAvailableColors + 1);
+        if ((availableColors & (1 << color)) == 0) {
+            this.availableColors |= 1 << color;
+            amountOfAvailableColors++;
             return true;
         }
         return false;
@@ -205,8 +200,24 @@ public class Vertex {
         this.degree++;
     }
 
-    public int getImportanceValue(int numberOfVertices) {
-        return getAmountOfAvailableColors() - (numberOfVertices/getDegree());
+    public int getImportanceValue() {
+        return getAmountOfAvailableColors() + (getDegree() - amountOfColoredNeighbours);
+    }
+
+    public int getAmountOfColoredNeighbours() {
+        return amountOfColoredNeighbours;
+    }
+
+    public void setAmountOfColoredNeighbours(int amountOfColoredNeighbours) {
+        this.amountOfColoredNeighbours = amountOfColoredNeighbours;
+    }
+
+    public void incrementAmountOfColoredNeighbours() {
+        this.amountOfColoredNeighbours++;
+    }
+
+    public void decrementAmountOfColoredNeighbours() {
+        this.amountOfColoredNeighbours--;
     }
 
     /**
@@ -219,8 +230,11 @@ public class Vertex {
      *          These are the actual correct vertices to be used.
      * @param   properLy
      *          Whether the fact that the vertex is proper should get checked.
+     * @param   fillUncolored
+     *          Whether vertices that aren't colored but have only one possible color
+     *          are allowed. The one possible color will be used as the color.
      */
-    public boolean isCorrectlyColored(Coloring inputColoring, Vertex[] verticesIndexed, boolean properLy) {
+    public boolean isCorrectlyColored(Coloring inputColoring, Vertex[] verticesIndexed, boolean properLy, boolean fillUncolored) {
         boolean open = Coloring.isOpen(inputColoring);
         boolean proper = Coloring.isProper(inputColoring);
         int n = inputColoring.getMaxChromaticNumber();
@@ -228,21 +242,32 @@ public class Vertex {
         // This is created with a length of ten, as the most upper bound of any chromatic number is 10
         // We should therefore only use this method when the inputColoring has happened.
 
+        if (!fillUncolored && color == 0 && !open) return false; // This vertex isn't colored.
+
         for (int i = neighbours; i != 0; i &= i - 1) {
             int index = Integer.numberOfTrailingZeros(i);
 
             Vertex neighbour = verticesIndexed[index];
+            int neighbourColor = neighbour.getColor();
 
-            if (neighbour.getColor() == 0 && !open) {
+            if (!fillUncolored && neighbourColor == 0) {
                 return false;
-                // Not all vertices have been colored yet, this vertex is also checked.
+                // Not all vertices have been colored yet.
+            } else if (neighbourColor == 0) {
+                // fillUncolored is true, we check if we can fill the uncolored vertex.
+                if (neighbour.getAmountOfAvailableColors() == 1) {
+                    colors[Integer.numberOfTrailingZeros(neighbour.getAvailableColors())]++;
+                    continue;
+                } else {
+                    return false;
+                }
             }
 
-            if (properLy && proper && neighbour.getColor() == color && !this.equals(neighbour)) {
+            if (properLy && proper && neighbourColor == color && !this.equals(neighbour)) {
                 return false;
             }
 
-            colors[neighbour.getColor()-1]++;
+            colors[neighbourColor-1]++;
         }
 
         // We should add this vertex to the colors list, if closed coloring

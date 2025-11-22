@@ -85,11 +85,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 # We make sure to recompile the code
-javac Main.java
-if [[ "$raw" == false ]]; then
-  # Only if we are not in raw mode do we print this.
-  echo "Code compiled."
-fi
+# javac Main.java
+
+#if [[ "$raw" == false ]]; then
+#  # Only if we are not in raw mode do we print this.
+#  echo "Code compiled."
+#fi
 
 
 #echo "Coloring: $coloring"

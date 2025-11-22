@@ -94,7 +94,7 @@ public class GraphBS {
 
         for (Vertex v : verticesIndexed) {
             // It's important to give the indexed vertices.
-            if (!v.isCorrectlyColored(coloring, verticesIndexed, properLy)) {
+            if (!v.isCorrectlyColored(coloring, verticesIndexed, properLy, false)) {
                 return false;
             }
         }
@@ -284,7 +284,7 @@ public class GraphBS {
         changeFilledColors(index, -1);
         // We remove this vertex from the available vertices
 
-        boolean[] colors = v.getAvailableColors();
+        int colors = v.getAvailableColors();
 
         int maxLoop = um ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
         // Every coloring should be tried for um, as this is different for it.
@@ -294,15 +294,16 @@ public class GraphBS {
 
         boolean neighboursColored = (v.getOpenNeighbourhood() & vertexIsColored) == v.getOpenNeighbourhood();
 
-        for (int color = 0; color < maxLoop; color++) {
-            if (!colors[color]) continue; // We skip this color as this can't be correct
+        for (int i = colors; i != 0; i &= i - 1) {
+            int color = Integer.numberOfTrailingZeros(i);
+            if (color > maxLoop) break; // We passed the highest possible color in the graph
 
 
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
 
             // We have to now check if all our neighbours are colored, as this isn't checked in updateNeighbours
             // This is an extra check for correctness
-            if (neighboursColored && !v.isCorrectlyColored(coloring,  verticesIndexed, false)) {
+            if (neighboursColored && !v.isCorrectlyColored(coloring,  verticesIndexed, false, false)) {
                 // This color isn't correct, we pick another
                 continue;
             }
@@ -315,12 +316,10 @@ public class GraphBS {
                 continue;
             }
 
-
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
             if (optimizedAlgorithm(coloring, proper, um, newMaxColorCurrGraph, maxColor)) {
                 return true;
             }
-
 
             // We add back the available colors if it didn't work out
             if (proper) {
@@ -397,7 +396,7 @@ public class GraphBS {
                     neighbourIsColored) {
                 // All the neighbour's neighbours are colored and the neighbour itself is colored
                 // We want to check if the neighbour is CORRECTLY colored
-                if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false)) {
+                if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false, false)) {
                     // Early pruning
                     changeBackVertices(changed, color);
                     return true;
