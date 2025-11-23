@@ -18,17 +18,18 @@ cc -o plantri -O4 plantri.c
 ```
 This will compile plantri and make sure you can use it.
 
-Now, go straight to the source directory.
+Now, go straight to the source directory and be sure to compile the code.
 ```
-cd ../Code/optimizedSrc/
+cd ../Code/veryOptimizedSrc/
+javac Main.java
 ```
 
-Once there, make sure a python virtual environment is created by running the following command:
+Also, make sure a python virtual environment is created by running the following command:
 ```
 ./setupVenv.sh
 ```
 This will create the venv and install all needed libraries.
-Now you're ready to use the algorithm!
+Now you're ready to use the coloring algorithm!
 
 ## General Usage
 
@@ -41,11 +42,15 @@ Example usage:
 
  - **NUMBER_OF_VERTICES**: The amount of vertices of the graphs that are to be checked are (for right now) a mandatory argument. This should always be a value between 3 and 63, but this can also be written as a range of vertices. For example: `3:6`, the graphs with vertices between 3 and 6.
 
-This will print out the graph6 strings of the graphs and the corresponding chromatic number of the coloring for this graph. It will also output the overall time it took to calculate everyting.
+This will print out the graph6 strings of the graphs and the corresponding chromatic number of the coloring for this graph. 
+It will also output the overall time it took to calculate everyting.
+
+_The outputs provided will almost always be written to a file, which can be found in the `outputs/` directory.
+Each file getting a name corresponding to the time of when the file was created._
 
 ### Output
 
-The output for `colorScript.sh` can be altered in three ways.
+The output for `colorScript.sh` can be altered in three ways:
 
  - The first way is by using the flag `-r` or `--raw`. 
 This will make sure the only output outputted to the standard out are the corresponding chromatic numbers for the colorings.
@@ -57,6 +62,7 @@ One can also give this option a value: 1, 2 or 3.
  - The second way is by using a different flag, `-o` or `--overview`. 
 This will give an overview of the corresponding chromatic numbers for the colorings of the graphs. 
 Showing the amount of graphs with a certain chromatic number, similar to how _nauty_ does it with `countg`.
+   _(Choosing this option will not create a file containing the output)._
  - And lastly, one can also use the flag `-f` or `--filter`, followed by a value.
 This will make it so that only the graphs with a minimum chromatic number, specified by the value, will be shown.
 
@@ -103,6 +109,7 @@ One can also choose to pipe their own graphs into the algorithm.
 This is possible by giving a specific value with the manual option.
 This value being `"pipe"`.
 Do note that the piped strings should also be _graph6_ strings and should be divided by new lines (\n).
+_(Choosing this option will not create a file containing the output)._
 
 Example usage:
 ```
@@ -139,6 +146,7 @@ The number of vertices or the coloring method should still be given to the progr
 Usage:
 ```
 ./checkOutputs.sh NUMBER_OF_VERTICES COLORING_METHOD1 COLORING_METHOD2 ...
+./checkOutputs.sh NUMBER_OF_VERTICES all
 ./checkCycles.sh COLORING_METHOD
 ./checkNaiveOutputs.sh NUMBER_OF_VERTICES -c COLORING_METHOD
 ```

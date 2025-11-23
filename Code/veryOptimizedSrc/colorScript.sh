@@ -142,7 +142,7 @@ show_func() {
 }
 
 write_to_file() {
-  if [[ "$overview" == false ]]; then
+  if [[ "$overview" == false && "$manual" == false ]]; then
     mkdir -p outputs
     tee "outputs/$(date +"%F-%H-%M-%S").txt"
   else
@@ -156,7 +156,6 @@ java_alg() {
 	else
 		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method"
 	fi
-
 }
 
 choose_incoming_graphs() {
