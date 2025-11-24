@@ -333,18 +333,21 @@ public class Graph {
         vertexIsColored |= 1 << index;
 //        vertexIsAlmostColored &= ~(1 << index);
 
+        boolean lastToColor = (maxColoring & ~vertexIsColored) == 0;
+
         int neighbourhood = v.getOpenNeighbourhood();
         boolean neighboursColored = (neighbourhood & vertexIsColored) == neighbourhood;
 
         for (int i = colors; i != 0; i &= i - 1) {
             int color = Integer.numberOfTrailingZeros(i);
             if (color > maxLoop) break; // We passed the highest possible color in the graph
+            if (lastToColor && maxColorCurrGraph < maxColor && color <= maxColorCurrGraph) continue; // We don't want to retry already tried states
 
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
 
             // We have to now check if all our neighbours are colored, as this isn't checked in updateNeighbours
             // This is an extra check for correctness
-            if (neighboursColored && !v.isCorrectlyColored(coloring,  verticesIndexed, false, false)) {
+            if (neighboursColored && !v.isCorrectlyColored(coloring, verticesIndexed, false, false)) {
                 // This color isn't correct, we pick another
                 continue;
             }
@@ -410,6 +413,11 @@ public class Graph {
 
     /**
      * A method for finding the best candidate in the coloring of a graph.
+     *
+     * This best-ndex method doesn't work well
+     * as keeping track of the amount of colored neighbours
+     * already adds a lot of overhead,
+     * which isn't compensated by good vertex choosing.
      */
     private int getBestIndex2(int indexColored) {
         if (indexColored != -1) availables &= ~(1 << indexColored);

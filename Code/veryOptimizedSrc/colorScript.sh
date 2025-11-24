@@ -348,13 +348,13 @@ done
 # javac Main.java
 
 ### RAW-CHECK
-#if [[ "$raw" == 0 ]]; then
-#	# Only if we are not in raw mode do we print this.
-#	echo "Code compiled."
-#elif [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 ]]; then
-#	# We only want three raw options
-#	raw=1
-#fi
+if [[ "$raw" == 0 ]]; then
+	# Only if we are not in raw mode do we print this.
+	echo "Code compiled."
+elif [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 ]]; then
+	# We only want three raw options
+	raw=1
+fi
 
 ### SHOW-CHECK
 if [[ "$show" == true ]]; then
@@ -381,7 +381,16 @@ fi
 
 ### EXECUTION
 
-choose_incoming_graphs | java_alg | write_to_file | show_func
+if [[ "$overview" == true && "$coloring" == all ]]; then
+  declare -a colorings=("proper" "odd" "pUMo" "pUMc" "pCFo" "pCFc" "iUMo" "iUMc" "iCFo" "iCFc")
+  for i in "${colorings[@]}"; do
+    coloring="$i"
+    choose_incoming_graphs | java_alg | write_to_file | show_func
+  done
+else
+  choose_incoming_graphs | java_alg | write_to_file | show_func
+fi
+
 
 # Extra output for show functionality to signal the end of the generation.
 if [[ "$show" == true ]]; then
