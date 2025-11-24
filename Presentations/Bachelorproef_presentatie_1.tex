@@ -248,11 +248,16 @@
 		
 		\begin{itemize}
 			\item Proper conflict-free and unique-maximum colorings of planar graphs with respect to neighborhoods
-			\item Colorings with neighborhood parity condition
+			\item Odd kleuringen:
 			\begin{itemize}
-				\item Bewijzen grenzen van chromatische getallen
-				\item Formuleren conjectures
+				\item Colorings with neighborhood parity condition
+				\item The Odd Chromatic Number of a Planar Graph is at Most 8
 			\end{itemize}
+			
+			\pause
+			\item Bewijzen grenzen van chromatische getallen
+			\item Formuleren conjectures
+			
 			
 		\end{itemize}
 		
@@ -264,16 +269,16 @@
 		
 		\begin{block}{Odd}
 			$
-			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
+			\begin{array}{c@{\hspace{2.8cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
-					& 5 \leq \chi_{\mathrm{O}}(\mathcal{P}) \leq 9 \\
+					& 5 \leq \chi_{\mathrm{O}}(\mathcal{P}) \leq 8 \\
 				\end{aligned}
 				&
 				\pause
 				\Large \Rightarrow
 				&
 				\begin{aligned}
-					& \leq \chi_{\mathrm{O}}(\mathcal{P}) = 5 \\
+					& \chi_{\mathrm{O}}(\mathcal{P}) = 5 \\
 				\end{aligned}
 			\end{array}
 			$
@@ -310,7 +315,7 @@
 			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
 					& 4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5 \\ 
-					& 3 \le \chi_{\mathrm{iCFC}}(\mathcal{P}) \le 4 \\ 
+					& 3 \le \chi_{\mathrm{iCFc}}(\mathcal{P}) \le 4 \\ 
 					& 5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10 \\ 
 					&4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6
 				\end{aligned}
@@ -327,6 +332,11 @@
 			\end{array}
 			$
 		\end{block}
+		
+		\begin{itemize}
+			\item Conjecture van $\chi_{\mathrm{iCFc}}(\mathcal{P})$ is al weerlegd  (Conflict-free colouring of planar graphs)
+			\item 
+		\end{itemize}
 	\end{frame}
 	
 	\section{Methodologie}
@@ -336,11 +346,47 @@
 		
 		\begin{itemize}
 			\item Grafen genereren (plantri)
+			\pause
 			\item Inkleuren
 			\begin{itemize}
 				\item Java
-				\item Backtracking
-				\item Pruning
+				\item Optimalisaties
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Optimalisaties}
+		
+		\begin{itemize}
+			\item Kiezen volgende knoop:
+			\begin{itemize}
+				\item 4 implementaties getest
+				\item \textbf{Knopen overlopen}, PQ, Lijst van bitsets, Lijst van LL
+			\end{itemize}
+			\pause
+			\item Houd mogelijke kleuren bij
+			\pause
+			\item Backtracking
+			\pause
+			\item Pruning
+			\begin{itemize}
+				\item Wanneer geen kleuren mogelijk
+				\item Wanneer knoop volledig ingekleurd
+				\item Wanneer neighbourhood bijna ingekleurd $\rightarrow$ sluit kleuren uit
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Methodologie}
+		
+		\begin{itemize}
+			\item Grafen genereren (plantri)
+			\item Inkleuren
+			\begin{itemize}
+				\item Java
+				\item Optimalisaties
 			\end{itemize}
 			\item Chromatisch getal volgens kleuring vinden
 		\end{itemize}
