@@ -89,14 +89,21 @@ public class Graph {
      *          The coloring method used.
      * @param   properLy
      *          Whether the fact that the vertex is proper should get checked.
+     * @param   open
+     *          Whether the coloring is an open coloring,
+     *          this also includes odd coloring.µ
+     * @param   proper
+     *          Whether the coloring is proper.
+     * @param   um
+     *          Whether the coloring is a unique-maximum coloring.
      */
-    private boolean isCorrectlyColored(Coloring coloring, boolean properLy) {
+    private boolean isCorrectlyColored(Coloring coloring, boolean properLy, boolean open, boolean proper, boolean um) {
         // This method only gets called after coloring properLy
         if (!properLy && coloring == Coloring.PROPER) return true;
 
         for (Vertex v : verticesIndexed) {
             // It's important to give the indexed vertices.
-            if (!v.isCorrectlyColored(coloring, verticesIndexed, properLy, false)) {
+            if (!v.isCorrectlyColored(coloring, verticesIndexed, properLy, false, open, proper, um)) {
                 return false;
             }
         }
@@ -108,9 +115,16 @@ public class Graph {
      *
      * @param   coloring
      *          The coloring method used.
+     * @param   open
+     *          Whether the coloring is an open coloring,
+     *          this also includes odd coloring.µ
+     * @param   proper
+     *          Whether the coloring is proper.
+     * @param   um
+     *          Whether the coloring is a unique-maximum coloring.
      */
-    public boolean isCorrectlyColored(Coloring coloring) {
-        return isCorrectlyColored(coloring, true);
+    public boolean isCorrectlyColored(Coloring coloring, boolean open ,boolean proper, boolean um) {
+        return isCorrectlyColored(coloring, true, open ,proper, um);
     }
 
     /**
@@ -273,11 +287,8 @@ public class Graph {
      * @param   coloring
      *          The chosen coloring method of which this method is finding the chromatic number of.
      */
-    public int findChromaticNumberOptimized(Coloring coloring) {
+    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um) {
         int n = coloring.getMaxChromaticNumber();
-        boolean proper = Coloring.isProper(coloring);
-        boolean open = Coloring.isOpen(coloring);
-        boolean um = Coloring.isUniqueMaximum(coloring);
 
         for (int i = 2; i <= n; i++) {
             for (Vertex v : verticesIndexed) {
@@ -286,7 +297,7 @@ public class Graph {
             // Each time we reset which vertices are colored.
             vertexIsColored = 0;
             availables = maxColoring;
-            if (optimizedAlgorithm(coloring, proper, um, open, 0, i, 0)) {
+            if (optimizedAlgorithm(coloring, open, proper, um,0, i, 0)) {
                 return i;
             }
         }
@@ -298,13 +309,13 @@ public class Graph {
      *
      * @param   coloring
      *          The coloring of which the algorithm should to try to find a solution for.
+     * @param   open
+     *          Whether the coloring is an open coloring,
+     *          this also includes odd coloring.
      * @param   proper
      *          Whether the coloring is proper.
      * @param   um
      *          Whether the coloring is a version of unique-maximum coloring.
-     * @param   open
-     *          Whether the coloring is an open coloring,
-     *          this also includes odd coloring.
      * @param   maxColorCurrGraph
      *          The current max color possible for this graph.
      *          This doesn't matter for unique-maximum colorings.
@@ -317,7 +328,7 @@ public class Graph {
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
-    private boolean optimizedAlgorithm(Coloring coloring, boolean proper, boolean um, boolean open, int maxColorCurrGraph, int maxColor, int index) {
+    private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, int index) {
         if (vertexIsColored == maxColoring) {
             // We reached the end
             return true;
@@ -347,21 +358,21 @@ public class Graph {
 
             // We have to now check if all our neighbours are colored, as this isn't checked in updateNeighbours
             // This is an extra check for correctness
-            if (neighboursColored && !v.isCorrectlyColored(coloring, verticesIndexed, false, false)) {
+            if (neighboursColored && !v.isCorrectlyColored(coloring, verticesIndexed, false, false, open, proper, um)) {
                 // This color isn't correct, we pick another
                 continue;
             }
             // We also change the available colors for the neighbours if the coloring is proper
             int[] changed = new int[numberOfVertices];
 
-            if (updateNeighbours(v, color, coloring, open, changed, proper)) {
+            if (updateNeighbours(v, color, coloring, open, proper, um, changed)) {
                 // This is used to skip this color, as it isn't possible
                 continue;
             }
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
             int newIndex = getBestIndex(index);
-            if (optimizedAlgorithm(coloring, proper, um, open, newMaxColorCurrGraph, maxColor, newIndex)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, newIndex)) {
                 return true;
             }
 
@@ -559,19 +570,22 @@ public class Graph {
      *          of neighbours while the algorithm is being run.
      * @param   open
      *          Whether the coloring is an open coloring,
-     *          this also includes odd coloring.
+     *          this also includes odd coloring.µ
+     * @param   proper
+     *          Whether the coloring is proper.
+     * @param   um
+     *          Whether the coloring is a unique-maximum coloring.
      * @param   changed
      *          This should be an empty list
      *          to be filled with the vertices that were changed.
      *          This will contain the old vertices that were removed from verticesIndexed.
-     * @param   proper
-     *          Whether the coloring is proper.
+
      *
      * @return  True if this color should get skipped
      *          as we already found a neighbour with zero possible colors.
      *          False otherwise.
      */
-    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, boolean open, int[] changed, boolean proper) {
+    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, boolean open, boolean proper, boolean um, int[] changed) {
         for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
             int bit = Integer.numberOfTrailingZeros(i);
             Vertex neighbour = verticesIndexed[bit];
@@ -591,7 +605,7 @@ public class Graph {
             if (diff == 0 && (open || neighbourIsColored)) {
                 // All the neighbour's neighbours are colored and the neighbour itself is colored
                 // We want to check if the neighbour is CORRECTLY colored
-                if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false, true)) {
+                if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false, true, open, proper, um)) {
                     // Early pruning
                     addColorsBack(changed);
                     return true;
@@ -603,12 +617,7 @@ public class Graph {
                 int toColorNeighbourIndex = Integer.numberOfTrailingZeros(diff);
                 Vertex toColorNeighbour = verticesIndexed[toColorNeighbourIndex];
                 // There's one vertex that isn't colored yet.
-                if (Coloring.isConflictFree(coloring) && (neighbourIsColored || !proper) ) {
-                    if (handleCF(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
-                        return true;
-                    }
-
-                } else if (Coloring.isUniqueMaximum(coloring) && (neighbourIsColored || !proper)) {
+                if (um && (neighbourIsColored || !proper)) {
                     if (handleUM(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
                         return true;
                     }
@@ -619,6 +628,11 @@ public class Graph {
                     if (handleOdd(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
                         return true;
                     }
+                } else if (coloring != Coloring.PROPER && (neighbourIsColored || !proper) ) {
+                    if (handleCF(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                        return true;
+                    }
+
                 }
                 // Proper colorings are done later
             }
@@ -835,7 +849,7 @@ public class Graph {
     private boolean naiveAlgorithm(Coloring coloring, int maxColor, int index) {
         if (index >= verticesIndexed.length) {
             // We reached the end of the list
-            return isCorrectlyColored(coloring, true);
+            return isCorrectlyColored(coloring, true, Coloring.isOpen(coloring), Coloring.isProper(coloring), Coloring.isUniqueMaximum(coloring));
         }
 
         for (int i = 1; i <= maxColor; i++) {

@@ -21,6 +21,10 @@ public class Main {
             // First: the coloring
             Coloring coloring = Coloring.getColoring(args[0]);
 
+            boolean open = Coloring.isOpen(coloring);
+            boolean proper = Coloring.isProper(coloring);
+            boolean um = Coloring.isUniqueMaximum(coloring);
+
             // Second: overview
             boolean overview = false;
             TreeMap<Integer, Integer> cNumbers = new TreeMap<>();
@@ -67,6 +71,9 @@ public class Main {
                     switch (parts[0]) {
                         case ":coloring":
                             coloring = Coloring.getColoring(parts[1]);
+                            open = Coloring.isOpen(coloring);
+                            proper = Coloring.isProper(coloring);
+                            um = Coloring.isUniqueMaximum(coloring);
                             continue;
                         case ":minChrom":
                             minChrom = Integer.parseInt(parts[1]);
@@ -122,7 +129,7 @@ public class Main {
                         break;
                     default:
                         Graph graph = new Graph(line);
-                        c = graph.findChromaticNumberOptimized(coloring);
+                        c = graph.findChromaticNumberOptimized(coloring, open, proper, um);
                         s = Arrays.toString(graph.getColors());
                         break;
                 }
@@ -169,32 +176,32 @@ public class Main {
         } else {
             // This is the debugging code section
 
-            File file = new File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while((line = br.readLine()) != null){
-                Graph graph = new Graph(line);
-                graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
-            }
+//            File file = new File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
+//            BufferedReader br = new BufferedReader(new FileReader(file));
+//            String line;
+//            while((line = br.readLine()) != null){
+//                Graph graph = new Graph(line);
+//                graph.findChromaticNumberOptimized(Coloring.getColoring("odd"), true, true, false);
+//            }
 
-//            ArrayList<String> graphs = new ArrayList<>(){{
+            ArrayList<String> graphs = new ArrayList<>(){{
 //                add("L|eKKF`WJ?k@Nw");
 //                add("L|eKKEDoJxk@@w");
 //                add("L|eKKF`WI?kBNw");
 //                add("L~eKKF@oI@j{?M");
 //                add("I|~KMLKBG");
-//                add("E|tw");
+                add("E|tw");
 //                add("G|mnMC");
 //                add("I~fIIDBVg");
-//            }};
+            }};
 //
-//            for (String line2 : graphs) {
-//                GraphPQ graph = new GraphPQ(line2);
+            for (String line2 : graphs) {
+                Graph graph = new Graph(line2);
 //
-//                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"));
+                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"), true, true, false);
 //                System.out.println(Arrays.toString(graph.getColors()));
 //                System.out.println(c);
-//            }
+            }
 
 //            Graph graphnew = new Graph("O~eK]f@SOuA@EBE?_X?AP");
 //            System.out.println(Arrays.deepToString(Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));

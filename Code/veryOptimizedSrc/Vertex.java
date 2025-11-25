@@ -233,81 +233,128 @@ public class Vertex {
      * @param   fillUncolored
      *          Whether vertices that aren't colored but have only one possible color
      *          are allowed. The one possible color will be used as the color.
+     * @param   open
+     *          Whether the coloring is an open coloring,
+     *          this also includes odd coloring.µ
+     * @param   proper
+     *          Whether the coloring is proper.
+     * @param   um
+     *          Whether the coloring is a unique-maximum coloring.
      */
-    public boolean isCorrectlyColored(Coloring inputColoring, Vertex[] verticesIndexed, boolean properLy, boolean fillUncolored) {
-        boolean open = Coloring.isOpen(inputColoring);
-        boolean proper = Coloring.isProper(inputColoring);
-        int n = inputColoring.getMaxChromaticNumber();
-        int[] colors = new int[n];
-        // This is created with a length of ten, as the most upper bound of any chromatic number is 10
-        // We should therefore only use this method when the inputColoring has happened.
-
+    public boolean isCorrectlyColored(Coloring inputColoring, Vertex[] verticesIndexed, boolean properLy,
+                                      boolean fillUncolored, boolean open, boolean proper, boolean um) {
         if (!fillUncolored && color == 0 && !open) return false; // This vertex isn't colored.
 
-        for (int i = neighbours; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        int neighbourhood = open ? neighbours : (neighbours | (1 << index));
 
-            Vertex neighbour = verticesIndexed[index];
-            int neighbourColor = neighbour.getColor();
+        if (inputColoring == Coloring.ODD) {
+            int odds = 0;
+            for (int i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Integer.numberOfTrailingZeros(i);
 
-            if (!fillUncolored && neighbourColor == 0) {
-                return false;
-                // Not all vertices have been colored yet.
-            } else if (neighbourColor == 0) {
-                // fillUncolored is true, we check if we can fill the uncolored vertex.
-                if (neighbour.getAmountOfAvailableColors() == 1) {
-                    colors[Integer.numberOfTrailingZeros(neighbour.getAvailableColors())]++;
-                    continue;
+                Vertex neighbour = verticesIndexed[index];
+                int neighbourColor = neighbour.getColor();
+
+                if (!fillUncolored && neighbourColor == 0) {
+                    return false;
+                    // Not all vertices have been colored yet.
+                } else if (neighbourColor == 0) {
+                    // fillUncolored is true, we check if we can fill the uncolored vertex.
+                    if (neighbour.getAmountOfAvailableColors() == 1) {
+                        odds ^= (1 << Integer.numberOfTrailingZeros(neighbour.getAvailableColors()));
+                    } else {
+                        return false;
+                    }
                 } else {
+                    odds ^= (1 << neighbourColor);
+                }
+                if (properLy && proper && neighbourColor == color && !this.equals(neighbour)) {
                     return false;
                 }
             }
+            return odds != 0;
+        } else if (inputColoring == Coloring.PROPER) {
+            for (int i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Integer.numberOfTrailingZeros(i);
 
-            if (properLy && proper && neighbourColor == color && !this.equals(neighbour)) {
-                return false;
+                Vertex neighbour = verticesIndexed[index];
+                int neighbourColor = neighbour.getColor();
+
+                if (!fillUncolored && neighbourColor == 0) {
+                    return false;
+                    // Not all vertices have been colored yet.
+                } else if (neighbourColor == 0 && neighbour.getAmountOfAvailableColors() != 1) {
+                    // fillUncolored is true, we check if we can fill the uncolored vertex.
+                    return false;
+                }
+
+                if (properLy && proper && neighbourColor == color && !this.equals(neighbour)) {
+                    return false;
+                }
+
             }
+        } else if (um) {
+            // Unique-Maximum
+            int max = 0;
+            int amountOfMax = 0;
+            for (int i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Integer.numberOfTrailingZeros(i);
 
-            colors[neighbourColor-1]++;
-        }
+                Vertex neighbour = verticesIndexed[index];
+                int neighbourColor = neighbour.getColor();
 
-        // We should add this vertex to the colors list, if closed coloring
-        if(!open) {
-            colors[getColor()-1]++;
-        }
+                if (!fillUncolored && neighbourColor == 0) {
+                    return false;
+                    // Not all vertices have been colored yet.
+                } else if (neighbourColor == 0) {
+                    // fillUncolored is true, we check if we can fill the uncolored vertex.
+                    if (neighbour.getAmountOfAvailableColors() == 1) {
+                        neighbourColor = Integer.numberOfTrailingZeros(neighbour.getAvailableColors());
+                    } else {
+                        return false;
+                    }
+                }
 
-        if (inputColoring == Coloring.PROPER) {
-            // Proper check
+                if (properLy && proper && neighbourColor == color && !this.equals(neighbour)) {
+                    return false;
+                }
 
-            return true;
-        } else if (inputColoring == Coloring.ODD) {
-            // Odd check
-
-            for (int i = 0; i < n; i++) {
-                if (colors[i] % 2 == 1) {
-                    return true;
+                if (neighbourColor > max) {
+                    max = neighbourColor;
+                    amountOfMax = 1;
+                } else if (neighbourColor == max) {
+                    amountOfMax++;
                 }
             }
-            return false;
-        } else if (Coloring.isConflictFree(inputColoring)) {
-            // Conflict-free check
-
-            for (int i = 0; i < n; i++) {
-                if (colors[i] == 1) {
-                    return true;
-                }
-            }
-            return false;
+            return amountOfMax == 1;
         } else {
-            // Unique-maximum check
+            int colorsOccurOnce = 0;
+            int colorsOccur = 0;
+            int colorIndex;
 
-            for (int i = n-1; i >= 0; i--) {
-                if (colors[i] == 0) {
-                    continue;
+            for (int i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Integer.numberOfTrailingZeros(i);
+
+                Vertex neighbour = verticesIndexed[index];
+                int neighbourColor = neighbour.getColor();
+                // We do -1 as the colors are from 1...k,
+                // but we want to later on use the colors 0...k-1
+
+                if (neighbourColor == 0 && neighbour.getAmountOfAvailableColors() == 1) { // We now for a fact that this vertex has one color available, as this was checked beforehand
+                    colorIndex = 1 << Integer.numberOfTrailingZeros(neighbour.getAvailableColors());
+                } else {
+                    colorIndex = 1 << (neighbourColor - 1);
                 }
-                return colors[i] == 1;
-            }
-        }
 
+                if ((colorsOccur & colorIndex) != 0) {
+                    colorsOccurOnce &= ~colorIndex;
+                } else {
+                    colorsOccurOnce |= colorIndex;
+                    colorsOccur |= colorIndex;
+                }
+            }
+            return colorsOccurOnce != 0;
+        }
         return false;
     }
 

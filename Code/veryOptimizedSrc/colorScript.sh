@@ -345,7 +345,7 @@ done
 #######################
 
 # We make sure to recompile the code
-# javac Main.java
+ javac Main.java
 
 ### RAW-CHECK
 if [[ "$raw" == 0 ]]; then
