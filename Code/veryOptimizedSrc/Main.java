@@ -176,32 +176,36 @@ public class Main {
         } else {
             // This is the debugging code section
 
-//            File file = new File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
-//            BufferedReader br = new BufferedReader(new FileReader(file));
-//            String line;
-//            while((line = br.readLine()) != null){
-//                Graph graph = new Graph(line);
-//                graph.findChromaticNumberOptimized(Coloring.getColoring("odd"), true, true, false);
-//            }
+            File file = new File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = br.readLine()) != null){
+                Graph graph = new Graph(line);
+                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"), true, true, false);
+                if (c == 0) {
+                    System.out.println(line);
+                    break;
+                }
+            }
 
-            ArrayList<String> graphs = new ArrayList<>(){{
+//            ArrayList<String> graphs = new ArrayList<>(){{
 //                add("L|eKKF`WJ?k@Nw");
 //                add("L|eKKEDoJxk@@w");
 //                add("L|eKKF`WI?kBNw");
 //                add("L~eKKF@oI@j{?M");
 //                add("I|~KMLKBG");
-                add("E|tw");
+//                add("E|tw");
 //                add("G|mnMC");
 //                add("I~fIIDBVg");
-            }};
+//            }};
 //
-            for (String line2 : graphs) {
-                Graph graph = new Graph(line2);
-//
-                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"), true, true, false);
-//                System.out.println(Arrays.toString(graph.getColors()));
+//            for (String line2 : graphs) {
+//                Graph graph = new Graph(line2);
+////
+//                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"), true, true, false);
+////                System.out.println(Arrays.toString(graph.getColors()));
 //                System.out.println(c);
-            }
+//            }
 
 //            Graph graphnew = new Graph("O~eK]f@SOuA@EBE?_X?AP");
 //            System.out.println(Arrays.deepToString(Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));

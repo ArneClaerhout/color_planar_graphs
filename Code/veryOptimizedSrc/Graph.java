@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.stream.IntStream;
 
 public class Graph {
 
@@ -33,6 +35,12 @@ public class Graph {
         char[] graphArray = graph6.toCharArray();
         this.numberOfVertices = getNumberOfVertices(graphArray);
         this.verticesIndexed = findFastVerticesList(graphArray, this.numberOfVertices);
+
+        // This next code section sorts the vertices by degree
+        // By experimenting, it can be found that this is most likely slower
+//        int[] newIndices = new int[numberOfVertices];
+//        int [][] adjMatrix = getAdjacencyMatrix(graphArray, numberOfVertices, newIndices);
+//        this.verticesIndexed = findVerticesList(adjMatrix, numberOfVertices, getDegreeBasedIndices(newIndices));
         maxColoring = (1 << numberOfVertices) - 1;
         availables = maxColoring;
     }
@@ -198,6 +206,69 @@ public class Graph {
     }
 
     /**
+     * A method for finding the adjacency matrix given a string in the graph6 format.
+     *
+     * @param   graphString
+     *          The string in graph6 format which should be converted.
+     * @param   n
+     *          The amount of vertices for this graph.
+     * @param   degrees
+     *          An array of degrees, this should be an empty array
+     *          to be filled by this method.
+     */
+    private static int[][] getAdjacencyMatrix(char[] graphString, int n, int[] degrees) {
+        int[][] adjMatrix = new int[n][n];
+        int index = 1; // First index as index 0 is the vertex count
+
+        int bitPos = 0; // Bit position per index
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                // Go through the entire adjacency matrix
+                int part6bits = graphString[index] - 63;
+
+                int bitShift = 5 - bitPos;
+                // The amount you have to bitshift the number to check bitPos here:
+                boolean edge = ((part6bits >> bitShift) & 1) == 1;
+                if (edge) {
+                    adjMatrix[i][j] = 1;
+                    adjMatrix[j][i] = 1;
+                    // The matrix is symmetrical
+
+                    degrees[i]++;
+                    degrees[j]++;
+                }
+
+                bitPos++;
+                if (bitPos % 6 == 0) {
+                    index++;
+                    bitPos = 0;
+                }
+            }
+        }
+        return adjMatrix;
+
+    }
+
+    private static int[] getDegreeBasedIndices(int[] degrees) {
+        int n = degrees.length;
+
+        // First sort the indices
+        Integer[] sortedIndices = new Integer[n]; // This is Integer so that the Arrays.sort will work
+        for (int i = 0; i < n; i++) {
+            sortedIndices[i] = i;
+        }
+        Arrays.sort(sortedIndices, Comparator.comparingInt(i -> degrees[i]));
+
+        // Then find the newIndices array
+        int[] newIndices = new int[n];
+        for (int newI = 0; newI < n; newI++) {
+            int originalI = sortedIndices[newI];
+            newIndices[originalI] = newI;
+        }
+        return newIndices;
+    }
+
+    /**
      * A method for getting the vertices list directly from the graph string.
      *
      * @param   graphString
@@ -270,6 +341,37 @@ public class Graph {
             for (int j = i+1; j < adjMatrix[i].length; j++) {
                 if(adjMatrix[i][j] == 1) {
                     vertices[i].addNeighbour(vertices[j]);
+                }
+            }
+        }
+
+        return vertices;
+    }
+
+    /**
+     * A method for creating a vertices array from a given adjacency matrix.
+     *
+     * @param   adjMatrix
+     *          The adjacency matrix to find the vertices for.
+     * @param   n
+     *          The amount of vertices.
+     * @param   newIndices
+     *          The new indices for all vertices.
+     * @return  The array of vertices with each vertex instantiated.
+     */
+    private static Vertex[] findVerticesList(int[][] adjMatrix, int n, int[] newIndices) {
+        Vertex[] vertices = new Vertex[n];
+
+        for (int i = 0; i < n; i++) {
+            vertices[i] = new Vertex(i);
+        }
+
+        for (int i = 0; i < adjMatrix.length; i++) {
+            int newI = newIndices[i];
+            for (int j = i+1; j < adjMatrix[i].length; j++) {
+                int newJ = newIndices[j];
+                if(adjMatrix[i][j] == 1) {
+                    vertices[newI].addNeighbour(vertices[newJ]);
                 }
             }
         }

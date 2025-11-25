@@ -248,6 +248,7 @@ public class Vertex {
         int neighbourhood = open ? neighbours : (neighbours | (1 << index));
 
         if (inputColoring == Coloring.ODD) {
+            // Odd coloring
             int odds = 0;
             for (int i = neighbourhood; i != 0; i &= i - 1) {
                 int index = Integer.numberOfTrailingZeros(i);
@@ -274,6 +275,8 @@ public class Vertex {
             }
             return odds != 0;
         } else if (inputColoring == Coloring.PROPER) {
+            // Proper coloring
+            if (!properLy) return true;
             for (int i = neighbourhood; i != 0; i &= i - 1) {
                 int index = Integer.numberOfTrailingZeros(i);
 
@@ -286,9 +289,11 @@ public class Vertex {
                 } else if (neighbourColor == 0 && neighbour.getAmountOfAvailableColors() != 1) {
                     // fillUncolored is true, we check if we can fill the uncolored vertex.
                     return false;
+                } else if (neighbourColor == 0) {
+                    neighbourColor = Integer.numberOfTrailingZeros(neighbour.getAvailableColors());
                 }
 
-                if (properLy && proper && neighbourColor == color && !this.equals(neighbour)) {
+                if (neighbourColor == color) {
                     return false;
                 }
 
