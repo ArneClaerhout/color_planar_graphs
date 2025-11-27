@@ -1,5 +1,6 @@
 Commands:
 - ./colorScript.sh 3:5
 - ./colorScript.sh 3:13 -c iCFo -o
+- ./checkOutputs.sh 3:10 all
 - ./colorScript.sh 3:12 -c pUMo -f 6
 - ./colorScript.sh 3:12 -c pUMo -f 6 --show png

@@ -9,21 +9,30 @@
 \pgfplotsset{compat=newest}   % or a specific version, e.g. 1.18
 \usepackage{pgfmath}
 \usepackage{graphicx}
-\usepackage[dutch]{babel}
 \usepackage{subfiles}
 \usepackage{amssymb, amsthm, amsmath,hyperref,mhchem,siunitx}
 \sisetup{output-decimal-marker = {,}}
 \usepackage[section]{placeins}
 \usepackage[gen]{eurosym}
 \usepackage{multicol}
+\usepackage[style=verbose]{biblatex}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usepackage{float}
 
 \title[Bachelorproef]{Bachelorproefvoorstelling van grafenkleuringen}
-\subtitle{Ondertitel}
-\author{Arne Claerhout} 
+\subtitle{A computational approach for variants of coloring planar graphs}
+\author{Arne Claerhout \and \\
+Jorik Jooken \and Jan Goedgebeur} 
 \institute[Kulak]{KU Leuven Kulak}
 \date{Academiejaar 2025 -- 2026}
 
 \renewcommand{\outlineTitle}{Overzicht} % enkel met optie outline
+
+\addbibresource{Citations.bib}
+
+\addtobeamertemplate{footnote}{}{\vspace{2ex}}
 
 \begin{document}
 	
@@ -42,12 +51,13 @@
 		\frametitle{Onderzoeksprobleem}
 		
 		\begin{itemize}
-			\item Kleuren van grafen
+			\item Hoe kunnen we een efficiënt algoritme voor het kleuren van vlakke grafen maken, zodat we hiermee vermoedens kunnen testen.
+			\item Kleuren van vlakke grafen
 			\begin{itemize}
 				\item Knopen
 				\item Vlakke grafen
 			\end{itemize}
-			\item Conjectures rond chromatische getallen weerleggen
+			\item Vermoedens rond chromatische getallen weerleggen of ondersteunen door computationeel bewijs
 		\end{itemize}
 	\end{frame}
 	
@@ -57,7 +67,7 @@
 		\begin{multicols}{2}
 
 			\begin{itemize}
-				\item Proper kleuring
+				\item Proper colouring
 			\end{itemize}
 			
 			\vspace*{\fill}\null
@@ -76,11 +86,11 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper kleuring
-				\item Odd kleuring
+				\item Proper colouring
+				\item Odd colouring
 				\begin{itemize}
-					\item Proper
-					\item Oneven kleur
+					\item Proper colouring
+					\item "Oneven" kleur
 				\end{itemize}
 			\end{itemize}
 			
@@ -104,11 +114,11 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper kleuring
-				\item Odd kleuring
+				\item Proper colouring
+				\item Odd colouring
 				\begin{itemize}
-					\item Proper
-					\item Oneven kleur
+					\item Proper colouring
+					\item "Oneven" kleur
 				\end{itemize}
 			\end{itemize}
 			
@@ -131,9 +141,9 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper kleuring
-				\item Odd kleuring
-				\item Conflict free kleuring (CF)
+				\item Proper colouring
+				\item Odd colouring
+				\item Conflict free colouring (CF)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
@@ -162,9 +172,9 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper kleuring
-				\item Odd kleuring
-				\item Conflict free kleuring (CF)
+				\item Proper colouring
+				\item Odd colouring
+				\item Conflict free colouring (CF)
 				\begin{itemize}
 					\item 4 opsplitsingen
 					\item Proper $\longleftrightarrow$ Improper
@@ -193,10 +203,10 @@
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper kleuring
-				\item Odd kleuring
-				\item Conflict free kleuring (CF)
-				\item Unique-Maximum kleuring (UM)
+				\item Proper colouring
+				\item Odd colouring
+				\item Conflict free colouring (CF)
+				\item Unique-Maximum colouring (UM)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
@@ -219,6 +229,21 @@
 	\end{frame}
 	
 	\begin{frame}
+		\frametitle{Toepassingen}
+		\begin{itemize}
+			\item Draadloze netwerken: versturen signaal van zendmast zonder interferentie 
+			
+			$\rightarrow$ Conflict free colouring
+			\item Vertex ranking: kleuring waarbij paden tussen knopen met zelfde kleur een knoop bevatten met grotere kleur 
+			
+			$\rightarrow$ Unique-Maximum colouring
+			\begin{itemize}
+				\item Toepassingen bij parallel factoriseren matrices en meer
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
 		\frametitle{Naamgeving}
 		
 		\begin{itemize}
@@ -227,47 +252,63 @@
 			\item Open neighbourhood $\rightarrow$ o
 			\item Closed neighbourhood $\rightarrow$ c
 			\item pCFo, iUMo, iUMc, pUMo, iCFc, $\dots$
+			\item 10 kleuringen
 		\end{itemize}
 	\end{frame}
 	
 	\begin{frame}
 		\frametitle{Chromatische getallen}
 		\begin{itemize}
-			\item $\chi_{pCFo}(\mathcal{P})$, $\chi_{O}(\mathcal{P})$, $\chi(\mathcal{P})$, $\dots$
+			\item $\chi_{pCFo}(\mathcal{P})$, $\chi_{O}(\mathcal{P})$, $\chi(\mathcal{P})$, $\dots$ ($\mathcal{P}$ een vlakke graaf)
 			\item Per kleuring
-			\item Maximaal aantal kleuren die minimaal nodig is
+			\item Maximaal aantal kleuren dat minimaal nodig is
 			
 		\end{itemize}
 	\end{frame}
 	
 	\section{Literatuur}
 	
-	
 	\begin{frame}
 		\frametitle{Literatuur}
 		
+			% Define the content of the footnotes once at the frame start
+		% (We use \footnotetext inside the frame, defining the content for the 
+		% next available footnote counter, which we control.)
+		
+		% Footnote 1 Content (CFenUMConjectures)
+		\stepcounter{footnote}\footnotetext{\cite{CFenUMConjectures}}
+		% Footnote 2 Content (PETRUSEVSKI2022385)
+		\stepcounter{footnote}\footnotetext{\cite{PETRUSEVSKI2022385}}
+		% Footnote 3 Content (oddMax8)
+		\stepcounter{footnote}\footnotetext{\cite{oddMax8}}
+		
+		% Reset the counter back to the first defined number (1)
+		\setcounter{footnote}{1} 
+		
 		\begin{itemize}
-			\item Proper conflict-free and unique-maximum colorings of planar graphs with respect to neighborhoods
-			\item Odd kleuringen:
-			\begin{itemize}
-				\item Colorings with neighborhood parity condition
-				\item The Odd Chromatic Number of a Planar Graph is at Most 8
-			\end{itemize}
+			% --- FIRST LIST ITEM (Markers 1, 2, 3) ---
+			\item Brengen resultaten samen en bewijzen nieuwe grenzen%
+			\textsuperscript{\thefootnote}%  <-- Prints 1
+			\stepcounter{footnote}\textsuperscript{\thefootnote}%  <-- Prints 2
+			\stepcounter{footnote}\textsuperscript{\thefootnote} % <-- Prints 3
 			
-			\pause
-			\item Bewijzen grenzen van chromatische getallen
-			\item Formuleren conjectures
-			
-			
+			% --- SECOND LIST ITEM (Markers 1, 2) ---
+			% Reset the counter back to 1 before starting the second item's markers
+			\setcounter{footnote}{1} 
+			\item Formuleren vermoedens%
+			\textsuperscript{\thefootnote}%  <-- Prints 1
+			\stepcounter{footnote}\textsuperscript{\thefootnote} % <-- Prints 2
 		\end{itemize}
+
 		
 		
 	\end{frame}
 	
 	\begin{frame}
-		\frametitle{Conjectures}
-		
-		\begin{block}{Odd}
+		\frametitle{Vermoedens}
+		\small $\mathcal{P}$ een vlakke graaf
+		\vspace{0.5em}
+		\begin{block}{Odd colouring}
 			$
 			\begin{array}{c@{\hspace{2.8cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
@@ -284,7 +325,7 @@
 			$
 		\end{block}
 		
-		\begin{block}{Proper}
+		\begin{block}{Proper colourings}
 			$
 			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
@@ -308,9 +349,30 @@
 	\end{frame}
 	
 	\begin{frame}
-		\frametitle{Conjectures 2}
+		\frametitle{Vermoedens 2}
+		$\mathcal{P}$ een vlakke graaf
 		
-		\begin{block}{Improper}
+		\begin{block}{Improper colourings}
+			$
+			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
+				\begin{aligned}
+					& 4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5 \\ 
+					& 3 \le \chi_{\mathrm{iCFc}}(\mathcal{P}) \le 4 \\ 
+					& 5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10 \\ 
+					&4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6
+				\end{aligned}
+			\end{array}
+			$
+		\end{block}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Vermoedens 2}
+		\setcounter{footnote}{3} 
+		$\mathcal{P}$ een vlakke graaf
+		
+		\begin{block}{Improper colourings}
 			$
 			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
@@ -320,7 +382,6 @@
 					&4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6
 				\end{aligned}
 				&
-				\pause
 				\Large \Rightarrow
 				&
 				\begin{aligned}
@@ -334,9 +395,10 @@
 		\end{block}
 		
 		\begin{itemize}
-			\item Conjecture van $\chi_{\mathrm{iCFc}}(\mathcal{P})$ is al weerlegd  (Conflict-free colouring of planar graphs)
-			\item 
+			\item Conjecture van $\chi_{\mathrm{iCFc}}(\mathcal{P})$ is al weerlegd\footcite{Malik2023thesis}.
+			\item $\chi_{\mathrm{iCFc}}(\mathcal{P}) = 4$
 		\end{itemize}
+		
 	\end{frame}
 	
 	\section{Methodologie}
@@ -345,50 +407,82 @@
 		\frametitle{Methodologie}
 		
 		\begin{itemize}
-			\item Grafen genereren (plantri)
-			\pause
-			\item Inkleuren
-			\begin{itemize}
-				\item Java
-				\item Optimalisaties
-			\end{itemize}
-		\end{itemize}
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{Optimalisaties}
-		
-		\begin{itemize}
-			\item Kiezen volgende knoop:
-			\begin{itemize}
-				\item 4 implementaties getest
-				\item \textbf{Knopen overlopen}, PQ, Lijst van bitsets, Lijst van LL
-			\end{itemize}
-			\pause
-			\item Houd mogelijke kleuren bij
-			\pause
 			\item Backtracking
-			\pause
-			\item Pruning
-			\begin{itemize}
-				\item Wanneer geen kleuren mogelijk
-				\item Wanneer knoop volledig ingekleurd
-				\item Wanneer neighbourhood bijna ingekleurd $\rightarrow$ sluit kleuren uit
-			\end{itemize}
+			\item Houd mogelijke kleuren bij
 		\end{itemize}
+		\pause
+		
+		\begin{algorithm}[H]
+			\caption{Kleuren van grafen}
+			\begin{algorithmic}[1]
+				\State $G \gets \text{grafen gegenereerd door \textit{plantri}}$
+				\For{\texttt{$g \in G$}}
+					\For{\text{$maxColor$ $ \le $ $10$}}
+						\If{\texttt{colorGraph}($g, maxColor, 0$)} 
+							
+							\Return $maxColor$
+						\EndIf
+					\EndFor
+				\EndFor
+			\end{algorithmic}
+		\end{algorithm}
+		
+	\end{frame}
+	
+	\begin{frame}		
+		\begin{algorithm}[H]
+			\caption{\texttt{colorGraph}}
+			\begin{algorithmic}[1]
+				\If{All vertices colored}
+				\Return True
+				\EndIf
+				\State $vertex \gets $ \texttt{vertices}[$index$]
+				\For{Each available $color$ of $vertex$}
+					\State \texttt{color}($vertex, color$)
+					\If{\texttt{neighbourhood}($vertex$) is fully colored $\land$ $\neg$\texttt{isCorrectlyColored}($vertex$)}
+					
+						\Return False
+					\EndIf
+					\State \texttt{updateNeighbours}($vertex, color$)
+					\If{\texttt{colorGraph}($g, maxColor, $ \texttt{getBestIndex}())}
+						
+						\Return True
+					\EndIf
+					\State \texttt{uncolor}($vertex, color$)
+				\EndFor
+				\State \textbf{return} False
+			\end{algorithmic}
+		\end{algorithm}
+		
+	\end{frame}
+	
+	
+	\begin{frame}		
+		\begin{algorithm}[H]
+			\caption{\texttt{updateNeighbours}}
+			\begin{algorithmic}[1]
+				\For{$neighbour \in $ \texttt{neighbourhood}($vertex$)}
+					\If{\texttt{neighbourhood}($neighbour$) is fully colored}
+						
+						\Return \texttt{isCorrectlyColored}($neighbour$)
+					\ElsIf{\texttt{neighbourhood}($neighbour$) contains only \textit{one} uncolored vertex}
+						\State \texttt{removeAvailableColorsForColoring}($uncoloredNeighbour$)
+						
+					\ElsIf{$coloring$ is proper}
+						\State \texttt{removeAvailableColor}($neighbour, color$)
+					\EndIf
+				\EndFor
+			\end{algorithmic}
+		\end{algorithm}
+		
 	\end{frame}
 	
 	\begin{frame}
-		\frametitle{Methodologie}
+		\frametitle{Threats to validity}
 		
 		\begin{itemize}
-			\item Grafen genereren (plantri)
-			\item Inkleuren
-			\begin{itemize}
-				\item Java
-				\item Optimalisaties
-			\end{itemize}
-			\item Chromatisch getal volgens kleuring vinden
+			\item Incorrect algoritme
+			\item Vergelijken tussen implementaties
 		\end{itemize}
 	\end{frame}
 	
@@ -398,20 +492,26 @@
 		\frametitle{Planning}
 		\begin{itemize}
 			\item Optimaliseren
-			\item Laten lopen
+			\item Patronen in maximaliserende grafen zoeken
+			\item Code omzetten naar C
+			\item Algoritme laten lopen
+			\item Bewijzen correctheid naïef algoritme
+			\item Verslag schrijven
 		\end{itemize}
 	\end{frame}
 	
 	\section{Demo}
 	
 	\begin{frame}
-		\frametitle{Demo}
+		\centering
+		\includegraphics[width=0.9\textwidth]{DEMO.pdf}
 	\end{frame}
 	
 	\section{Vragen}
 	
 	\begin{frame}
-		\frametitle{Vragen?}
+		\centering
+		\includegraphics[width=0.9\textwidth]{VRAGEN.pdf}
 	\end{frame}
 	
 \end{document}

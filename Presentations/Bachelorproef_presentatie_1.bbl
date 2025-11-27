@@ -1,0 +1,169 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global}
+    \entry{CFenUMConjectures}{unknown}{}
+      \name{author}{4}{}{%
+        {{hash=3e2e9caad1901ab4153adaea2d4318b2}{%
+           family={Fabrici},
+           familyi={F\bibinitperiod},
+           given={Igor},
+           giveni={I\bibinitperiod}}}%
+        {{hash=dea9936dc5717aa4e8eda83bbd774a23}{%
+           family={Lužar},
+           familyi={L\bibinitperiod},
+           given={Borut},
+           giveni={B\bibinitperiod}}}%
+        {{hash=1c69be554c5ff2f711d76c8e275d848b}{%
+           family={Rindošová},
+           familyi={R\bibinitperiod},
+           given={Simona},
+           giveni={S\bibinitperiod}}}%
+        {{hash=60601e062dbffd23d615be938b1c50d9}{%
+           family={Soták},
+           familyi={S\bibinitperiod},
+           given={Roman},
+           giveni={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{c521e53085415ca37bfac1f230cda5a7}
+      \strng{fullhash}{285911e4a31d2e7a7740c439103ded03}
+      \strng{bibnamehash}{c521e53085415ca37bfac1f230cda5a7}
+      \strng{authorbibnamehash}{c521e53085415ca37bfac1f230cda5a7}
+      \strng{authornamehash}{c521e53085415ca37bfac1f230cda5a7}
+      \strng{authorfullhash}{285911e4a31d2e7a7740c439103ded03}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{02}
+      \field{title}{Proper conflict-free and unique-maximum colorings of planar graphs with respect to neighborhoods}
+      \field{year}{2022}
+      \verb{doi}
+      \verb 10.48550/arXiv.2202.02570
+      \endverb
+    \endentry
+    \entry{Malik2023thesis}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=f07bb2042a4581d1d812e41c7fec34e8}{%
+           family={Málik},
+           familyi={M\bibinitperiod},
+           given={Lukáš},
+           giveni={L\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Masarykova univerzita, Fakulta informatikyBrno}%
+      }
+      \strng{namehash}{f07bb2042a4581d1d812e41c7fec34e8}
+      \strng{fullhash}{f07bb2042a4581d1d812e41c7fec34e8}
+      \strng{bibnamehash}{f07bb2042a4581d1d812e41c7fec34e8}
+      \strng{authorbibnamehash}{f07bb2042a4581d1d812e41c7fec34e8}
+      \strng{authornamehash}{f07bb2042a4581d1d812e41c7fec34e8}
+      \strng{authorfullhash}{f07bb2042a4581d1d812e41c7fec34e8}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{SUPERVISOR: prof. RNDr. Petr Hliněný, Ph.D.}
+      \field{title}{Conflict-free colouring of planar graphs [online]}
+      \field{type}{Bakalářská práce}
+      \field{year}{2023 [cit. 2025-11-26]}
+      \verb{urlraw}
+      \verb https://theses.cz/id/u5w3fx/
+      \endverb
+      \verb{url}
+      \verb https://theses.cz/id/u5w3fx/
+      \endverb
+    \endentry
+    \entry{oddMax8}{unknown}{}
+      \name{author}{2}{}{%
+        {{hash=1caa8eafb3330beccb7613e8d79aac0f}{%
+           family={Petr},
+           familyi={P\bibinitperiod},
+           given={Jan},
+           giveni={J\bibinitperiod}}}%
+        {{hash=c93a1f2112c5f77ef026f40594a4b24f}{%
+           family={Portier},
+           familyi={P\bibinitperiod},
+           given={Julien},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{e3a5e185e899cdd458ad6bb22dfe8321}
+      \strng{fullhash}{e3a5e185e899cdd458ad6bb22dfe8321}
+      \strng{bibnamehash}{e3a5e185e899cdd458ad6bb22dfe8321}
+      \strng{authorbibnamehash}{e3a5e185e899cdd458ad6bb22dfe8321}
+      \strng{authornamehash}{e3a5e185e899cdd458ad6bb22dfe8321}
+      \strng{authorfullhash}{e3a5e185e899cdd458ad6bb22dfe8321}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{01}
+      \field{title}{Odd chromatic number of planar graphs is at most 8}
+      \field{year}{2022}
+      \verb{doi}
+      \verb 10.48550/arXiv.2201.12381
+      \endverb
+    \endentry
+    \entry{PETRUSEVSKI2022385}{article}{}
+      \name{author}{2}{}{%
+        {{hash=21980980938844c08a079cd8362f019e}{%
+           family={Petruševski},
+           familyi={P\bibinitperiod},
+           given={Mirko},
+           giveni={M\bibinitperiod}}}%
+        {{hash=98918986e2227c6295b3b9a83b28b728}{%
+           family={Škrekovski},
+           familyi={Š\bibinitperiod},
+           given={Riste},
+           giveni={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{40f5da7e22dc4d2982366d47f8860fe7}
+      \strng{fullhash}{40f5da7e22dc4d2982366d47f8860fe7}
+      \strng{bibnamehash}{40f5da7e22dc4d2982366d47f8860fe7}
+      \strng{authorbibnamehash}{40f5da7e22dc4d2982366d47f8860fe7}
+      \strng{authornamehash}{40f5da7e22dc4d2982366d47f8860fe7}
+      \strng{authorfullhash}{40f5da7e22dc4d2982366d47f8860fe7}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this short paper, we introduce a new vertex coloring whose motivation comes from our series on odd edge-colorings of graphs. A proper vertex coloring φ of a graph G is said to be odd if for each non-isolated vertex x∈V(G) there exists a color c such that φ−1(c)∩N(x) is odd-sized. We prove that every simple planar graph admits an odd 9-coloring, and conjecture that 5 colors always suffice.}
+      \field{issn}{0166-218X}
+      \field{journaltitle}{Discrete Applied Mathematics}
+      \field{title}{Colorings with neighborhood parity condition}
+      \field{volume}{321}
+      \field{year}{2022}
+      \field{pages}{385\bibrangedash 391}
+      \range{pages}{7}
+      \verb{doi}
+      \verb https://doi.org/10.1016/j.dam.2022.07.018
+      \endverb
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/S0166218X22002803
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/S0166218X22002803
+      \endverb
+      \keyw{Planar graph,Neighborhood,Proper coloring,Odd coloring}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
