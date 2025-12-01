@@ -1,35 +1,40 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
 public class Graph {
 
-//    /**
-//     * The array comprised of the vertices in this graph.
-//     */
-//    Vertex[] vertices;
+    /**
+     * The array comprised of the vertices in this graph.
+     */
+    protected Vertex[] vertices;
 
     /**
      * The indexed array that stays by index.
      */
-    Vertex[] verticesIndexed;
+    protected Vertex[] verticesIndexed;
 
     /**
      * A help-bitset for the verticesIndexed array that tracks which vertices have been colored.
      */
-    private int vertexIsColored = 0;
+    protected int vertexIsColored = 0;
 
-    private int vertexIsAlmostColored = 0;
+//    private int vertexIsAlmostColored = 0;
+
+    protected int chromaticNumber = 0;
+
+    protected ArrayList<int[]> colorings = new ArrayList<>();
 
     /**
      * A help-bitset for checking whether the graph is almost fully colored.
      */
-    private final int maxColoring;
+    protected final int maxColoring;
 
     /**
      * A simple integer that keeps track of the amount of vertices.
      */
-    private final int numberOfVertices;
+    protected final int numberOfVertices;
 
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
@@ -105,7 +110,7 @@ public class Graph {
      * @param   um
      *          Whether the coloring is a unique-maximum coloring.
      */
-    private boolean isCorrectlyColored(Coloring coloring, boolean properLy, boolean open, boolean proper, boolean um) {
+    protected boolean isCorrectlyColored(Coloring coloring, boolean properLy, boolean open, boolean proper, boolean um) {
         // This method only gets called after coloring properLy
         if (!properLy && coloring == Coloring.PROPER) return true;
 
@@ -276,7 +281,7 @@ public class Graph {
      * @param   n
      *          The amount of vertices for this graph.
      */
-    private static Vertex[] findFastVerticesList(char[] graphString, int n) {
+    protected static Vertex[] findFastVerticesList(char[] graphString, int n) {
         Vertex[] vertices = new Vertex[n];
 
         for (int i = 0; i < n; i++) {
@@ -330,7 +335,7 @@ public class Graph {
      *          The amount of vertices.
      * @return  The array of vertices with each vertex instantiated.
      */
-    private static Vertex[] findVerticesList(int[][] adjMatrix, int n) {
+    protected static Vertex[] findVerticesList(int[][] adjMatrix, int n) {
         Vertex[] vertices = new Vertex[n];
 
         for (int i = 0; i < n; i++) {
@@ -379,6 +384,9 @@ public class Graph {
         return vertices;
     }
 
+    public ArrayList<int[]> getColorings() {
+        return colorings;
+    }
 
     /**
      * A method for finding the proper, odd, conflict-free
@@ -388,8 +396,22 @@ public class Graph {
      *
      * @param   coloring
      *          The chosen coloring method of which this method is finding the chromatic number of.
+     * @param   open
+     *          Whether the coloring is an open coloring,
+     *          this also includes odd coloring.
+     * @param   proper
+     *          Whether the coloring is proper.
+     * @param   um
+     *          Whether the coloring is a version of unique-maximum coloring.
+     * @param   allColorings
+     *          True if all colorings for a given graph should get found.
+     *          False otherwise.
+     *
+     * @post    If allColorings is true,
+     *          the arrayList colorings will contain all possible colorings for this graph.
+     *          Otherwise, the graph ends in a colored state
      */
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um) {
+    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
         for (int i = 2; i <= n; i++) {
@@ -399,7 +421,7 @@ public class Graph {
             // Each time we reset which vertices are colored.
             vertexIsColored = 0;
             availables = maxColoring;
-            if (optimizedAlgorithm(coloring, open, proper, um,0, i, 0)) {
+            if (optimizedAlgorithm(coloring, open, proper, um,0, i, 0, allColorings)) {
                 return i;
             }
         }
@@ -425,13 +447,18 @@ public class Graph {
      *          The maximum color possible for this coloring method.
      * @param   index
      *          The index of where this algorithm is working.
+     * @param   allColorings
+     *          True if all colorings for a given graph should get found.
      *
      * @return  True if the algorithm found a coloring for this graph.
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
-    private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, int index) {
+    private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
+                                       int maxColorCurrGraph, int maxColor, int index, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
+            if (allColorings) colorings.add(getColors());
+
             // We reached the end
             return true;
         }
@@ -474,7 +501,8 @@ public class Graph {
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
             int newIndex = getBestIndex(index);
-            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, newIndex)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, newIndex, allColorings)) {
+                if (allColorings) continue;
                 return true;
             }
 
@@ -681,7 +709,6 @@ public class Graph {
      *          This should be an empty list
      *          to be filled with the vertices that were changed.
      *          This will contain the old vertices that were removed from verticesIndexed.
-
      *
      * @return  True if this color should get skipped
      *          as we already found a neighbour with zero possible colors.

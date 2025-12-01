@@ -35,7 +35,7 @@ public class Vertex {
      * @note    This variable is only needed for the show option in colorScript.sh.
      *          As we use this to correctly color the shown graph.
      */
-    private int index;
+    private final int index;
 
     /**
      * A constructor for a vertex object.

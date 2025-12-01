@@ -112,7 +112,7 @@ gen_range_graphs() {
 		echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
 	fi
 	for num in $(seq "$1" "$2"); do
-		"./$plantri_path/plantri" -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+		"./$plantri_path/plantri" "${simpleplanar[@]}" "$num" 2>/dev/null # We get rid of the extra printing to the terminal
 	done
 }
 
@@ -201,7 +201,7 @@ choose_incoming_graphs() {
 				fi
 			fi
 
-			"./$plantri_path/plantri" -g "$n" 2>/dev/null | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
+			"./$plantri_path/plantri" "${simpleplanar[@]}" "$n" 2>/dev/null | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
 		done
 
 		# We deactivate the venv
@@ -233,22 +233,9 @@ progressview=false
 show=false
 show_value="svg"
 method=0
-
-if [[ "$1" != -* ]]; then
-	# Number of vertices is given
-
-	# We extract them
-	if [[ "$1" == *:* ]]; then
-		# Split the argument into start and end
-		IFS=':' read -r startn endn <<<"$1"
-	else
-		# Only one value given; use it as both start and end
-		startn="$1"
-		endn="$1"
-	fi
-	shift 1
-
-fi
+startn=-1
+endn=-1
+simpleplanar=(-g)
 
 #######################
 ###### ARGUMENTS ######
@@ -329,13 +316,31 @@ while [[ $# -gt 0 ]]; do
     method=3
     shift 1
     ;;
+  -p)
+    simpleplanar+=("-p")
+    shift 1
+    ;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1
 		;;
 	*)
-		# End of the flags
-		break
+	  if [[ "$startn" == -1 && "$endn" == -1 ]]; then
+      # Number of vertices
+      # We extract them
+      if [[ "$1" == *:* ]]; then
+        # Split the argument into start and end
+        IFS=':' read -r startn endn <<<"$1"
+      else
+        # Only one value given; use it as both start and end
+        startn="$1"
+        endn="$1"
+      fi
+      shift 1
+    else
+      echo "Number of vertices already set."
+      exit 1
+    fi
 		;;
 	esac
 done

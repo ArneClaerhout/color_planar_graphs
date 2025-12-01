@@ -109,30 +109,25 @@ public class Main {
                     }
                 }
 
-                int c = 0;
+                int c;
                 String s;
+                Graph graph;
                 switch (method) {
                     case 1:
-                        GraphPQ graph1 = new GraphPQ(line);
-                        c = graph1.findChromaticNumberOptimized(coloring);
-                        s = Arrays.toString(graph1.getColors());
+                        graph = new GraphPQ(line);
                         break;
                     case 2:
-                        GraphLL graph2 = new GraphLL(line);
-                        c = graph2.findChromaticNumberOptimized(coloring);
-                        s = Arrays.toString(graph2.getColors());
+                        graph = new GraphLL(line);
                         break;
                     case 3:
-                        GraphBS graph3 = new GraphBS(line);
-                        c = graph3.findChromaticNumberOptimized(coloring);
-                        s = Arrays.toString(graph3.getColors());
+                        graph = new GraphBS(line);
                         break;
                     default:
-                        Graph graph = new Graph(line);
-                        c = graph.findChromaticNumberOptimized(coloring, open, proper, um);
-                        s = Arrays.toString(graph.getColors());
+                        graph = new Graph(line);
                         break;
                 }
+                c = graph.findChromaticNumberOptimized(coloring, open, proper, um, false);
+                s = Arrays.toString(graph.getColors());
 
                 if (c >= minChrom) {
                     if (overview) {
@@ -181,7 +176,7 @@ public class Main {
             String line;
             while((line = br.readLine()) != null){
                 Graph graph = new Graph(line);
-                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"), true, true, false);
+                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"), true, true, false, false);
                 if (c == 0) {
                     System.out.println(line);
                     break;
