@@ -24,7 +24,7 @@
 \title[Bachelorproef]{Bachelorproefvoorstelling van grafenkleuringen}
 \subtitle{A computational approach for variants of coloring planar graphs}
 \author{Arne Claerhout \and \\
-Jorik Jooken \and Jan Goedgebeur} 
+Begeleiders: Jorik Jooken \and Jan Goedgebeur} 
 \institute[Kulak]{KU Leuven Kulak}
 \date{Academiejaar 2025 -- 2026}
 
@@ -51,12 +51,8 @@ Jorik Jooken \and Jan Goedgebeur}
 		\frametitle{Onderzoeksprobleem}
 		
 		\begin{itemize}
-			\item Hoe kunnen we een efficiënt algoritme voor het kleuren van vlakke grafen maken, zodat we hiermee vermoedens kunnen testen.
-			\item Kleuren van vlakke grafen
-			\begin{itemize}
-				\item Knopen
-				\item Vlakke grafen
-			\end{itemize}
+			\item Hoe kunnen we een efficiënt algoritme voor het kleuren van vlakke grafen maken, zodat we hiermee vermoedens kunnen testen?
+			\item Knoopkleuringen van vlakke grafen
 			\item Vermoedens rond chromatische getallen weerleggen of ondersteunen door computationeel bewijs
 		\end{itemize}
 	\end{frame}
@@ -90,7 +86,7 @@ Jorik Jooken \and Jan Goedgebeur}
 				\item Odd colouring
 				\begin{itemize}
 					\item Proper colouring
-					\item "Oneven" kleur
+					\item ``Oneven'' kleur
 				\end{itemize}
 			\end{itemize}
 			
@@ -118,7 +114,7 @@ Jorik Jooken \and Jan Goedgebeur}
 				\item Odd colouring
 				\begin{itemize}
 					\item Proper colouring
-					\item "Oneven" kleur
+					\item ``Oneven'' kleur
 				\end{itemize}
 			\end{itemize}
 			
@@ -252,16 +248,16 @@ Jorik Jooken \and Jan Goedgebeur}
 			\item Open neighbourhood $\rightarrow$ o
 			\item Closed neighbourhood $\rightarrow$ c
 			\item pCFo, iUMo, iUMc, pUMo, iCFc, $\dots$
-			\item 10 kleuringen
+			\item $2 \times 2 \times 2 + 2 = 10 \text{ kleuringen}$
 		\end{itemize}
 	\end{frame}
 	
 	\begin{frame}
 		\frametitle{Chromatische getallen}
 		\begin{itemize}
-			\item $\chi_{pCFo}(\mathcal{P})$, $\chi_{O}(\mathcal{P})$, $\chi(\mathcal{P})$, $\dots$ ($\mathcal{P}$ een vlakke graaf)
+			\item $\chi(\mathcal{P})$, $\chi_{O}(\mathcal{P})$, $\chi_{pCFo}(\mathcal{P})$, $\dots$ ($\mathcal{P}$ de klasse van vlakke grafen)
 			\item Per kleuring
-			\item Maximaal aantal kleuren dat minimaal nodig is
+			\item Maximaal aantal kleuren, binnen klasse van vlakke grafen, bij minimale kleuringen van die grafen
 			
 		\end{itemize}
 	\end{frame}
@@ -288,15 +284,15 @@ Jorik Jooken \and Jan Goedgebeur}
 		\begin{itemize}
 			% --- FIRST LIST ITEM (Markers 1, 2, 3) ---
 			\item Brengen resultaten samen en bewijzen nieuwe grenzen%
-			\textsuperscript{\thefootnote}%  <-- Prints 1
-			\stepcounter{footnote}\textsuperscript{\thefootnote}%  <-- Prints 2
+			\textsuperscript{\thefootnote,}%  <-- Prints 1
+			\stepcounter{footnote}\textsuperscript{\thefootnote,}%  <-- Prints 2
 			\stepcounter{footnote}\textsuperscript{\thefootnote} % <-- Prints 3
 			
 			% --- SECOND LIST ITEM (Markers 1, 2) ---
 			% Reset the counter back to 1 before starting the second item's markers
 			\setcounter{footnote}{1} 
 			\item Formuleren vermoedens%
-			\textsuperscript{\thefootnote}%  <-- Prints 1
+			\textsuperscript{\thefootnote,}%  <-- Prints 1
 			\stepcounter{footnote}\textsuperscript{\thefootnote} % <-- Prints 2
 		\end{itemize}
 
@@ -306,40 +302,44 @@ Jorik Jooken \and Jan Goedgebeur}
 	
 	\begin{frame}
 		\frametitle{Vermoedens}
-		\small $\mathcal{P}$ een vlakke graaf
 		\vspace{0.5em}
 		\begin{block}{Odd colouring}
 			$
 			\begin{array}{c@{\hspace{2.8cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
+					& \textit{Bewezen grenzen:} \\
 					& 5 \leq \chi_{\mathrm{O}}(\mathcal{P}) \leq 8 \\
 				\end{aligned}
 				&
 				\pause
-				\Large \Rightarrow
+				\Large \rightarrow
 				&
 				\begin{aligned}
+					& \textit{Vermoedens:} \\
 					& \chi_{\mathrm{O}}(\mathcal{P}) = 5 \\
 				\end{aligned}
 			\end{array}
 			$
 		\end{block}
-		
+		\pause
 		\begin{block}{Proper colourings}
 			$
-			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
+			\begin{array}{c@{\hspace{2.35cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
-					& 6 \leq \chi_{\mathrm{PCFo}}(\mathcal{P}) \leq 8 \\
+					& \textit{Bewezen grenzen:} \\
+					& 6 \leq \chi_{\mathrm{pCFo}}(\mathcal{P}) \leq 8 \\
 					& \chi_{\mathrm{pCFc}}(\mathcal{P}) = 4 \\
 					& 6 \leq \chi_{\mathrm{pUMo}}(\mathcal{P}) \leq 10 \\
 					& 6 \leq \chi_{\mathrm{pUMc}}(\mathcal{P}) \leq 8
 				\end{aligned}
 				&
 				\pause
-				\Large \Rightarrow
+				\Large \rightarrow
 				&
 				\begin{aligned}
-					&\chi_{\mathrm{PCFo}}(\mathcal{P}) = 6 \\
+					& \textit{Vermoedens:} \\
+					&\chi_{\mathrm{pCFo}}(\mathcal{P}) = 6 \\
+					& \\
 					&\chi_{\mathrm{pUMo}}(\mathcal{P}) \leq 7 \\
 					&\chi_{\mathrm{pUMc}}(\mathcal{P}) = 6
 				\end{aligned}
@@ -349,13 +349,12 @@ Jorik Jooken \and Jan Goedgebeur}
 	\end{frame}
 	
 	\begin{frame}
-		\frametitle{Vermoedens 2}
-		$\mathcal{P}$ een vlakke graaf
-		
+		\frametitle{Vermoedens 2}		
 		\begin{block}{Improper colourings}
 			$
 			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
+					& \textit{Bewezen grenzen:} \\
 					& 4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5 \\ 
 					& 3 \le \chi_{\mathrm{iCFc}}(\mathcal{P}) \le 4 \\ 
 					& 5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10 \\ 
@@ -370,21 +369,21 @@ Jorik Jooken \and Jan Goedgebeur}
 	\begin{frame}
 		\frametitle{Vermoedens 2}
 		\setcounter{footnote}{3} 
-		$\mathcal{P}$ een vlakke graaf
-		
 		\begin{block}{Improper colourings}
 			$
 			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
+					& \textit{Bewezen grenzen:} \\
 					& 4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5 \\ 
 					& 3 \le \chi_{\mathrm{iCFc}}(\mathcal{P}) \le 4 \\ 
 					& 5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10 \\ 
 					&4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6
 				\end{aligned}
 				&
-				\Large \Rightarrow
+				\Large \rightarrow
 				&
 				\begin{aligned}
+					& \textit{Vermoedens:} \\
 					& \chi_{\mathrm{iCFo}}(\mathcal{P}) = 4 \\ 
 					& \chi_{\mathrm{iCFc}}(\mathcal{P}) = 3 \\ 
 					& \chi_{\mathrm{iUMo}}(\mathcal{P}) = 5 \\ 
@@ -411,14 +410,14 @@ Jorik Jooken \and Jan Goedgebeur}
 			\item Houd mogelijke kleuren bij
 		\end{itemize}
 		\pause
-		
+		\setcounter{algorithm}{0}
 		\begin{algorithm}[H]
 			\caption{Kleuren van grafen}
 			\begin{algorithmic}[1]
-				\State $G \gets \text{grafen gegenereerd door \textit{plantri}}$
-				\For{\texttt{$g \in G$}}
+				\State $\mathcal{G} \gets \text{grafen gegenereerd door \textit{plantri}}$
+				\For{\texttt{$G \in \mathcal{G}$}}
 					\For{\text{$maxColor$ $ \le $ $10$}}
-						\If{\texttt{colorGraph}($g, maxColor, 0$)} 
+						\If{\texttt{colorGraph}($G, maxColor, 0$)} 
 							
 							\Return $maxColor$
 						\EndIf
@@ -431,25 +430,26 @@ Jorik Jooken \and Jan Goedgebeur}
 	
 	\begin{frame}		
 		\begin{algorithm}[H]
-			\caption{\texttt{colorGraph}}
+			\caption{\texttt{colorGraph}($G, maxColor, index$)}
 			\begin{algorithmic}[1]
 				\If{All vertices colored}
 				\Return True
 				\EndIf
 				\State $vertex \gets $ \texttt{vertices}[$index$]
 				\For{Each available $color$ of $vertex$}
-					\State \texttt{color}($vertex, color$)
+					\State \texttt{col}($vertex, color$)
 					\If{\texttt{neighbourhood}($vertex$) is fully colored $\land$ $\neg$\texttt{isCorrectlyColored}($vertex$)}
 					
-						\Return False
+						\State \textbf{continue}
 					\EndIf
 					\State \texttt{updateNeighbours}($vertex, color$)
-					\If{\texttt{colorGraph}($g, maxColor, $ \texttt{getBestIndex}())}
+					\If{\texttt{colorGraph}($G, maxColor, $ \texttt{getBestIndex}())}
 						
 						\Return True
 					\EndIf
-					\State \texttt{uncolor}($vertex, color$)
 				\EndFor
+				
+				\State \texttt{uncol}($vertex, color$)
 				\State \textbf{return} False
 			\end{algorithmic}
 		\end{algorithm}
@@ -459,7 +459,7 @@ Jorik Jooken \and Jan Goedgebeur}
 	
 	\begin{frame}		
 		\begin{algorithm}[H]
-			\caption{\texttt{updateNeighbours}}
+			\caption{\texttt{updateNeighbours}($vertex, color$)}
 			\begin{algorithmic}[1]
 				\For{$neighbour \in $ \texttt{neighbourhood}($vertex$)}
 					\If{\texttt{neighbourhood}($neighbour$) is fully colored}
@@ -498,13 +498,6 @@ Jorik Jooken \and Jan Goedgebeur}
 			\item Bewijzen correctheid naïef algoritme
 			\item Verslag schrijven
 		\end{itemize}
-	\end{frame}
-	
-	\section{Demo}
-	
-	\begin{frame}
-		\centering
-		\includegraphics[width=0.9\textwidth]{DEMO.pdf}
 	\end{frame}
 	
 	\section{Vragen}
