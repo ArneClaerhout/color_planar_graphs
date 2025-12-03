@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Main {
 
@@ -45,11 +42,14 @@ public class Main {
                 minChrom = 0;
             }
 
-            // Lastly: choosing the method
+            // Fifth: choosing the method
             int method = Integer.parseInt(args[4]);
 
+            // Lastly: whether we check a condition
+            boolean checkCondition = Boolean.parseBoolean(args[5]);
 
-            if (raw == 0) System.out.println("Received coloring: " + coloring);
+
+            if (raw == 0) System.err.println("Received coloring: " + coloring);
             if (raw == 0 && method != 0) System.err.println("Received method: " + ((method == 1) ? "Priority Queues" : (method == 2) ? "Linked Lists" : "Bitsets"));
             // This is still done to stderr so that it doesn't interfere with other things
 
@@ -101,7 +101,7 @@ public class Main {
                                 cNumbers = new TreeMap<>();
                             }
                             if (raw == 0) {
-                                System.out.println("All graphs have been processed for this filter.");
+                                System.err.println("All graphs have been processed for this filter.");
                             }
                             // Restart the start
                             start = System.currentTimeMillis();
@@ -110,7 +110,6 @@ public class Main {
                 }
 
                 int c;
-                String s;
                 Graph graph;
                 switch (method) {
                     case 1:
@@ -126,10 +125,9 @@ public class Main {
                         graph = new Graph(line);
                         break;
                 }
-                c = graph.findChromaticNumberOptimized(coloring, open, proper, um, false);
-                s = Arrays.toString(graph.getColors());
+                c = graph.findChromaticNumberOptimized(coloring, open, proper, um, checkCondition, (raw == 4));
 
-                if (c >= minChrom) {
+                if (c >= minChrom && (graph.counter.getCondition() != graph.maxColoring || !checkCondition)) {
                     if (overview) {
                         cNumbers.merge(c, 1, Integer::sum);
                     } else {
@@ -141,7 +139,11 @@ public class Main {
                                 System.out.println(line); break;
                                 // This option is only useful when filtering
                             case 3:
-                                System.out.println(line + " " + s);
+                                System.out.println(line + " " + Arrays.toString(graph.getColors()));
+                                break;
+                            case 4:
+                                System.out.println(line + " " + graph.getColorings()
+                                        .stream().map(Arrays::toString).toList());
                                 break;
                             default: System.out.println(line + ": " + c);
                         }
@@ -165,7 +167,7 @@ public class Main {
             }
 
             if (raw == 0) {
-                System.out.println("All graphs have been processed.");
+                System.err.println("All graphs have been processed.");
             }
 
         } else {
@@ -176,7 +178,7 @@ public class Main {
             String line;
             while((line = br.readLine()) != null){
                 Graph graph = new Graph(line);
-                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"), true, true, false, false);
+                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"), true, true, false, false, false);
                 if (c == 0) {
                     System.out.println(line);
                     break;

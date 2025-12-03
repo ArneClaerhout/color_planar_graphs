@@ -21,7 +21,7 @@ public class VertexLL extends Vertex {
         super(index);
     }
 
-    public VertexLL(VertexLL v) {
+    public VertexLL(Vertex v) {
         super(v);
     }
 

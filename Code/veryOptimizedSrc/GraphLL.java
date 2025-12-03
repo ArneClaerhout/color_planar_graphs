@@ -19,7 +19,7 @@ public class GraphLL extends Graph {
 
     public GraphLL(String graph6) {
         super(graph6);
-        this.verticesIndexed = (VertexLL []) findFastVerticesList(graph6.toCharArray(), super.numberOfVertices);
+        this.verticesIndexed = Arrays.stream(super.verticesIndexed).map(VertexLL::new).toArray(VertexLL[]::new);
         this.vertices = new VertexLL[10];
     }
 
@@ -28,7 +28,7 @@ public class GraphLL extends Graph {
      */
     public GraphLL(int[][] adjMatrix) {
         super(adjMatrix);
-        this.verticesIndexed = (VertexLL []) findVerticesList(adjMatrix, super.numberOfVertices);
+        this.verticesIndexed = (VertexLL []) super.verticesIndexed;
         this.vertices = new VertexLL[10];
     }
 
@@ -36,7 +36,7 @@ public class GraphLL extends Graph {
      * {@inheritDoc}
      */
     @Override
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
         for (int i = 2; i <= n; i++) {
@@ -50,9 +50,10 @@ public class GraphLL extends Graph {
             }
             // Each time we reset which vertices are colored.
             vertexIsColored = 0;
-            if (optimizedAlgorithm(coloring, open, proper, um, 0, i, allColorings)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, 0, i, checkCondition, allColorings)) {
                 return i;
             }
+            if (chromaticNumber != 0) return i;
         }
         return 0;
     }
@@ -74,6 +75,9 @@ public class GraphLL extends Graph {
      *          This doesn't matter for unique-maximum colorings.
      * @param   maxColor
      *          The maximum color possible for this coloring method.
+     * @param   checkCondition
+     *          True if a condition, specified in the Counter class, should get checked.
+     *          False otherwise.
      * @param   allColorings
      *          True if all colorings for a given graph should get found.
      *
@@ -82,9 +86,9 @@ public class GraphLL extends Graph {
      *          False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-                                       int maxColorCurrGraph, int maxColor, boolean allColorings) {
-        if (Integer.bitCount(vertexIsColored) == numberOfVertices) {
-            return true;
+                                       int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
+        if (vertexIsColored == maxColoring) {
+            return startingStep(maxColor, checkCondition, allColorings);
         }
 
         int index = 0;
@@ -131,7 +135,7 @@ public class GraphLL extends Graph {
             }
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
-            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, allColorings)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, checkCondition, allColorings)) {
                 return true;
             }
 

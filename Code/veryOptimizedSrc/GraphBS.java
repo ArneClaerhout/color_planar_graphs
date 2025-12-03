@@ -12,11 +12,6 @@ public class GraphBS extends Graph {
 
     private int filledColors = 0;
 
-    /**
-     * The indexed array that stays by index.
-     */
-    Vertex[] verticesIndexed;
-
     public GraphBS(String graph6) {
         super(graph6);
     }
@@ -29,16 +24,10 @@ public class GraphBS extends Graph {
     }
 
     /**
-     * A method for finding the proper, odd, conflict-free
-     * or unique-maximum chromatic number of a graph.
-     * This is done using a memorization of the available colors
-     * if the chosen coloring method is proper.
-     *
-     * @param   coloring
-     *          The chosen coloring method of which this method is finding the chromatic number of.
+     * {@inheritDoc}
      */
     @Override
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
         for (int i = 2; i <= n; i++) {
@@ -52,9 +41,10 @@ public class GraphBS extends Graph {
             vertices[i - 1] = maxColoring;
             // Each time we reset which vertices are colored.
             vertexIsColored = 0;
-            if (optimizedAlgorithm(coloring, open, proper, um, 0, i)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, 0, i, checkCondition, allColorings)) {
                 return i;
             }
+            if (chromaticNumber != 0) return i;
         }
         return 0;
     }
@@ -76,13 +66,19 @@ public class GraphBS extends Graph {
      *          This doesn't matter for unique-maximum colorings.
      * @param   maxColor
      *          The maximum color possible for this coloring method.
+     * @param   checkCondition
+     *          True if a condition, specified in the Counter class, should get checked.
+     *          False otherwise.
+     * @param   allColorings
+     *          True if all colorings for a given graph should get found.
+     *
      * @return  True if the algorithm found a coloring for this graph.
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
-    private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um, int maxColorCurrGraph, int maxColor) {
-        if (Integer.bitCount(vertexIsColored) == numberOfVertices) {
-            return true;
+    private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um, int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
+        if (vertexIsColored == maxColoring) {
+            return startingStep(maxColor, checkCondition, allColorings);
         }
 
         int index = Integer.numberOfTrailingZeros(filledColors);
@@ -128,7 +124,7 @@ public class GraphBS extends Graph {
             }
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
-            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, checkCondition, allColorings)) {
                 return true;
             }
 

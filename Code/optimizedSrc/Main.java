@@ -44,7 +44,7 @@ public class Main {
             }
 
 
-            if (raw == 0) System.out.println("Received coloring: " + coloring);
+            if (raw == 0) System.err.println("Received coloring: " + coloring);
 
 
             // We start reading the graphs
@@ -152,7 +152,7 @@ public class Main {
             }
 
             if (raw == 0) {
-                System.out.println("All graphs have been processed.");
+                System.err.println("All graphs have been processed.");
             }
 
         } else {

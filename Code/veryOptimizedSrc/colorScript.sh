@@ -152,9 +152,9 @@ write_to_file() {
 
 java_alg() {
 	if [[ "$progressview" == true ]]; then
-		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method"
+		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
 	else
-		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method"
+		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
 	fi
 }
 
@@ -236,6 +236,7 @@ method=0
 startn=-1
 endn=-1
 simpleplanar=(-g)
+check_condition=false
 
 #######################
 ###### ARGUMENTS ######
@@ -320,6 +321,10 @@ while [[ $# -gt 0 ]]; do
     simpleplanar+=("-p")
     shift 1
     ;;
+  -x | --condition)
+    check_condition=true
+    shift 1
+    ;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1
@@ -350,16 +355,17 @@ done
 #######################
 
 # We make sure to recompile the code
-#javac Main.java
+javac Main.java
 #
 #### RAW-CHECK
-#if [[ "$raw" == 0 ]]; then
-#	# Only if we are not in raw mode do we print this.
-#	echo "Code compiled."
-#elif [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 ]]; then
-#	# We only want three raw options
-#	raw=1
-#fi
+if [[ "$raw" == 0 ]]; then
+	# Only if we are not in raw mode do we print this.
+	echo "Code compiled." >&2
+fi
+if [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 && "$raw" -ne 4 && "$raw" -ne 0 ]]; then
+	# We only want three raw options
+	raw=1
+fi
 
 ### SHOW-CHECK
 if [[ "$show" == true ]]; then

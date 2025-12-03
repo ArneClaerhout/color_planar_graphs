@@ -28,7 +28,7 @@ public class GraphPQ extends Graph {
      * {@inheritDoc}
      */
     @Override
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
         for (int i = 2; i <= n; i++) {
@@ -40,7 +40,7 @@ public class GraphPQ extends Graph {
                 // Note that this changes the amount of available colors
                 // This does not matter for the PQ as they're all the same value
             }
-            if (optimizedAlgorithm(coloring, open, proper, um, 0, i)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, 0, i, checkCondition, allColorings)) {
                 return i;
             }
         }
@@ -64,16 +64,20 @@ public class GraphPQ extends Graph {
      *          This doesn't matter for unique-maximum colorings.
      * @param   maxColor
      *          The maximum color possible for this coloring method.
+     * @param   checkCondition
+     *          True if a condition, specified in the Counter class, should get checked.
+     *          False otherwise.
+     * @param   allColorings
+     *          True if all colorings for a given graph should get found.
+     *
      * @return  True if the algorithm found a coloring for this graph.
      *          The colors of each of the vertex objects in vertices are the correct colors.
      *          False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-                                       int maxColorCurrGraph, int maxColor) {
-        if (vertices.isEmpty() || Integer.bitCount(vertexIsColored) == verticesIndexed.length) {
-            // We check the coloring
-            return true;
-
+                                       int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
+        if (vertexIsColored == maxColoring) {
+            return startingStep(maxColor, checkCondition, allColorings);
         }
 
         for (Vertex v : verticesIndexed) {
@@ -137,7 +141,7 @@ public class GraphPQ extends Graph {
 
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
-            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, checkCondition, allColorings)) {
                 return true;
             }
 

@@ -63,18 +63,6 @@ fi
 shift 1
 
 method=""
-if [[ "$1" == -pq || "$1" == -ll || "$1" == -bs ]]; then
-	method="$1"
-	if [[ "$method" == -pq ]]; then
-	  printf "Received method: Priority Queues\n\n"
-	elif [[ "$method" == -ll ]]; then
-	  printf "Received method: Linked Lists\n\n"
-	else
-	  printf "Received method: Bitsets\n\n"
-	fi
-	shift 1
-fi
-
 
 ########################
 ###### COMPARISON ######
@@ -95,6 +83,15 @@ declare -a colorings=()
 while [[ $# -gt 0 ]]; do
   if [[ "$1" == "all" ]]; then
     colorings+=("proper" "odd" "pUMo" "pUMc" "pCFo" "pCFc" "iUMo" "iUMc" "iCFo" "iCFc")
+  elif [[ "$1" == -pq || "$1" == -ll || "$1" == -bs ]]; then
+    method="$1"
+    if [[ "$method" == -pq ]]; then
+      printf "Received method: Priority Queues\n\n" >&2
+    elif [[ "$method" == -ll ]]; then
+      printf "Received method: Linked Lists\n\n" >&2
+    else
+      printf "Received method: Bitsets\n\n" >&2
+    fi
   else
 	  colorings+=("$1")
 	fi

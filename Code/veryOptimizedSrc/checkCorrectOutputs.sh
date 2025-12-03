@@ -20,23 +20,27 @@ numvertices="$1"
 shift 1
 method=""
 
+args=("$numvertices")
+argssimple=("$numvertices")
+
 # Loop over all flags and their values
 while [[ $# -gt 0 ]]; do
 	case $1 in
 	-c | --coloring)
-		coloring="$2"
+		args+=(-c "$coloring")
+		argssimple+=(-c "$coloring")
 		shift 2
 		;;
   -pq)
-    method="-pq"
+    args+=(-pq)
     shift 1
     ;;
   -ll)
-    method="-ll"
+    args+=(-ll)
     shift 1
     ;;
   -bs)
-    method="-bs"
+    args+=(-bs)
     shift 1
     ;;
 	-* | --*)
@@ -75,8 +79,8 @@ while IFS=$'\t' read -r line1 line2; do
 
 	esac
 	# We pipe these outputs, this will make sure that even if the length is incorrect, it will still output
-done < <(paste <(./../optimizedSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
-	<(./colorScript.sh "$numvertices" -c "$coloring" "$method" 2>/dev/null))
+done < <(paste <(./../optimizedSrc/colorScript.sh "${argssimple[@]}" 2>/dev/null) \
+	<(./colorScript.sh "${args[@]}" 2>/dev/null))
 
 if [[ "$diff" == true ]]; then
 	echo "Outputs differ."

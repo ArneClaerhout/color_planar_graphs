@@ -5,10 +5,10 @@ import java.util.stream.IntStream;
 
 public class Graph {
 
-    /**
-     * The array comprised of the vertices in this graph.
-     */
-    protected Vertex[] vertices;
+//    /**
+//     * The array comprised of the vertices in this graph.
+//     */
+//    protected Vertex[] vertices;
 
     /**
      * The indexed array that stays by index.
@@ -24,7 +24,7 @@ public class Graph {
 
     protected int chromaticNumber = 0;
 
-    protected ArrayList<int[]> colorings = new ArrayList<>();
+    protected Counter counter = new Counter();
 
     /**
      * A help-bitset for checking whether the graph is almost fully colored.
@@ -385,7 +385,7 @@ public class Graph {
     }
 
     public ArrayList<int[]> getColorings() {
-        return colorings;
+        return counter.getColorings();
     }
 
     /**
@@ -403,15 +403,14 @@ public class Graph {
      *          Whether the coloring is proper.
      * @param   um
      *          Whether the coloring is a version of unique-maximum coloring.
+     * @param   checkCondition
+     *          True if a condition, specified in the Counter class, should get checked.
+     *          False otherwise.
      * @param   allColorings
      *          True if all colorings for a given graph should get found.
      *          False otherwise.
-     *
-     * @post    If allColorings is true,
-     *          the arrayList colorings will contain all possible colorings for this graph.
-     *          Otherwise, the graph ends in a colored state
      */
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
         for (int i = 2; i <= n; i++) {
@@ -421,8 +420,11 @@ public class Graph {
             // Each time we reset which vertices are colored.
             vertexIsColored = 0;
             availables = maxColoring;
-            if (optimizedAlgorithm(coloring, open, proper, um,0, i, 0, allColorings)) {
+            if (optimizedAlgorithm(coloring, open, proper, um,0, i, 0, checkCondition, allColorings)) {
                 return i;
+            }
+            if (allColorings && chromaticNumber != 0) {
+                return i; // we wanted to find all colorings
             }
         }
         return 0;
@@ -447,6 +449,9 @@ public class Graph {
      *          The maximum color possible for this coloring method.
      * @param   index
      *          The index of where this algorithm is working.
+     * @param   checkCondition
+     *          True if a condition, specified in the Counter class, should get checked.
+     *          False otherwise.
      * @param   allColorings
      *          True if all colorings for a given graph should get found.
      *
@@ -455,12 +460,9 @@ public class Graph {
      *          False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-                                       int maxColorCurrGraph, int maxColor, int index, boolean allColorings) {
+                                       int maxColorCurrGraph, int maxColor, int index, boolean checkCondition, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
-            if (allColorings) colorings.add(getColors());
-
-            // We reached the end
-            return true;
+            return startingStep(maxColor, checkCondition, allColorings);
         }
 
         Vertex v = verticesIndexed[index];
@@ -501,8 +503,7 @@ public class Graph {
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
             int newIndex = getBestIndex(index);
-            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, newIndex, allColorings)) {
-                if (allColorings) continue;
+            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, newIndex, checkCondition, allColorings)) {
                 return true;
             }
 
@@ -520,6 +521,31 @@ public class Graph {
 
         return false;
 
+    }
+
+    /**
+     * A method that does the starting step for the recursive coloring algorithm.
+     * This is mostly important when checking conditions of graphs
+     * or finding all different colorings of a graph.
+     *
+     * @param   maxColor
+     *          The maximum color allowed in the graph at that time,
+     *          this will be used to set the chromatic number of this graph.
+     * @param   checkCondition
+     *          True if a condition, specified in the Counter class, should get checked.
+     *          False otherwise.
+     * @param   allColorings
+     *          True if all colorings for a given graph should get found.
+     *
+     * @return  The return value that should be used in the startingStep of the recursive algorithm.
+     */
+    protected boolean startingStep(int maxColor, boolean checkCondition, boolean allColorings) {
+        if (checkCondition || allColorings) {
+            chromaticNumber = maxColor;
+            counter.inputColors(getColors(), !checkCondition);
+            return false;
+        }
+        return true;
     }
 
     /**
