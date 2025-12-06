@@ -81,7 +81,7 @@ public class GraphPQ extends Graph {
         }
 
         for (Vertex v : verticesIndexed) {
-            if ((vertexIsColored & (1 << v.getIndex())) == 0 && !vertices.contains(v)) {
+            if ((vertexIsColored & (1L << v.getIndex())) == 0 && !vertices.contains(v)) {
                 System.out.println(v.getIndex());
             }
         }
@@ -90,7 +90,7 @@ public class GraphPQ extends Graph {
 
         // The second check is to see if this vertex is real
         while (!vertices.isEmpty() &&
-                ((vertexIsColored & (1 << v.getIndex())) > 0 || v != (verticesIndexed[v.getIndex()])) )
+                ((vertexIsColored & (1L << v.getIndex())) > 0 || v != (verticesIndexed[v.getIndex()])) )
             v = vertices.poll();
 
         int vertexIndex = v.getIndex(); // Actual index
@@ -109,7 +109,7 @@ public class GraphPQ extends Graph {
         // Every coloring should be tried for um, as this is different for it.
 
         // We are coloring this index
-        vertexIsColored |= 1 << vertexIndex;
+        vertexIsColored |= 1L << vertexIndex;
 
         boolean lastToColor = (maxColoring & ~vertexIsColored) == 0;
 
@@ -156,7 +156,7 @@ public class GraphPQ extends Graph {
         // We add the vertex back to be chosen
         vertices.add(v);
         v.changeColor(0);
-        vertexIsColored &= ~(1 << vertexIndex);
+        vertexIsColored &= ~(1L << vertexIndex);
 
         return false;
 
@@ -193,7 +193,7 @@ public class GraphPQ extends Graph {
      * @return  Whether we should skip this color
      *          as we already found a neighbour with zero possible colors.
      */
-    private boolean updateNeighbours(int neighbourhood, int color, Coloring coloring, boolean open, boolean proper, boolean um, boolean addColor, ArrayList<Vertex> changed) {
+    private boolean updateNeighbours(long neighbourhood, int color, Coloring coloring, boolean open, boolean proper, boolean um, boolean addColor, ArrayList<Vertex> changed) {
         if (addColor) {
             // We need to undo everything in changed
             for (Vertex changedNeighbour : changed) {
@@ -205,8 +205,8 @@ public class GraphPQ extends Graph {
             return false; // This doesn't matter as we don't use this in this context
         }
 
-        for (int i = neighbourhood; i != 0; i &= i - 1) {
-            int bit = Integer.numberOfTrailingZeros(i);
+        for (long i = neighbourhood; i != 0; i &= i - 1) {
+            int bit = Long.numberOfTrailingZeros(i);
             Vertex neighbour = verticesIndexed[bit];
 
             boolean neighbourIsColored = ((1 << bit) & vertexIsColored) > 0;

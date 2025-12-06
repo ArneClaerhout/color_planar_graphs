@@ -105,7 +105,7 @@ public class GraphLL extends Graph {
         // Every coloring should be tried for um, as this is different for it.
 
         // We are coloring this index
-        vertexIsColored |= 1 << vertexIndex;
+        vertexIsColored |= 1L << vertexIndex;
 
         boolean lastToColor = (maxColoring & ~vertexIsColored) == 0;
 
@@ -152,7 +152,7 @@ public class GraphLL extends Graph {
         }
 
         // We decolor this vertex
-        vertexIsColored &= ~(1 << vertexIndex);
+        vertexIsColored &= ~(1L << vertexIndex);
         v.changeColor(0);
 
         // We add the vertex back to be chosen.
@@ -191,11 +191,11 @@ public class GraphLL extends Graph {
      *          as we already found a neighbour with zero possible colors.
      */
     private boolean updateNeighbours(VertexLL v, int color, Coloring coloring, boolean open, boolean proper, boolean um, ArrayList<VertexLL> changed) {
-        for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
-            int bit = Integer.numberOfTrailingZeros(i);
+        for (long i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
+            int bit = Long.numberOfTrailingZeros(i);
             VertexLL neighbour = verticesIndexed[bit];
 
-            boolean neighbourIsColored = ((1 << bit) & vertexIsColored) > 0;
+            boolean neighbourIsColored = ((1L << bit) & vertexIsColored) > 0;
 
             if ((neighbour.getOpenNeighbourhood() & vertexIsColored) == neighbour.getOpenNeighbourhood() &&
                     neighbourIsColored) {

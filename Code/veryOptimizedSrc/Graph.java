@@ -18,7 +18,7 @@ public class Graph {
     /**
      * A help-bitset for the verticesIndexed array that tracks which vertices have been colored.
      */
-    protected int vertexIsColored = 0;
+    protected long vertexIsColored = 0;
 
 //    private int vertexIsAlmostColored = 0;
 
@@ -29,7 +29,7 @@ public class Graph {
     /**
      * A help-bitset for checking whether the graph is almost fully colored.
      */
-    protected final int maxColoring;
+    protected final long maxColoring;
 
     /**
      * A simple integer that keeps track of the amount of vertices.
@@ -46,7 +46,7 @@ public class Graph {
 //        int[] newIndices = new int[numberOfVertices];
 //        int [][] adjMatrix = getAdjacencyMatrix(graphArray, numberOfVertices, newIndices);
 //        this.verticesIndexed = findVerticesList(adjMatrix, numberOfVertices, getDegreeBasedIndices(newIndices));
-        maxColoring = (1 << numberOfVertices) - 1;
+        maxColoring = (1L << numberOfVertices) - 1;
         availables = maxColoring;
     }
 
@@ -56,7 +56,7 @@ public class Graph {
     public Graph(int[][] adjMatrix) {
         this.verticesIndexed = findVerticesList(adjMatrix, adjMatrix.length);
         this.numberOfVertices = adjMatrix.length;
-        maxColoring = (1 << numberOfVertices) - 1;
+        maxColoring = (1L << numberOfVertices) - 1;
         availables = maxColoring;
     }
 
@@ -472,12 +472,12 @@ public class Graph {
         // Every coloring should be tried for um, as this is different for it.
 
         // We are coloring this index
-        vertexIsColored |= 1 << index;
+        vertexIsColored |= 1L << index;
 //        vertexIsAlmostColored &= ~(1 << index);
 
         boolean lastToColor = (maxColoring & ~vertexIsColored) == 0;
 
-        int neighbourhood = v.getOpenNeighbourhood();
+        long neighbourhood = v.getOpenNeighbourhood();
         boolean neighboursColored = (neighbourhood & vertexIsColored) == neighbourhood;
 
         for (int i = colors; i != 0; i &= i - 1) {
@@ -494,7 +494,7 @@ public class Graph {
                 continue;
             }
             // We also change the available colors for the neighbours if the coloring is proper
-            int[] changed = new int[numberOfVertices];
+            long[] changed = new long[numberOfVertices];
 
             if (updateNeighbours(v, color, coloring, open, proper, um, changed)) {
                 // This is used to skip this color, as it isn't possible
@@ -511,9 +511,9 @@ public class Graph {
             addColorsBack(changed);
         }
         // We decolor this vertex
-        vertexIsColored &= ~(1 << index);
+        vertexIsColored &= ~(1L << index);
         v.changeColor(0);
-        availables |= (1 << index);
+        availables |= (1L << index);
 
 //        for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
 //            verticesIndexed[Integer.numberOfTrailingZeros(i)].decrementAmountOfColoredNeighbours();
@@ -554,7 +554,7 @@ public class Graph {
      * For a naïve coloring chooser, this will be the opposite of maxColoring.
      * For more complex choosers, this is different.
      */
-    private int availables;
+    private long availables;
 
     /**
      * A method for finding the best candidate in the coloring of a graph.
@@ -562,12 +562,12 @@ public class Graph {
     private int getBestIndex(int indexColored) {
         // The addition of tiebreaks with degree only slows it down (this is done in DSATUR),
         //  taking the first best vertex is fastest
-        if (indexColored != -1) availables &= ~(1 << indexColored);
+        if (indexColored != -1) availables &= ~(1L << indexColored);
         int bestIndex = 0;
         int smallestAC = Integer.MAX_VALUE;
         int testAC;
-        for (int i = availables; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        for (long i = availables; i != 0; i &= i - 1) {
+            int index = Long.numberOfTrailingZeros(i);
             testAC = verticesIndexed[index].getAmountOfAvailableColors();
             if (smallestAC > testAC) {
                 smallestAC = testAC;
@@ -587,12 +587,12 @@ public class Graph {
      * which isn't compensated by good vertex choosing.
      */
     private int getBestIndex2(int indexColored) {
-        if (indexColored != -1) availables &= ~(1 << indexColored);
+        if (indexColored != -1) availables &= ~(1L << indexColored);
         int bestIndex = 0;
         int smallestDiff = Integer.MAX_VALUE;
         int testDiff;
-        for (int i = availables; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        for (long i = availables; i != 0; i &= i - 1) {
+            int index = Long.numberOfTrailingZeros(i);
             testDiff = verticesIndexed[index].getDegree() - verticesIndexed[index].getAmountOfColoredNeighbours();
             if (smallestDiff > testDiff) {
                 smallestDiff = testDiff;
@@ -607,12 +607,12 @@ public class Graph {
      * A method for finding the best candidate in the coloring of a graph.
      */
     private int getBestIndex3(int indexColored) {
-        if (indexColored != -1) availables &= ~(1 << indexColored);
+        if (indexColored != -1) availables &= ~(1L << indexColored);
         int bestIndex = 0;
         int smallestDiff = Integer.MAX_VALUE;
         int testDiff;
-        for (int i = availables; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        for (long i = availables; i != 0; i &= i - 1) {
+            int index = Long.numberOfTrailingZeros(i);
             testDiff = verticesIndexed[index].getImportanceValue();
             if (smallestDiff > testDiff) {
                 smallestDiff = testDiff;
@@ -627,15 +627,15 @@ public class Graph {
      * A method for finding the best candidate in the coloring of a graph.
      */
     private int getBestIndexWP(int indexColored) {
-        if (indexColored != -1) availables &= ~(verticesIndexed[indexColored].getOpenNeighbourhood() | (1 << indexColored));
+        if (indexColored != -1) availables &= ~(verticesIndexed[indexColored].getOpenNeighbourhood() | (1L << indexColored));
 
         // If this removes all vertices, reset
         if (availables == 0) availables = maxColoring & ~vertexIsColored;
 
         int maxDegree = 0;
         int maxDegreeIndex = 0;
-        for (int i = availables; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        for (long i = availables; i != 0; i &= i - 1) {
+            int index = Long.numberOfTrailingZeros(i);
             int degree = verticesIndexed[index].getDegree();
             if (degree > maxDegree) {
                 maxDegree = degree;
@@ -650,7 +650,7 @@ public class Graph {
      * A method for finding the best candidate in the coloring of a graph.
      */
     private int getBestIndexWP2(int indexColored) {
-        if (indexColored != -1) availables &= ~(verticesIndexed[indexColored].getOpenNeighbourhood() | (1 << indexColored));
+        if (indexColored != -1) availables &= ~(verticesIndexed[indexColored].getOpenNeighbourhood() | (1L << indexColored));
 
         // If this removes all vertices, reset
         if (availables == 0) availables = maxColoring & ~vertexIsColored;
@@ -660,8 +660,8 @@ public class Graph {
         int minACDegree = 0;
         Vertex testV;
         int index;
-        for (int i = availables; i != 0; i &= i - 1) {
-            index = Integer.numberOfTrailingZeros(i);
+        for (long i = availables; i != 0; i &= i - 1) {
+            index = Long.numberOfTrailingZeros(i);
             testV = verticesIndexed[index];
             int testAC = testV.getAmountOfAvailableColors();
             if (minAC > testAC) {
@@ -684,15 +684,15 @@ public class Graph {
      * A method for finding the best candidate in the coloring of a graph.
      */
     private int getBestIndexDSATUR(int indexColored) {
-        if (indexColored != -1) availables &= ~(1 << indexColored);
+        if (indexColored != -1) availables &= ~(1L << indexColored);
 
         int minAC = Integer.MAX_VALUE;
         int minACIndex = 0;
         int minACDegree = 0;
         Vertex testV;
         int index;
-        for (int i = availables; i != 0; i &= i - 1) {
-            index = Integer.numberOfTrailingZeros(i);
+        for (long i = availables; i != 0; i &= i - 1) {
+            index = Long.numberOfTrailingZeros(i);
             testV = verticesIndexed[index];
             int testAC = testV.getAmountOfAvailableColors();
             if (minAC > testAC) {
@@ -740,19 +740,19 @@ public class Graph {
      *          as we already found a neighbour with zero possible colors.
      *          False otherwise.
      */
-    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, boolean open, boolean proper, boolean um, int[] changed) {
-        for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
-            int bit = Integer.numberOfTrailingZeros(i);
+    private boolean updateNeighbours(Vertex v, int color, Coloring coloring, boolean open, boolean proper, boolean um, long[] changed) {
+        for (long i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
+            int bit = Long.numberOfTrailingZeros(i);
             Vertex neighbour = verticesIndexed[bit];
 
 //            neighbour.incrementAmountOfColoredNeighbours();
 
-            boolean neighbourIsColored = ((1 << bit) & vertexIsColored) != 0;
+            boolean neighbourIsColored = ((1L << bit) & vertexIsColored) != 0;
 
-            int neighbourhood = neighbour.getOpenNeighbourhood();
-            neighbourhood = (open ? neighbourhood : (neighbourhood | (1 << bit)));
+            long neighbourhood = neighbour.getOpenNeighbourhood();
+            neighbourhood = (open ? neighbourhood : (neighbourhood | (1L << bit)));
 
-            int diff = neighbourhood & ~vertexIsColored;
+            long diff = neighbourhood & ~vertexIsColored;
 
             // We will allow adding vertices with one possible color that aren't colored
 //            diff &= ~vertexIsAlmostColored;
@@ -769,7 +769,7 @@ public class Graph {
                 // It doesn't have to be checked on whether it's proper, as this is done by the next section
             }
             else if (diff != 0 && (diff & (diff - 1)) == 0) { // bitCount(diff) == 1
-                int toColorNeighbourIndex = Integer.numberOfTrailingZeros(diff);
+                int toColorNeighbourIndex = Long.numberOfTrailingZeros(diff);
                 Vertex toColorNeighbour = verticesIndexed[toColorNeighbourIndex];
                 // There's one vertex that isn't colored yet.
                 if (um && (neighbourIsColored || !proper)) {
@@ -800,7 +800,7 @@ public class Graph {
 
                 // We compare the neighbours neighbourhood with the already colored vertices
                 if (neighbour.removeColorFromAvailableColors(color)) {
-                    changed[bit] |= (1 << color);
+                    changed[bit] |= (1L << color);
                     if (neighbour.getAmountOfAvailableColors() == 0) {
                         // Early pruning
                         addColorsBack(changed);
@@ -822,13 +822,13 @@ public class Graph {
      *          The changed array containing the vertices changed,
      *          paired with the colors that were removed (and thus have to get added back).
      */
-    private void addColorsBack(int[] changed) {
+    private void addColorsBack(long[] changed) {
         for (int i = 0; i < changed.length; i++) {
-            int value = changed[i];
+            long value = changed[i];
             if (value != 0) {
                 Vertex changedNeighbour = verticesIndexed[i];
                 while (value != 0) {
-                    int valueIndex = Integer.numberOfTrailingZeros(value);
+                    int valueIndex = Long.numberOfTrailingZeros(value);
                     value &= value - 1; // clear the lowest set bit
                     changedNeighbour.addColorFromAvailableColors(valueIndex);
                 }
@@ -844,16 +844,16 @@ public class Graph {
     /**
      * A helper method for handling the Conflict-Free coloring part of the optimisation.
      */
-    private boolean handleCF(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
+    private boolean handleCF(long[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, long neighbourhood) {
         int colorsOccurOnce = 0;
         int colorsOccur = 0;
 
         Vertex secondNeighbour;
         int colorIndex;
 
-        neighbourhood = neighbourhood & ~(1 << toColorNeighbourIndex);
-        for (int i = neighbourhood; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        neighbourhood = neighbourhood & ~(1L << toColorNeighbourIndex);
+        for (long i = neighbourhood; i != 0; i &= i - 1) {
+            int index = Long.numberOfTrailingZeros(i);
             secondNeighbour = verticesIndexed[index];
             int neighbourColor = secondNeighbour.getColor();
             // We do -1 as the colors are from 1...k,
@@ -888,15 +888,15 @@ public class Graph {
     /**
      * A helper method for handling the Unique-Maximum coloring part of the optimisation.
      */
-    private boolean handleUM(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
+    private boolean handleUM(long[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, long neighbourhood) {
         int max = 1;
         int amountOfMax = 0;
 
         Vertex secondNeighbour;
 
-        neighbourhood = neighbourhood & ~(1 << toColorNeighbourIndex);
-        for (int i = neighbourhood; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        neighbourhood = neighbourhood & ~(1L << toColorNeighbourIndex);
+        for (long i = neighbourhood; i != 0; i &= i - 1) {
+            int index = Long.numberOfTrailingZeros(i);
             secondNeighbour = verticesIndexed[index];
             int neighbourColor = secondNeighbour.getColor();
 
@@ -929,13 +929,13 @@ public class Graph {
     /**
      * A helper method for handling the Odd coloring part of the optimisation.
      */
-    private boolean handleOdd(int[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, int neighbourhood) {
+    private boolean handleOdd(long[] changed, Vertex toColorNeighbour, int toColorNeighbourIndex, long neighbourhood) {
         int colorsOccurOdd = 0;
         Vertex secondNeighbour;
 
-        neighbourhood = neighbourhood & ~(1 << toColorNeighbourIndex);
-        for (int i = neighbourhood; i != 0; i &= i - 1) {
-            int index = Integer.numberOfTrailingZeros(i);
+        neighbourhood = neighbourhood & ~(1L << toColorNeighbourIndex);
+        for (long i = neighbourhood; i != 0; i &= i - 1) {
+            int index = Long.numberOfTrailingZeros(i);
             secondNeighbour = verticesIndexed[index];
             int neighbourColor = secondNeighbour.getColor();
 
@@ -975,9 +975,9 @@ public class Graph {
      * @return  True if we can prune, meaning there was a vertex with no available colors.
      *          False otherwise.
      */
-    private boolean removeColor(Vertex v, int index, int color, int[] changed) {
+    private boolean removeColor(Vertex v, int index, int color, long[] changed) {
         if (!v.removeColorFromAvailableColors(color)) return false;
-        changed[index] |= (1 << color);
+        changed[index] |= (1L << color);
         int m = v.getAmountOfAvailableColors();
         if (m == 0) {
             addColorsBack(changed);

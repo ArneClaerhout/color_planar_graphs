@@ -8,7 +8,7 @@ public class GraphBS extends Graph {
      * Each index in the array is an amount of available colors starting from 1.
      * So all vertices in the linked list at index 0, have 1 available color.
      */
-    int[] vertices;
+    long[] vertices;
 
     private int filledColors = 0;
 
@@ -32,7 +32,7 @@ public class GraphBS extends Graph {
 
         for (int i = 2; i <= n; i++) {
             // We don't forget to reset the vertices array
-            vertices = new int[n];
+            vertices = new long[n];
             filledColors = (1 << (i - 1));
             for (Vertex v : verticesIndexed) {
                 v.setMaxAvailableColors(i);
@@ -82,9 +82,9 @@ public class GraphBS extends Graph {
         }
 
         int index = Integer.numberOfTrailingZeros(filledColors);
-        int colV = vertices[index];
+        long colV = vertices[index];
 
-        int vertexIndex = Integer.numberOfTrailingZeros(colV);
+        int vertexIndex = Long.numberOfTrailingZeros(colV);
         Vertex v = verticesIndexed[vertexIndex];
 
         vertices[index] &= ~(1 << vertexIndex);
@@ -97,7 +97,7 @@ public class GraphBS extends Graph {
         // Every coloring should be tried for um, as this is different for it.
 
         // We are coloring this index
-        vertexIsColored |= 1 << vertexIndex;
+        vertexIsColored |= 1L << vertexIndex;
 
         boolean neighboursColored = (v.getOpenNeighbourhood() & vertexIsColored) == v.getOpenNeighbourhood();
 
@@ -136,11 +136,11 @@ public class GraphBS extends Graph {
         }
 
         // We decolor this vertex
-        vertexIsColored &= ~(1 << vertexIndex);
+        vertexIsColored &= ~(1L << vertexIndex);
         v.changeColor(0);
 
         // We add the vertex back to be chosen.
-        vertices[index] |= 1 << vertexIndex;
+        vertices[index] |= 1L << vertexIndex;
         changeFilledColors(-1, index);
 
         return false;
@@ -175,8 +175,8 @@ public class GraphBS extends Graph {
      *          as we already found a neighbour with zero possible colors.
      */
     private boolean updateNeighbours(Vertex v, int color, Coloring coloring, boolean open, boolean proper, boolean um, ArrayList<Vertex> changed) {
-        for (int i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
-            int bit = Integer.numberOfTrailingZeros(i);
+        for (long i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
+            int bit = Long.numberOfTrailingZeros(i);
             Vertex neighbour = verticesIndexed[bit];
 
             boolean neighbourIsColored = ((1 << bit) & vertexIsColored) > 0;
@@ -205,10 +205,9 @@ public class GraphBS extends Graph {
                     int amountOfAvailableColors = neighbour.getAmountOfAvailableColors();// We removed one, but this is correct for the following indexing
                     if (amountOfAvailableColors != 0) {
                         changed.add(neighbour);
-                        int amountOfAvaliableColors = neighbour.getAmountOfAvailableColors();
-                        vertices[amountOfAvaliableColors] &= ~(1 << neighbour.getIndex());
-                        vertices[amountOfAvaliableColors - 1] |= 1 << neighbour.getIndex();
-                        changeFilledColors(amountOfAvaliableColors, amountOfAvaliableColors - 1);
+                        vertices[amountOfAvailableColors] &= ~(1L << neighbour.getIndex());
+                        vertices[amountOfAvailableColors - 1] |= 1L << neighbour.getIndex();
+                        changeFilledColors(amountOfAvailableColors, amountOfAvailableColors - 1);
                     } else {
                         // Early pruning
                         changeBackVertices(changed, color);
@@ -236,11 +235,11 @@ public class GraphBS extends Graph {
         for (Vertex changedNeighbour : changed) {
             // We add the colors back
             changedNeighbour.addColorFromAvailableColors(color);
-            int amountOfAvaliableColors = changedNeighbour.getAmountOfAvailableColors();
+            int amountOfAvailableColors = changedNeighbour.getAmountOfAvailableColors();
             // We change back the neighbour LL's
-            vertices[amountOfAvaliableColors - 2] &= ~(1 << changedNeighbour.getIndex());
-            vertices[amountOfAvaliableColors - 1] |= 1 << changedNeighbour.getIndex();
-            changeFilledColors(amountOfAvaliableColors - 2, amountOfAvaliableColors - 1);
+            vertices[amountOfAvailableColors - 2] &= ~(1L << changedNeighbour.getIndex());
+            vertices[amountOfAvailableColors - 1] |= 1L << changedNeighbour.getIndex();
+            changeFilledColors(amountOfAvailableColors - 2, amountOfAvailableColors - 1);
         }
     }
 
@@ -256,7 +255,7 @@ public class GraphBS extends Graph {
     private void changeFilledColors(int oldIndex, int newIndex) {
         if (oldIndex != -1) {
             // Only if it doesn't get added back
-            if (Integer.bitCount(vertices[oldIndex]) == 0) {
+            if (vertices[oldIndex] == 0) {
                 // We removed the last vertex from here
                 filledColors &= ~(1 << oldIndex);
             }

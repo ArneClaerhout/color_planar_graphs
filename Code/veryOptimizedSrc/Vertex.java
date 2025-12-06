@@ -10,7 +10,7 @@ public class Vertex {
     /**
      * The neighbours of a vertex, presented with bitsets.
      */
-    private int neighbours = 0;
+    private long neighbours = 0;
 
     /**
      * The available colors for this vertex.
@@ -87,7 +87,7 @@ public class Vertex {
      * @note    This method gives the neighbour list directly,
      *          changing the given list changes the actual list of neighbours.
      */
-    public int getOpenNeighbourhood() {
+    public long getOpenNeighbourhood() {
         return neighbours;
     }
 
@@ -245,13 +245,13 @@ public class Vertex {
                                       boolean fillUncolored, boolean open, boolean proper, boolean um) {
         if (!fillUncolored && color == 0 && !open) return false; // This vertex isn't colored.
 
-        int neighbourhood = open ? neighbours : (neighbours | (1 << index));
+        long neighbourhood = open ? neighbours : (neighbours | (1 << index));
 
         if (inputColoring == Coloring.ODD) {
             // Odd coloring
             int odds = 0;
-            for (int i = neighbourhood; i != 0; i &= i - 1) {
-                int index = Integer.numberOfTrailingZeros(i);
+            for (long i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Long.numberOfTrailingZeros(i);
 
                 Vertex neighbour = verticesIndexed[index];
                 int neighbourColor = neighbour.getColor();
@@ -277,8 +277,8 @@ public class Vertex {
         } else if (inputColoring == Coloring.PROPER) {
             // Proper coloring
             if (!properLy) return true;
-            for (int i = neighbourhood; i != 0; i &= i - 1) {
-                int index = Integer.numberOfTrailingZeros(i);
+            for (long i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Long.numberOfTrailingZeros(i);
 
                 Vertex neighbour = verticesIndexed[index];
                 int neighbourColor = neighbour.getColor();
@@ -302,8 +302,8 @@ public class Vertex {
             // Unique-Maximum
             int max = 0;
             int amountOfMax = 0;
-            for (int i = neighbourhood; i != 0; i &= i - 1) {
-                int index = Integer.numberOfTrailingZeros(i);
+            for (long i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Long.numberOfTrailingZeros(i);
 
                 Vertex neighbour = verticesIndexed[index];
                 int neighbourColor = neighbour.getColor();
@@ -337,8 +337,8 @@ public class Vertex {
             int colorsOccur = 0;
             int colorIndex;
 
-            for (int i = neighbourhood; i != 0; i &= i - 1) {
-                int index = Integer.numberOfTrailingZeros(i);
+            for (long i = neighbourhood; i != 0; i &= i - 1) {
+                int index = Long.numberOfTrailingZeros(i);
 
                 Vertex neighbour = verticesIndexed[index];
                 int neighbourColor = neighbour.getColor();
