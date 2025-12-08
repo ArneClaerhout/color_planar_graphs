@@ -142,7 +142,7 @@ show_func() {
 }
 
 write_to_file() {
-  if [[ "$overview" == false && "$manual" == false ]]; then
+  if [[ "$overview" == false &&  ("$manual" == false || "$manual" == pipe) ]]; then
     mkdir -p outputs
     tee "outputs/$(date +"%F-%H-%M-%S").txt"
   else
