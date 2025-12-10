@@ -206,7 +206,7 @@ write_to_file() {
 
 java_alg() {
 	if [[ "$progressview" == true ]]; then
-		pv | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
+		pv -l "-s $num_graphs" | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
 	else
 		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
 	fi
@@ -283,6 +283,7 @@ manual=""
 raw=0
 overview=false
 progressview=false
+num_graphs=0
 show=false
 show_value="svg"
 method=0
@@ -316,6 +317,8 @@ while [[ $# -gt 0 ]]; do
 		;;
 	-pv | progressview)
 		progressview=true
+		echo "Counting the number of graphs." >&2
+    num_graphs=$(choose_incoming_graphs 2>/dev/null | "./$nauty_path/countg" 2>/dev/null | grep "graphs altogether" | awk '{print $1}')
 		shift 1
 		;;
 	-o | --overview)
