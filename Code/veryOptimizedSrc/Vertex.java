@@ -63,7 +63,7 @@ public class Vertex {
      *          The neighbour vertex to make an edge between.
      */
     public void addNeighbour(Vertex neighbour) {
-        neighbours |= (1 << neighbour.index);
+        neighbours |= (1L << neighbour.index);
         neighbour.addSingleNeighbour(this);
         incrementDegree();
     }
@@ -75,7 +75,7 @@ public class Vertex {
      *          The neighbour to add to the neighbours number.
      */
     void addSingleNeighbour(Vertex neighbour) {
-        neighbours |= (1 << neighbour.index);
+        neighbours |= (1L << neighbour.index);
         incrementDegree();
     }
 

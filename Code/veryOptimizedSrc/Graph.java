@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.stream.IntStream;
 
 public class Graph {
 
@@ -24,7 +23,7 @@ public class Graph {
 
     protected int chromaticNumber = 0;
 
-    protected Counter counter = new Counter();
+    protected Counter counter;
 
     /**
      * A help-bitset for checking whether the graph is almost fully colored.
@@ -148,7 +147,7 @@ public class Graph {
      */
     public int[] getColors() {
         return Arrays.stream(verticesIndexed)
-                .map(v -> v.getColor()).mapToInt(Integer::intValue).toArray();
+                .map(Vertex::getColor).mapToInt(Integer::intValue).toArray();
         // We first make our vertices a stream
         // Then we sort them according to their indices
         // Afterward, we map all of our vertices to their respective color
@@ -304,7 +303,7 @@ public class Graph {
                 }
 
                 bitPos++;
-                if (bitPos % 6 == 0) {
+                if (bitPos == 6) {
                     index++;
                     bitPos = 0;
                 }
@@ -423,7 +422,7 @@ public class Graph {
             if (optimizedAlgorithm(coloring, open, proper, um,0, i, 0, checkCondition, allColorings)) {
                 return i;
             }
-            if (allColorings && chromaticNumber != 0) {
+            if ((allColorings || checkCondition) && chromaticNumber != 0) {
                 return i; // we wanted to find all colorings
             }
         }
@@ -468,7 +467,7 @@ public class Graph {
         Vertex v = verticesIndexed[index];
         int colors = v.getAvailableColors();
 
-        int maxLoop = um ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
+        int maxLoop = (um || checkCondition || allColorings) ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
         // Every coloring should be tried for um, as this is different for it.
 
         // We are coloring this index
@@ -476,6 +475,7 @@ public class Graph {
 //        vertexIsAlmostColored &= ~(1 << index);
 
         boolean lastToColor = (maxColoring & ~vertexIsColored) == 0;
+        if (lastToColor && maxLoop < maxColor) colors = 0; // We don't want to go over colors, as it can't be correct
 
         long neighbourhood = v.getOpenNeighbourhood();
         boolean neighboursColored = (neighbourhood & vertexIsColored) == neighbourhood;
@@ -483,7 +483,6 @@ public class Graph {
         for (int i = colors; i != 0; i &= i - 1) {
             int color = Integer.numberOfTrailingZeros(i);
             if (color > maxLoop) break; // We passed the highest possible color in the graph
-            if (lastToColor && maxColorCurrGraph < maxColor && color <= maxColorCurrGraph) continue; // We don't want to retry already tried states
 
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
 
@@ -541,8 +540,13 @@ public class Graph {
      */
     protected boolean startingStep(int maxColor, boolean checkCondition, boolean allColorings) {
         if (checkCondition || allColorings) {
+            if (Main.minChrom != 0 && maxColor < Main.minChrom) {
+                // When it's going to get filtered away anyway, we stop it
+                return true;
+            }
             chromaticNumber = maxColor;
-            counter.inputColors(getColors(), !checkCondition);
+            if (counter == null) counter = new Counter(chromaticNumber);
+            counter.inputColors(getColors(), allColorings);
             return false;
         }
         return true;
@@ -551,7 +555,7 @@ public class Graph {
     /**
      * A bit-set keeping track of which vertices are still able to be colored.
      *
-     * For a naïve coloring chooser, this will be the opposite of maxColoring.
+     * For a naive coloring chooser, this will be the opposite of maxColoring.
      * For more complex choosers, this is different.
      */
     private long availables;
@@ -880,7 +884,7 @@ public class Graph {
             }
         } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
             int j = Integer.numberOfTrailingZeros(colorsOccurOnce);
-            if (removeColor(toColorNeighbour, toColorNeighbourIndex, j, changed)) return true;
+            return removeColor(toColorNeighbour, toColorNeighbourIndex, j, changed);
         }
         return false;
     }
@@ -917,7 +921,7 @@ public class Graph {
         //  Only allow colors bigger than the max
         // Otherwise, do nothing.
         if (amountOfMax == 1) {
-            if (removeColor(toColorNeighbour, toColorNeighbourIndex, max - 1, changed)) return true;
+            return removeColor(toColorNeighbour, toColorNeighbourIndex, max - 1, changed);
         } else if (amountOfMax > 1) {
             for (int colorToRemove = 0; colorToRemove < max; colorToRemove++) {
                 if (removeColor(toColorNeighbour, toColorNeighbourIndex, colorToRemove, changed)) return true;
@@ -951,7 +955,7 @@ public class Graph {
         if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
             // Don't take this color
             int index = Integer.numberOfTrailingZeros(colorsOccurOdd);
-            if (removeColor(toColorNeighbour, toColorNeighbourIndex, index, changed)) return true;
+            return removeColor(toColorNeighbour, toColorNeighbourIndex, index, changed);
         }
         return false;
     }

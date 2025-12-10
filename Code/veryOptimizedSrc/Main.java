@@ -7,6 +7,8 @@ public class Main {
      ********** INPUT READING **********
      **********************************/
 
+    static int minChrom = 0;
+
     public static void main(String[] args) throws IOException {
 
         boolean debugging = false;
@@ -34,7 +36,6 @@ public class Main {
             int raw = Integer.parseInt(args[2]);
 
             // Fourth: adding a filter to the output (min. chromatic number)
-            int minChrom = 0;
             try {
                 minChrom = Integer.parseInt(args[3]);
             } catch(NumberFormatException e) {
@@ -127,7 +128,7 @@ public class Main {
                 }
                 c = graph.findChromaticNumberOptimized(coloring, open, proper, um, checkCondition, (raw == 4));
 
-                if (c >= minChrom && (graph.counter.getCondition() != graph.maxColoring || !checkCondition)) {
+                if (c >= minChrom && (!checkCondition || graph.counter.getCondition() != graph.maxColoring)) {
                     if (overview) {
                         cNumbers.merge(c, 1, Integer::sum);
                     } else {
@@ -139,7 +140,20 @@ public class Main {
                                 System.out.println(line); break;
                                 // This option is only useful when filtering
                             case 3:
-                                System.out.println(line + " " + Arrays.toString(graph.getColors()));
+                                int[] colors = new int[graph.numberOfVertices];
+                                if (checkCondition) {
+                                    int count = 0;
+                                    for (long k = (graph.maxColoring & ~graph.counter.getCondition()); k != 0; k &= k - 1) {
+                                        int index = Long.numberOfTrailingZeros(k);
+                                        colors[index] = graph.chromaticNumber;
+                                        count++;
+                                    }
+                                    if (count > 1) {
+                                        System.out.println(line + " " + Arrays.toString(colors));
+                                    }
+                                } else {
+                                    System.out.println(line + " " + Arrays.toString(colors));
+                                }
                                 break;
                             case 4:
                                 System.out.println(line + " " + graph.getColorings()
@@ -173,20 +187,20 @@ public class Main {
         } else {
             // This is the debugging code section
 
-            File file = new File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while((line = br.readLine()) != null){
-                Graph graph = new Graph(line);
-                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"), true, true, false, false, false);
-                if (c == 0) {
-                    System.out.println(line);
-                    break;
-                }
-            }
+//            File file = new File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
+//            BufferedReader br = new BufferedReader(new FileReader(file));
+//            String line;
+//            while((line = br.readLine()) != null){
+//                Graph graph = new Graph(line);
+//                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"), true, true, false, false, false);
+//                if (c == 0) {
+//                    System.out.println(line);
+//                    break;
+//                }
+//            }
 
 //            ArrayList<String> graphs = new ArrayList<>(){{
-//                add("L|eKKF`WJ?k@Nw");
+//                add("a???????E?S?c?a?O_CC?_OA?_B??A_?@@??OG?A?_?E???E???D???AO???a???CC???K????K????E????@_????S????");
 //                add("L|eKKEDoJxk@@w");
 //                add("L|eKKF`WI?kBNw");
 //                add("L~eKKF@oI@j{?M");
@@ -199,7 +213,7 @@ public class Main {
 //            for (String line2 : graphs) {
 //                Graph graph = new Graph(line2);
 ////
-//                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"), true, true, false);
+//                int c = graph.findChromaticNumberOptimized(Coloring.getColoring("odd"), true, true, false, false, false);
 ////                System.out.println(Arrays.toString(graph.getColors()));
 //                System.out.println(c);
 //            }

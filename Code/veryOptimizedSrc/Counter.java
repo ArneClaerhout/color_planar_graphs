@@ -1,21 +1,32 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Counter {
 
-    private int condition = 0;
+    private long condition = 0;
+
+    private final int maxColor;
 
     private final ArrayList<int[]> colorings = new ArrayList<>();
 
-    public Counter() {}
+    public Counter() {
+        this.maxColor = 3;
+    }
+
+    public Counter(int maxColor) {
+        this.maxColor = maxColor;
+    }
 
     public void inputColors(int[] colors, boolean allColors) {
         for (int k = 0; k < colors.length; k++) {
-            if (colors[k] == 1) condition |= (1 << k);
+            if (colors[k] == maxColor) {
+                condition |= (1L << k);
+            }
         }
         if(allColors) colorings.add(colors);
     }
 
-    public int getCondition() {
+    public long getCondition() {
         return condition;
     }
 
