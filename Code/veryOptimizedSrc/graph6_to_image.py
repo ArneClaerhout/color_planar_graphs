@@ -8,7 +8,7 @@ import tikzplotlib
 
 
 def convert_color(color_number):
-    color_to_color = ["blue", "orange", "green", "red", "purple", "brown", "pink", "gray", "olive", "cyan"]
+    color_to_color = ["blue", "orange", "green", "red", "purple", "brown", "pink", "gray", "olive", "cyan", "black"]
     return color_to_color[int(color_number) - 1]
 
 if __name__ == "__main__":
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         # We get the data from the input
         line = line.split(" ")
         colors_numbers = list(map(str.strip, "".join(line[1:]).strip('][').replace('"', '').split(',')))
-        colors = list(map(convert_color, colors_numbers))
+        colors = list(map(convert_color, colors_numbers)) # Color 0 = index -1 -> last color
 
         graph6_string = line[0]
 

@@ -105,6 +105,56 @@ fi
 ###### FUNCTIONS ######
 #######################
 
+# Function to parse options with optional arguments
+parse_optional_arg() {
+    local actualopt1="$1"
+    local actualopt2="$2"
+    local givenopt="$3"
+    local givenarg="$4"
+    local default="$5"
+    local args=("${@:6}") # Remaining arguments
+
+    # Glued form: -p2
+    if [[ "$givenopt" =~ ^$actualopt1(.+) || "$givenopt" =~ ^$actualopt2(.+) ]]; then
+        echo "${BASH_REMATCH[1]}"
+        return 1
+    fi
+
+    # Space-separated: -p 2
+    if [[ -n "$givenarg" && "$givenarg" != -* ]]; then
+        echo "$givenarg"
+        return 2
+    fi
+
+    # No argument: just -p
+    echo "$default"
+    return 1
+}
+
+# Function to parse options with mandatory arguments
+parse_mandatory_arg() {
+    local actualopt1="$1"
+    local actualopt2="$2"
+    local givenopt="$3"
+    local givenarg="$4"
+
+    # Glued form: -fFILE
+    if [[ "$givenopt" =~ ^$actualopt1(.+) || "$givenopt" =~ ^$actualopt2(.+) ]]; then
+        echo "${BASH_REMATCH[1]}"
+        return 1
+    fi
+
+    # Space-separated: -f file
+    if [[ -n "$givenarg" && "$givenarg" != -* ]]; then
+        echo "$givenarg"
+        return 2
+    fi
+
+    # Missing mandatory argument
+    echo "Error: Option '$givenopt' requires an argument." >&2
+    exit 1
+}
+
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
 	if [[ "$raw" == 0 ]]; then
@@ -112,7 +162,11 @@ gen_range_graphs() {
 		echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
 	fi
 	for num in $(seq "$1" "$2"); do
-		"./$plantri_path/plantri" "${simpleplanar[@]}" "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+	  if [[ "$allplanar" == true ]]; then
+	    "./$nauty_path/geng" "$num" -c -g 2>/dev/null | "./$nauty_path/planarg" 2>/dev/null
+	  else
+		  "./$plantri_path/plantri" "${simpleplanar[@]}" "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+    fi
 	done
 }
 
@@ -160,7 +214,6 @@ java_alg() {
 
 choose_incoming_graphs() {
 	# First we check whether we have a filter file
-
 	if ! [[ "$filter" =~ ^-?[0-9]+$ ]]; then
 		# The filter is not an integer
 		# We parse the given filter
@@ -235,46 +288,31 @@ show_value="svg"
 method=0
 startn=-1
 endn=-1
-simpleplanar=(-g)
+simpleplanar=(-g) # This is arguments for plantri
 check_condition=false
+allplanar=false
 
 #######################
 ###### ARGUMENTS ######
 #######################
 
-# Parse options
-POSITIONAL_ARGS=()
 
 # Loop over all flags and their values
 while [[ $# -gt 0 ]]; do
 	case $1 in
 	-h | --help)
-		show_help
-		exit 0
-		;;
+		show_help; exit 0;;
 	-c | --coloring)
-		if [[ -z "${2:-}" || "$2" == -* ]]; then
-			echo "Error: option $1 requires a value"
-			exit 1
-		fi
-		coloring="$2"
-		shift 2
+		coloring=$(parse_mandatory_arg "-c" "--coloring" "$1" "$2")
+    shift $?
 		;;
 	-m | --manual)
-		if [[ -z "${2:-}" || "$2" == -* ]]; then
-			echo "Error: option $1 requires a value"
-			exit 1
-		fi
-		manual="$2"
-		shift 2
+		manual=$(parse_mandatory_arg "-m" "--manual" "$1" "$2")
+    shift $?
 		;;
 	-f | --filter)
-		if [[ -z "${2:-}" || "$2" == -* ]]; then
-			echo "Error: option $1 requires a value"
-			exit 1
-		fi
-		filter="$2"
-		shift 2
+	  filter=$(parse_mandatory_arg "-f" "--filter" "$1" "$2")
+		shift $?
 		;;
 	-pv | progressview)
 		progressview=true
@@ -284,27 +322,13 @@ while [[ $# -gt 0 ]]; do
 		overview=true
 		shift
 		;;
-	-r | --raw)
-		if [[ -z "${2:-}" || "$2" == -* ]]; then
-			# No value given, we give it 1
-			raw=1
-			shift 1
-		else
-			raw="$2"
-			shift 2
-		fi
-		;;
-	-s | --show)
+	-r* | --raw*)
+		raw=$(parse_optional_arg -r --raw "$1" "$2" 1)
+    shift $?;;
+	-s* | --show*)
 		show=true
-		if [[ -z "${2:-}" || "$2" == -* ]]; then
-			# We didn't get a value
-			show_value="svg"
-			shift 1
-		else
-			show_value="$2"
-			shift 2
-		fi
-		;;
+		show_value=$(parse_optional_arg -s --show "$1" "$2" "svg")
+    shift $?;;
   -pq)
     method=1
     shift 1
@@ -317,9 +341,14 @@ while [[ $# -gt 0 ]]; do
     method=3
     shift 1
     ;;
-  -p)
-    simpleplanar+=("-p")
-    shift 1
+  -p*)
+    val=$(parse_optional_arg -p -p "$1" "$2" 0)
+    shift $?
+    if [[ "$val" == "0" ]]; then
+      simpleplanar+=("-p")
+    elif [[ "$val" == "2" ]]; then
+      allplanar=true
+    fi
     ;;
   -x | --condition)
     check_condition=true
