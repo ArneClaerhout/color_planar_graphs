@@ -352,7 +352,7 @@ while [[ $# -gt 0 ]]; do
     shift 1
     ;;
 	-* | --*)
-		echo "Unknown option $1"
+		echo "Error: Unknown option $1" >&2
 		exit 1
 		;;
 	*)
@@ -368,8 +368,11 @@ while [[ $# -gt 0 ]]; do
         endn="$1"
       fi
       shift 1
+    elif ! [[ "$1" =~ ^-?[0-9]+$ ]]; then
+      echo "Error: Argument given when none should be given" >&2
+      exit 1
     else
-      echo "Number of vertices already set."
+      echo "Error: Number of vertices already set." >&2
       exit 1
     fi
 		;;
@@ -412,7 +415,7 @@ if [[ -z "$startn" && -z "$manual" && "$filter" =~ ^-?[0-9]+$ ]]; then
 	# There is no n given and we don't want to manually give a graph
 	# And we also haven't recieved a filter file (as it is just a number) -> ERROR
 	# We only check startn, as both are either filled or not filled
-	echo "Error: Number of vertices wasn't given."
+	echo "Error: Number of vertices wasn't given." >&2
 	exit 1
 fi
 
