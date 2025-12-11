@@ -163,9 +163,9 @@ gen_range_graphs() {
 	fi
 	for num in $(seq "$1" "$2"); do
 	  if [[ "$allplanar" == true ]]; then
-	    "./$nauty_path/geng" "$num" -c -g 2>/dev/null | "./$nauty_path/planarg" 2>/dev/null
+	    "./$plantri_path/plantri" "-gpc1m1" "$num" 2>/dev/null | "./$nauty_path/shortg" -q 2>/dev/null
 	  else
-		  "./$plantri_path/plantri" "${simpleplanar[@]}" "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+		  "./$plantri_path/plantri" -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
     fi
 	done
 }
@@ -254,7 +254,7 @@ choose_incoming_graphs() {
 				fi
 			fi
 
-			"./$plantri_path/plantri" "${simpleplanar[@]}" "$n" 2>/dev/null | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
+			gen_range_graphs "$n" "$n" "$raw" | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
 		done
 
 		# We deactivate the venv
@@ -289,7 +289,6 @@ show_value="svg"
 method=0
 startn=-1
 endn=-1
-simpleplanar=(-g) # This is arguments for plantri
 check_condition=false
 allplanar=false
 
@@ -344,14 +343,9 @@ while [[ $# -gt 0 ]]; do
     method=3
     shift 1
     ;;
-  -p*)
-    val=$(parse_optional_arg -p -p "$1" "$2" 0)
-    shift $?
-    if [[ "$val" == "0" ]]; then
-      simpleplanar+=("-p")
-    elif [[ "$val" == "2" ]]; then
-      allplanar=true
-    fi
+  -p)
+    allplanar=true
+    shift 1
     ;;
   -x | --condition)
     check_condition=true
