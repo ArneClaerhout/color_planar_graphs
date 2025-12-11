@@ -19,7 +19,7 @@ public class Counter {
 
     public void inputColors(int[] colors, boolean allColors) {
         for (int k = 0; k < colors.length; k++) {
-            if (colors[k] == maxColor) {
+            if (colors[k] == 3) {
                 condition |= (1L << k);
             }
         }

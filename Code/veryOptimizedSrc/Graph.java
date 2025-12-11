@@ -383,6 +383,30 @@ public class Graph {
         return vertices;
     }
 
+    /**
+     * A method for subdividing the current graph.
+     * This returns the indexed array of the subdivided graph.
+     *
+     * @note    This will have changed the state of the Vertices in the current verticesIndexed.
+     *          Therefore, one shouldn't use these old ones and change them to the returned array.
+     */
+    public Vertex[] subdivide() {
+        ArrayList<Vertex> newVertices = new ArrayList<>(Arrays.asList(verticesIndexed));
+        int index = verticesIndexed.length; // Keeps track of where to add the newest subdivision
+        for (int i = 0; i < verticesIndexed.length; i++) {
+            Vertex v = verticesIndexed[i];
+            for (long j = (v.getOpenNeighbourhood() & -(1L << i)); j != 0; j &= j - 1) {
+                Vertex neighbour = verticesIndexed[Long.numberOfTrailingZeros(j)];
+                newVertices.add(new Vertex(index));
+                v.removeNeighbour(neighbour); // This removes both
+                v.addNeighbour(newVertices.get(index));
+                neighbour.addNeighbour(newVertices.get(index));
+                index++;
+            }
+        }
+        return newVertices.toArray(new Vertex[0]);
+    }
+
     public ArrayList<int[]> getColorings() {
         return counter.getColorings();
     }

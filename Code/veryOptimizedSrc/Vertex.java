@@ -74,9 +74,19 @@ public class Vertex {
      * @param   neighbour
      *          The neighbour to add to the neighbours number.
      */
-    void addSingleNeighbour(Vertex neighbour) {
+    protected void addSingleNeighbour(Vertex neighbour) {
         neighbours |= (1L << neighbour.index);
         incrementDegree();
+    }
+
+    /**
+     * A method for removing a neighbour, this is done for both parties.
+     */
+    protected void removeNeighbour(Vertex neighbour) {
+        neighbours &= ~(1L << neighbour.index);
+        neighbour.neighbours &= ~(1L << this.index);
+        decrementDegree();
+        neighbour.decrementDegree();
     }
 
     /**
@@ -198,6 +208,10 @@ public class Vertex {
      */
     void incrementDegree() {
         this.degree++;
+    }
+
+    void decrementDegree() {
+        this.degree--;
     }
 
     public int getImportanceValue() {

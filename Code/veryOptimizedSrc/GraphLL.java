@@ -28,8 +28,16 @@ public class GraphLL extends Graph {
      */
     public GraphLL(int[][] adjMatrix) {
         super(adjMatrix);
-        this.verticesIndexed = (VertexLL []) super.verticesIndexed;
+        this.verticesIndexed = Arrays.stream(super.verticesIndexed).map(VertexLL::new).toArray(VertexLL[]::new);
         this.vertices = new VertexLL[10];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VertexLL[] subdivide() {
+        return Arrays.stream(super.subdivide()).map(VertexLL::new).toArray(VertexLL[]::new);
     }
 
     /**
