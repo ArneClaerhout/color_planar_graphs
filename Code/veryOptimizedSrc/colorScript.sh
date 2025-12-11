@@ -343,7 +343,7 @@ while [[ $# -gt 0 ]]; do
     method=3
     shift 1
     ;;
-  -p)
+  -a | --all)
     allplanar=true
     shift 1
     ;;
