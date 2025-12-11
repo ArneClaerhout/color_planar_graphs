@@ -140,18 +140,19 @@ public class Main {
                                 System.out.println(line); break;
                                 // This option is only useful when filtering
                             case 3:
-                                int[] colors = new int[graph.numberOfVertices];
                                 if (checkCondition) {
+                                    int[] colors = new int[graph.numberOfVertices];
                                     int count = 0;
                                     for (long k = (graph.maxColoring & ~graph.counter.getCondition()); k != 0; k &= k - 1) {
                                         int index = Long.numberOfTrailingZeros(k);
                                         colors[index] = graph.chromaticNumber;
                                         count++;
                                     }
-                                    if (count > 1) {
+//                                    if (count > 1) {
                                         System.out.println(line + " " + Arrays.toString(colors));
-                                    }
+//                                    }
                                 } else {
+                                    int[] colors = graph.getColors();
                                     System.out.println(line + " " + Arrays.toString(colors));
                                 }
                                 break;
