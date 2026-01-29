@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 public class GraphLL extends Graph {
 
@@ -36,15 +34,8 @@ public class GraphLL extends Graph {
      * {@inheritDoc}
      */
     @Override
-    public VertexLL[] subdivide() {
-        return Arrays.stream(super.subdivide()).map(VertexLL::new).toArray(VertexLL[]::new);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um, boolean checkCondition, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um,
+            boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
         for (int i = 2; i <= n; i++) {
@@ -61,40 +52,47 @@ public class GraphLL extends Graph {
             if (optimizedAlgorithm(coloring, open, proper, um, 0, i, checkCondition, allColorings)) {
                 return i;
             }
-            if (chromaticNumber != 0) return i;
+            if (chromaticNumber != 0)
+                return i;
         }
         return 0;
     }
 
     /**
-     * A method for running the optimized algorithm using the memorization of available colors for each vertex.
+     * A method for running the optimized algorithm using the memorization of
+     * available colors for each vertex.
      *
-     * @param   coloring
-     *          The coloring of which the algorithm should to try to find a solution for.
-     * @param   open
-     *          Whether the coloring is an open coloring,
-     *          this also includes odd coloring.
-     * @param   proper
-     *          Whether the coloring is proper.
-     * @param   um
-     *          Whether the coloring is a version of unique-maximum coloring.
-     * @param   maxColorCurrGraph
-     *          The current max color possible for this graph.
-     *          This doesn't matter for unique-maximum colorings.
-     * @param   maxColor
-     *          The maximum color possible for this coloring method.
-     * @param   checkCondition
-     *          True if a condition, specified in the Counter class, should get checked.
-     *          False otherwise.
-     * @param   allColorings
-     *          True if all colorings for a given graph should get found.
+     * @param coloring
+     *                          The coloring of which the algorithm should to try to
+     *                          find a solution for.
+     * @param open
+     *                          Whether the coloring is an open coloring,
+     *                          this also includes odd coloring.
+     * @param proper
+     *                          Whether the coloring is proper.
+     * @param um
+     *                          Whether the coloring is a version of unique-maximum
+     *                          coloring.
+     * @param maxColorCurrGraph
+     *                          The current max color possible for this graph.
+     *                          This doesn't matter for unique-maximum colorings.
+     * @param maxColor
+     *                          The maximum color possible for this coloring method.
+     * @param checkCondition
+     *                          True if a condition, specified in the Counter class,
+     *                          should get checked.
+     *                          False otherwise.
+     * @param allColorings
+     *                          True if all colorings for a given graph should get
+     *                          found.
      *
-     * @return  True if the algorithm found a coloring for this graph.
-     *          The colors of each of the vertex objects in vertices are the correct colors.
-     *          False if there is no possible coloring for this maxColor.
+     * @return True if the algorithm found a coloring for this graph.
+     *         The colors of each of the vertex objects in vertices are the correct
+     *         colors.
+     *         False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-                                       int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
+            int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
             return startingStep(maxColor, checkCondition, allColorings);
         }
@@ -121,21 +119,24 @@ public class GraphLL extends Graph {
 
         for (int i = colors; i != 0; i &= i - 1) {
             int color = Integer.numberOfTrailingZeros(i);
-            if (color > maxLoop) break; // We passed the highest possible color in the graph
-            if (lastToColor && maxColorCurrGraph < maxColor && color <= maxColorCurrGraph) continue; // We don't want to retry already tried states
-
+            if (color > maxLoop)
+                break; // We passed the highest possible color in the graph
+            if (lastToColor && maxColorCurrGraph < maxColor && color <= maxColorCurrGraph)
+                continue; // We don't want to retry already tried states
 
             v.changeColor(color + 1); // + 1 as the actual colors are from 1 to n
 
-            // We have to now check if all our neighbours are colored, as this isn't checked in updateNeighbours
+            // We have to now check if all our neighbours are colored, as this isn't checked
+            // in updateNeighbours
             // This is an extra check for correctness
-            if (neighboursColored && !v.isCorrectlyColored(coloring,  verticesIndexed, false, false, open, proper, um)) {
+            if (neighboursColored && !v.isCorrectlyColored(coloring, verticesIndexed, false, false, open, proper, um)) {
                 // This color isn't correct, we pick another
                 continue;
             }
 
-            // We also change the available colors for the neighbours if the coloring is proper
-            ArrayList<VertexLL> changed =  new ArrayList<>();
+            // We also change the available colors for the neighbours if the coloring is
+            // proper
+            ArrayList<VertexLL> changed = new ArrayList<>();
 
             if (updateNeighbours(v, color, coloring, open, proper, um, changed)) {
                 // This is used to skip this color, as it isn't possible
@@ -143,7 +144,8 @@ public class GraphLL extends Graph {
             }
 
             int newMaxColorCurrGraph = Math.max(maxColorCurrGraph, color + 1);
-            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, checkCondition, allColorings)) {
+            if (optimizedAlgorithm(coloring, open, proper, um, newMaxColorCurrGraph, maxColor, checkCondition,
+                    allColorings)) {
                 return true;
             }
 
@@ -173,32 +175,35 @@ public class GraphLL extends Graph {
 
     /**
      * A method for updating the neighbours of a chosen vertex.
-     * This method makes sure that only the actual real neighbours (in verticesIndexed) are changed.
+     * This method makes sure that only the actual real neighbours (in
+     * verticesIndexed) are changed.
      * It also only changes those neighbours that aren't colored yet.
      *
-     * @param   v
-     *          The vertex to update.
-     * @param   color
-     *          The color that should get added or removed
-     *          from the neighbours available colors array.
-     * @param   coloring
-     *          The coloring to use, this is needed for the color-checking
-     *          of neighbours while the algorithm is being run.
-     * @param   open
-     *          Whether the coloring is an open coloring,
-     *          this also includes odd coloring.
-     * @param   proper
-     *          Whether the coloring is proper.
-     * @param   um
-     *          Whether the coloring is a version of unique-maximum coloring.
-     * @param   changed
-     *          This should be an empty list
-     *          to be filled with the vertices that were changed.
-     *          This will contain the old vertices that were removed from verticesIndexed.
-     * @return  Whether we should skip this color
-     *          as we already found a neighbour with zero possible colors.
+     * @param v
+     *                 The vertex to update.
+     * @param color
+     *                 The color that should get added or removed
+     *                 from the neighbours available colors array.
+     * @param coloring
+     *                 The coloring to use, this is needed for the color-checking
+     *                 of neighbours while the algorithm is being run.
+     * @param open
+     *                 Whether the coloring is an open coloring,
+     *                 this also includes odd coloring.
+     * @param proper
+     *                 Whether the coloring is proper.
+     * @param um
+     *                 Whether the coloring is a version of unique-maximum coloring.
+     * @param changed
+     *                 This should be an empty list
+     *                 to be filled with the vertices that were changed.
+     *                 This will contain the old vertices that were removed from
+     *                 verticesIndexed.
+     * @return Whether we should skip this color
+     *         as we already found a neighbour with zero possible colors.
      */
-    private boolean updateNeighbours(VertexLL v, int color, Coloring coloring, boolean open, boolean proper, boolean um, ArrayList<VertexLL> changed) {
+    private boolean updateNeighbours(VertexLL v, int color, Coloring coloring, boolean open, boolean proper, boolean um,
+            ArrayList<VertexLL> changed) {
         for (long i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
             int bit = Long.numberOfTrailingZeros(i);
             VertexLL neighbour = verticesIndexed[bit];
@@ -207,7 +212,8 @@ public class GraphLL extends Graph {
 
             if ((neighbour.getOpenNeighbourhood() & vertexIsColored) == neighbour.getOpenNeighbourhood() &&
                     neighbourIsColored) {
-                // All the neighbour's neighbours are colored and the neighbour itself is colored
+                // All the neighbour's neighbours are colored and the neighbour itself is
+                // colored
                 // We want to check if the neighbour is CORRECTLY colored
                 if (!neighbour.isCorrectlyColored(coloring, verticesIndexed, false, false, open, proper, um)) {
                     // Early pruning
@@ -222,18 +228,23 @@ public class GraphLL extends Graph {
                     return true;
                     // We skip the rest, as this color is incorrect
                 }
-                // It doesn't have to be checked on whether it's proper, as this is done by the next section
+                // It doesn't have to be checked on whether it's proper, as this is done by the
+                // next section
             }
 
             if (proper) {
                 // This section removes the color from the available colors
 
-                // We check if the neighbour is already colored, as we don't have to do anything if this is the case
-                if (neighbourIsColored) continue;
+                // We check if the neighbour is already colored, as we don't have to do anything
+                // if this is the case
+                if (neighbourIsColored)
+                    continue;
 
                 // We compare the neighbours neighbourhood with the already colored vertices
                 if (neighbour.removeColorFromAvailableColors(color)) {
-                    int amountOfAvailableColors = neighbour.getAmountOfAvailableColors();// We removed one, but this is correct for the following indexing
+                    int amountOfAvailableColors = neighbour.getAmountOfAvailableColors();// We removed one, but this is
+                                                                                         // correct for the following
+                                                                                         // indexing
                     if (amountOfAvailableColors != 0) {
                         changed.add(neighbour);
                         neighbour.removeFromLL(vertices, amountOfAvailableColors);

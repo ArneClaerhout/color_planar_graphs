@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Graph {
 
@@ -24,17 +26,17 @@ public class Graph {
 
     protected int chromaticNumber = 0;
 
-    protected Counter counter;
+    protected ColoringCounter counter = new ColoringCounter();
 
     /**
      * A help-bitset for checking whether the graph is almost fully colored.
      */
-    protected final long maxColoring;
+    protected long maxColoring;
 
     /**
      * A simple integer that keeps track of the amount of vertices.
      */
-    protected final int numberOfVertices;
+    protected int numberOfVertices;
 
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
@@ -404,7 +406,7 @@ public class Graph {
      *       Therefore, one shouldn't use these old ones and change them to the
      *       returned array.
      */
-    public Vertex[] subdivide() {
+    public void subdivide() {
         ArrayList<Vertex> newVertices = new ArrayList<>(Arrays.asList(verticesIndexed));
         int index = verticesIndexed.length; // Keeps track of where to add the newest subdivision
         for (int i = 0; i < verticesIndexed.length; i++) {
@@ -418,7 +420,55 @@ public class Graph {
                 index++;
             }
         }
-        return newVertices.toArray(new Vertex[0]);
+        verticesIndexed = newVertices.toArray(new Vertex[0]);
+        numberOfVertices = verticesIndexed.length;
+        maxColoring = (1L << numberOfVertices) - 1;
+        availables = maxColoring;
+    }
+
+    public void addGraphToIndex(int[][] adjMatrix, int indexInThisGraph, int indexInOwnGraph) {
+        int numOfNewVertices = adjMatrix.length;
+        Vertex target = verticesIndexed[indexInThisGraph];
+
+        int skip = 0;
+        Vertex[] extraVerticesIndexed = new Vertex[numOfNewVertices];
+        for (int i = 0; i < numOfNewVertices; i++) {
+            if (i == indexInOwnGraph) {
+                // We just link the target to the position
+                skip = 1;
+                extraVerticesIndexed[i] = target;
+            } else {
+                // Still give them the correct index for later
+                extraVerticesIndexed[i] = new Vertex(numberOfVertices + i - skip);
+            }
+        }
+
+        // Link all vertices
+        for (int i = 1; i < numOfNewVertices; i++) {
+            for (int j = 0; j < i; j++) {
+                if (adjMatrix[i][j] == 1) {
+                    extraVerticesIndexed[i].addNeighbour(extraVerticesIndexed[j]);
+                }
+            }
+        }
+
+        int l = verticesIndexed.length;
+        Vertex[] newArray = new Vertex[l + numOfNewVertices - 1];
+
+        System.arraycopy(verticesIndexed, 0, newArray, 0, l);
+        int pos = l;
+        for (int i = 0; i < numOfNewVertices; i++) {
+            if (i != indexInOwnGraph) {
+                // Skip adding the double vertex
+                newArray[pos] = extraVerticesIndexed[i];
+                pos++;
+            }
+        }
+
+        verticesIndexed = newArray;
+        numberOfVertices = verticesIndexed.length;
+        maxColoring = (1L << numberOfVertices) - 1;
+        availables = maxColoring;
     }
 
     /**
@@ -609,9 +659,9 @@ public class Graph {
             }
             chromaticNumber = maxColor;
             if (counter == null)
-                counter = new Counter(chromaticNumber);
-            counter.inputColors(getColors(), allColorings);
-            return false;
+                counter = new ColoringCounter(chromaticNumber);
+            // If the counters are all full, return true and stop counting
+            return !counter.inputColors(getColors(), allColorings);
         }
         return true;
     }
