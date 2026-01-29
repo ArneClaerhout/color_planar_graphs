@@ -14,3 +14,10 @@ nauty*.tar.gz
 Verslagen/~$*.docx
 .bashrc.local
 .vscode/
+code/*/.idea/
+code/*/*.class
+code/*/out/
+code/*/venv/
+code/*/images/
+code/*/outputs/
+verslagen/~$*.docx
