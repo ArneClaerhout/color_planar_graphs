@@ -108,7 +108,7 @@ public class Main {
 //                }
                 int c;
 //                if (Math.pow(adjM.length, 2)/count > 4) {
-//                    GraphPQ graphPQ = new GraphPQ(adjM);
+//                    Graphs.GraphPQ graphPQ = new Graphs.GraphPQ(adjM);
 //                    c = graphPQ.findChromaticNumberOptimized(coloring);
 //                } else {
                     c = graph.findChromaticNumberOptimized(coloring);
@@ -178,10 +178,10 @@ public class Main {
                 System.out.println(c);
             }
 
-//            Graph graphnew = new Graph("O~eK]f@SOuA@EBE?_X?AP");
-//            System.out.println(Arrays.deepToString(Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));
+//            Graphs.Graph graphnew = new Graphs.Graph("O~eK]f@SOuA@EBE?_X?AP");
+//            System.out.println(Arrays.deepToString(Graphs.Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));
 //            graphnew.colorGraph(new int[]{1, 2, 3, 2, 2, 3, 4, 3, 5, 1, 5, 4, 2, 1, 1, 3});
-//            graphnew.isCorrectlyColored(Coloring.pUMc);
+//            graphnew.isCorrectlyColored(Graphs.Coloring.pUMc);
 
 
 

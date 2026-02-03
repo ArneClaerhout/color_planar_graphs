@@ -1,4 +1,4 @@
-package Graphs;
+package graphs;
 
 public class VertexLL extends Vertex {
 

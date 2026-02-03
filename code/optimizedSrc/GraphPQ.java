@@ -38,8 +38,8 @@ public class GraphPQ {
 //    /**
 //     * A method for adding a vertex to a graph.
 //     */
-//    public void addVertex(Vertex v) {
-//        for (Vertex vertex : vertices) {
+//    public void addVertex(Graphs.Vertex v) {
+//        for (Graphs.Vertex vertex : vertices) {
 //            if (vertex.equals(v)) {
 //                return;
 //            }
@@ -378,7 +378,7 @@ public class GraphPQ {
 //    }
 
 //
-//    public int findChromaticNumberNaive(Coloring coloring) {
+//    public int findChromaticNumberNaive(Graphs.Coloring coloring) {
 //        int n = coloring.getMaxChromaticNumber();
 //
 //        for (int i = 1; i <= n; i++) {
@@ -389,7 +389,7 @@ public class GraphPQ {
 //        return 0;
 //    }
 
-//    private boolean naiveAlgorithm(Coloring coloring, int maxColor, int index) {
+//    private boolean naiveAlgorithm(Graphs.Coloring coloring, int maxColor, int index) {
 //        if (index >= vertices.length) {
 //            // We reached the end of the list
 //            return isCorrectlyColored(coloring, true);

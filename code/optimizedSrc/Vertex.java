@@ -180,7 +180,7 @@ public class Vertex {
 
     /**
      * A method for acquiring the index of this vertex,
-     * according to the adjacency list of the graph6 string given to the Graph class.
+     * according to the adjacency list of the graph6 string given to the Graphs.Graph class.
      */
     public int getIndex() {
         return index;

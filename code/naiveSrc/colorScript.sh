@@ -85,7 +85,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # We make sure to recompile the code
-# javac Main.java
+# javac Graphs.Main.java
 
 #if [[ "$raw" == false ]]; then
 #  # Only if we are not in raw mode do we print this.
@@ -93,7 +93,7 @@ done
 #fi
 
 
-#echo "Coloring: $coloring"
+#echo "Graphs.Coloring: $coloring"
 #echo "Filename: $filename"
 #echo "Manual: $manual"
 

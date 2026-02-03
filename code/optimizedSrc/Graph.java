@@ -48,8 +48,8 @@ public class Graph {
 //    /**
 //     * A method for adding a vertex to a graph.
 //     */
-//    public void addVertex(Vertex v) {
-//        for (Vertex vertex : vertices) {
+//    public void addVertex(Graphs.Vertex v) {
+//        for (Graphs.Vertex vertex : vertices) {
 //            if (vertex.equals(v)) {
 //                return;
 //            }

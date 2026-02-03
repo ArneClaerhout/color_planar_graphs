@@ -18,69 +18,7 @@ show_help() {
     This script helps the user in running the coloring algorithm provided in Main.java.
     The user of this script can choose to use multiple provided options.
 
-    Full explanation of the entire repository can be found here:
-        https://github.com/ArneClaerhout/Bachelorproef
-
-  Positional Arguments:
-    NUMBER_OF_VERTICES
-        The amount of vertices the to be colored graphs should have.
-        This can either be a range, or just a single number.
-        The range should be given in the following format:
-
-        MIN_VERTICES:MAX_VERTICES
-
-  Options:
-    -h, --help
-        Show this help message and exit.
-
-    -c, --coloring
-        The chosen coloring to use.
-        The default coloring is the proper coloring.
-        Examples: proper, odd, iUMo, pCFc, ...
-
-    -m, --manual GRAPH
-        Whether the user wants to manually input graphs.
-        The value for this option should be the graph to color in graph6 format.
-        If the user would like to input the graphs through a pipe,
-        the GRAPH value should be "pipe".
-
-	-a, --all
-		Instead of only generating planar triangulations,
-		this option goes through all planar graphs instead.
-
-    -f, --filter MIN_COLORS
-        Adds a filter to the outputted graphs.
-        MIN_COLORS is the minimum amount of colors needed before the graph gets to be output to the terminal.
-        When the chromatic number of a graph is strictly smaller than this value, it gets skipped.
-
-    -o, --overview
-        Gives an overview of all the outputted graphs instead of
-        actually printing all graphs and their corresponding chromatic numbers.
-        This also keeps track of the needed time for the algorithm as a whole.
-
-    -r, --raw VALUE
-        Alternates the output of the algorithm to a more raw output.
-        VALUE should be a value equal to 1, 2 or 3.
-          - A value of 1 makes sure the output is only the chromatic numbers of the graphs.
-          - A value of 2 only outputs the graph6 strings of the graphs (only useful when filtering).
-          - A value of 3 only outputs the graph6 strings followed by the used colors ordered by index.
-
-    -s, --show FORMAT
-        Outputs an image of the outputted graphs to the directory images/ .
-        The file extension of these images should be given by FORMAT.
-        The default value for FORMAT is svg.
-
-  Examples:
-    Run the script with a file of graph6 strings:
-        cat input.txt | ./${0##*/} --manual pipe
-
-    Run the script with common options:
-        ./${0##*/} 3:10 -c pUMo -f 6 --show
-
-    Other examples can be found on the Github page.
-
-  Notes:
-    - Arguments can be combined with both short and long forms. The order of the arguments doesn't matter either.
+    Full explanation of the entire repository can be found in the README.
 
   Author:
     Arne Claerhout
@@ -112,6 +50,7 @@ fi
 #######################
 
 # Helper function to get/set graph counts in JSON
+# Disclaimer: made with the help of AI
 get_cached_count() {
 	local n=$1
 
@@ -221,7 +160,7 @@ show_func() {
 		rm -f images/*
 
 		# Run Python script with stdin
-		"venv/bin/python" graph6_to_image.py "$show_value" </dev/stdin
+		"venv/bin/python" scripts/graph6_to_image.py "$show_value" </dev/stdin
 	else
 		cat
 	fi
@@ -238,9 +177,9 @@ write_to_file() {
 
 java_alg() {
 	if [[ "$progressview" == true ]]; then
-		pv -l "-s $num_graphs" | java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
+		pv -l "-s $num_graphs" | java graphs/Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
 	else
-		java Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
+		java graphs/Main "$coloring" "$overview" "$raw" "$minChrom" "$method" "$check_condition"
 	fi
 }
 
@@ -258,7 +197,7 @@ choose_incoming_graphs() {
 
 		change=""
 		changeoverview=false
-		"venv/bin/python" parseFilter.py "$filter" | while read -r line; do
+		"venv/bin/python" scripts/parseFilter.py "$filter" | while read -r line; do
 			# We first parse the line
 			# This changes all the variables to the ones given in the filter
 			read -r raw overview n coloring minChrom rest <<<"$line"
@@ -339,6 +278,14 @@ while [[ $# -gt 0 ]]; do
 		coloring=$(parse_mandatory_arg "-c" "--coloring" "$1" "$2")
 		shift $?
 		;;
+  -C | --compile)
+    javac graphs/Main.java
+    if [[ "$raw" == 0 ]]; then
+    	# Only if we are not in raw mode do we print this.
+    	echo "Code compiled." >&2
+    fi
+    shift 1
+    ;;
 	-m | --manual)
 		manual=$(parse_mandatory_arg "-m" "--manual" "$1" "$2")
 		shift $?
@@ -416,14 +363,8 @@ done
 ###### ALGORTIHM ######
 #######################
 
-# We make sure to recompile the code
-javac Main.java
-#
 #### RAW-CHECK
-if [[ "$raw" == 0 ]]; then
-	# Only if we are not in raw mode do we print this.
-	echo "Code compiled." >&2
-fi
+
 if [[ "$raw" -ne 1 && "$raw" -ne 2 && "$raw" -ne 3 && "$raw" -ne 4 && "$raw" -ne 0 ]]; then
 	# We only want three raw options
 	raw=1

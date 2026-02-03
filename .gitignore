@@ -14,3 +14,4 @@ code/*/images/
 code/*/outputs/
 code/*/filters/
 verslagen/~$*.docx
+code/*/graphs/*.class

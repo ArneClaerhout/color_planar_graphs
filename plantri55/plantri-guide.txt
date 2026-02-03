@@ -988,7 +988,7 @@ APPENDIX D.  Writing Plug-ins for plantri.
     faceorbits.c (makes plantri_fo) - count plane embeddings with 
                                       distinguished outer face
 
-APPENDIX E.  Graph Counts.
+APPENDIX E.  Graphs.Graph Counts.
 
   In this section we list some counts of the graph classes that can be
   generated using plantri.  If you compute any additional numbers in

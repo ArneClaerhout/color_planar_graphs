@@ -24,11 +24,10 @@ cc -o plantri -O4 plantri.c
 
 This will compile plantri and make sure you can use it.
 
-Now, go straight to the source directory and be sure to compile the code.
+Now, go straight to the source directory.
 
 ```
 cd ../Code/veryOptimizedSrc/
-javac Main.java
 ```
 
 Also, make sure a python virtual environment is created by running the following command:
@@ -42,15 +41,25 @@ Now you're ready to use the coloring algorithm!
 
 ## General Usage
 
+The algorithm is easily usable, starting with the two first options: 
+
+
+- **NUMBER_OF_VERTICES**: The amount of vertices of the graphs that are to be checked is a mandatory argument.
+  This should always be a value between 3 and 63, but this can also be written as a range of vertices.
+  For example: `3:6`, the graphs with vertices between 3 and 6.
+
+- **COLORING_METHOD**: (optional option) The default coloring method to be used is proper coloring,
+  this can be changed by using the flag _-c_ with the coloring method as value.
+  This coloring method should be like the following: `proper, odd, pCFo, iUMc, ...`.
+
+When using the algorithm for the first time, be sure to also compile the code by adding the `-C` option to the `colorScript` command.
+
+
 Example usage:
 
 ```
-./colorScript.sh NUMBER_OF_VERTICES -c COLORING_METHOD
+./colorScript.sh NUMBER_OF_VERTICES -c COLORING_METHOD -C
 ```
-
-- **COLORING_METHOD**: The default coloring method to be used is proper coloring, this can be changed by using the flag _-c_ with the coloring method as value. This coloring method should be like the following: `proper, odd, pCFo, iUMc, ...`.
-
-- **NUMBER_OF_VERTICES**: The amount of vertices of the graphs that are to be checked are (for right now) a mandatory argument. This should always be a value between 3 and 63, but this can also be written as a range of vertices. For example: `3:6`, the graphs with vertices between 3 and 6.
 
 This will print out the graph6 strings of the graphs and the corresponding chromatic number of the coloring for this graph.
 It will also output the overall time it took to calculate everyting.
