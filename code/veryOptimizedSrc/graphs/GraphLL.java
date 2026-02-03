@@ -1,3 +1,5 @@
+package Graphs;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -34,11 +36,11 @@ public class GraphLL extends Graph {
      * {@inheritDoc}
      */
     @Override
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um,
-            boolean checkCondition, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, int startingColor, boolean open, boolean proper, boolean um,
+                                            boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
-        for (int i = 2; i <= n; i++) {
+        for (int i = startingColor; i <= n; i++) {
             // We don't forget to reset the vertices array
             vertices = new VertexLL[n];
             for (VertexLL v : verticesIndexed) {
@@ -92,7 +94,7 @@ public class GraphLL extends Graph {
      *         False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-            int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
+                                       int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
             return startingStep(maxColor, checkCondition, allColorings);
         }
@@ -203,7 +205,7 @@ public class GraphLL extends Graph {
      *         as we already found a neighbour with zero possible colors.
      */
     private boolean updateNeighbours(VertexLL v, int color, Coloring coloring, boolean open, boolean proper, boolean um,
-            ArrayList<VertexLL> changed) {
+                                     ArrayList<VertexLL> changed) {
         for (long i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
             int bit = Long.numberOfTrailingZeros(i);
             VertexLL neighbour = verticesIndexed[bit];

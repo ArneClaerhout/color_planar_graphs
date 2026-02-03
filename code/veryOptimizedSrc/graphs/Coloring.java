@@ -1,3 +1,5 @@
+package Graphs;
+
 import java.util.ArrayList;
 
 public enum Coloring {

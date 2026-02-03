@@ -1,3 +1,5 @@
+package Graphs;
+
 import java.util.*;
 
 public class GraphPQ extends Graph {
@@ -26,11 +28,11 @@ public class GraphPQ extends Graph {
      * {@inheritDoc}
      */
     @Override
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um,
-            boolean checkCondition, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, int startingColor, boolean open, boolean proper, boolean um,
+                                            boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
-        for (int i = 2; i <= n; i++) {
+        for (int i = startingColor; i <= n; i++) {
             vertexIsColored = 0;
             vertices.clear();
             vertices.addAll(List.of(this.verticesIndexed));
@@ -80,7 +82,7 @@ public class GraphPQ extends Graph {
      *         False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-            int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
+                                       int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
             return startingStep(maxColor, checkCondition, allColorings);
         }
@@ -208,7 +210,7 @@ public class GraphPQ extends Graph {
      *         as we already found a neighbour with zero possible colors.
      */
     private boolean updateNeighbours(long neighbourhood, int color, Coloring coloring, boolean open, boolean proper,
-            boolean um, boolean addColor, ArrayList<Vertex> changed) {
+                                     boolean um, boolean addColor, ArrayList<Vertex> changed) {
         if (addColor) {
             // We need to undo everything in changed
             for (Vertex changedNeighbour : changed) {

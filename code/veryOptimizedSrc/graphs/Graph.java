@@ -1,15 +1,15 @@
+package Graphs;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Graph {
 
     // /**
     // * The array comprised of the vertices in this graph.
     // */
-    // protected Vertex[] vertices;
+    // protected Graphs.Vertex[] vertices;
 
     /**
      * The indexed array that stays by index.
@@ -26,17 +26,17 @@ public class Graph {
 
     protected int chromaticNumber = 0;
 
-    protected ColoringCounter counter = new ColoringCounter();
+    public final ColoringCounter counter = new ColoringCounter();
 
     /**
      * A help-bitset for checking whether the graph is almost fully colored.
      */
-    protected long maxColoring;
+    public long maxColoring;
 
     /**
      * A simple integer that keeps track of the amount of vertices.
      */
-    protected int numberOfVertices;
+    public int numberOfVertices;
 
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
@@ -87,8 +87,8 @@ public class Graph {
     // /**
     // * A method for adding a vertex to a graph.
     // */
-    // public void addVertex(Vertex v) {
-    // for (Vertex vertex : vertices) {
+    // public void addVertex(Graphs.Vertex v) {
+    // for (Graphs.Vertex vertex : vertices) {
     // if (vertex.equals(v)) {
     // return;
     // }
@@ -117,7 +117,7 @@ public class Graph {
      *                 Whether the coloring is a unique-maximum coloring.
      */
     protected boolean isCorrectlyColored(Coloring coloring, boolean properLy, boolean open, boolean proper,
-            boolean um) {
+                                         boolean um) {
         // This method only gets called after coloring properLy
         if (!properLy && coloring == Coloring.PROPER)
             return true;
@@ -489,6 +489,9 @@ public class Graph {
      * @param coloring
      *                       The chosen coloring method of which this method is
      *                       finding the chromatic number of.
+     * @param startingColor
+     *                       The amount of colors the algorithm should start at.
+     *                       Making this value too high could result in a false result.
      * @param open
      *                       Whether the coloring is an open coloring,
      *                       this also includes odd coloring.
@@ -506,11 +509,11 @@ public class Graph {
      *                       found.
      *                       False otherwise.
      */
-    public int findChromaticNumberOptimized(Coloring coloring, boolean open, boolean proper, boolean um,
-            boolean checkCondition, boolean allColorings) {
+    public int findChromaticNumberOptimized(Coloring coloring, int startingColor, boolean open, boolean proper, boolean um,
+                                            boolean checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
-        for (int i = 2; i <= n; i++) {
+        for (int i = startingColor; i <= n; i++) {
             for (Vertex v : verticesIndexed) {
                 v.setMaxAvailableColors(i);
             }
@@ -563,7 +566,7 @@ public class Graph {
      *         False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-            int maxColorCurrGraph, int maxColor, int index, boolean checkCondition, boolean allColorings) {
+                                       int maxColorCurrGraph, int maxColor, int index, boolean checkCondition, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
             return startingStep(maxColor, checkCondition, allColorings);
         }
@@ -658,8 +661,6 @@ public class Graph {
                 return true;
             }
             chromaticNumber = maxColor;
-            if (counter == null)
-                counter = new ColoringCounter(chromaticNumber);
             // If the counters are all full, return true and stop counting
             return !counter.inputColors(getColors(), allColorings);
         }
@@ -873,7 +874,7 @@ public class Graph {
      *         False otherwise.
      */
     private boolean updateNeighbours(Vertex v, int color, Coloring coloring, boolean open, boolean proper, boolean um,
-            long[] changed) {
+                                     long[] changed) {
         for (long i = v.getOpenNeighbourhood(); i != 0; i &= i - 1) {
             int bit = Long.numberOfTrailingZeros(i);
             Vertex neighbour = verticesIndexed[bit];

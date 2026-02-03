@@ -1,17 +1,9 @@
-Code/*/.idea/
-plantri55/*:Zone.Identifier
 *:Zone.Identifier
-Code/*/*.class
-Code/*/out/
 .idea/
 out/
-Code/*/venv/
-Code/*/images/
-Code/*/outputs/
 nauty*/
 nauty*.tar.gz
 *.iml
-Verslagen/~$*.docx
 .bashrc.local
 .vscode/
 code/*/.idea/
@@ -20,4 +12,5 @@ code/*/out/
 code/*/venv/
 code/*/images/
 code/*/outputs/
+code/*/filters/
 verslagen/~$*.docx

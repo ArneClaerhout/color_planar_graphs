@@ -1,3 +1,5 @@
+package Graphs;
+
 import java.io.*;
 import java.util.*;
 
@@ -7,19 +9,19 @@ public class Main {
      ********** INPUT READING **********
      **********************************/
 
-    protected static Coloring coloring;
-    protected static boolean open;
-    protected static boolean proper;
-    protected static boolean um;
-    protected static boolean overview;
-    protected static TreeMap<Integer, Integer> cNumbers;
-    protected static int minChrom = 0;
-    protected static int raw;
-    protected static int method;
-    protected static boolean checkCondition;
+    static Coloring coloring;
+    static boolean open;
+    static boolean proper;
+    static boolean um;
+    static boolean overview;
+    static TreeMap<Integer, Integer> cNumbers;
+    static int minChrom = 0;
+    static int raw;
+    static int method;
+    static boolean checkCondition;
 
-    protected static long start;
-    protected static long end;
+    static long start;
+    static long end;
 
     public static void main(String[] args) throws IOException {
 
@@ -70,7 +72,7 @@ public class Main {
                         graph = new Graph(line);
                         break;
                 }
-                c = graph.findChromaticNumberOptimized(coloring, open, proper, um, checkCondition, (raw == 4));
+                c = graph.findChromaticNumberOptimized(coloring, minChrom != 0 ? minChrom - 1 : 2, open, proper, um, checkCondition, (raw == 4));
 
                 if (c < minChrom || (checkCondition
                         && Arrays.stream(graph.counter.getCondition())
@@ -157,8 +159,8 @@ public class Main {
             // BufferedReader br = new BufferedReader(new FileReader(file));
             // String line;
             // while((line = br.readLine()) != null){
-            // Graph graph = new Graph(line);
-            // int c = graph.findChromaticNumberOptimized(Coloring.getColoring("proper"),
+            // Graphs.Graph graph = new Graphs.Graph(line);
+            // int c = graph.findChromaticNumberOptimized(Graphs.Coloring.getColoring("proper"),
             // true, true, false, false, false);
             // if (c == 0) {
             // System.out.println(line);
@@ -180,7 +182,7 @@ public class Main {
              for (String line2 : graphs) {
              Graph graph = new Graph(line2);
              //
-             int c = graph.findChromaticNumberOptimized(Coloring.iUMc, false, false, true, true, false);
+             int c = graph.findChromaticNumberOptimized(Coloring.iUMc, 2, false, false, true, true, false);
 
              if (c < minChrom || (checkCondition
                      && Arrays.stream(graph.counter.getCondition())
@@ -200,11 +202,11 @@ public class Main {
              System.out.println(c);
              }
 
-            // Graph graphnew = new Graph("O~eK]f@SOuA@EBE?_X?AP");
-            // System.out.println(Arrays.deepToString(Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));
+            // Graphs.Graph graphnew = new Graphs.Graph("O~eK]f@SOuA@EBE?_X?AP");
+            // System.out.println(Arrays.deepToString(Graphs.Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));
             // graphnew.colorGraph(new int[]{1, 2, 3, 2, 2, 3, 4, 3, 5, 1, 5, 4, 2, 1, 1,
             // 3});
-            // graphnew.isCorrectlyColored(Coloring.pUMc);
+            // graphnew.isCorrectlyColored(Graphs.Coloring.pUMc);
 
         }
 
@@ -291,14 +293,14 @@ public class Main {
         for (long k = indicesInOwnGraph; k != 0; k &= k - 1) {
             int index = Long.numberOfTrailingZeros(k);
 
-            // We start from a Graph made from a very simple graph needing 3 colors
+            // We start from a Graphs.Graph made from a very simple graph needing 3 colors
             Graph graphStart = new Graph("E|tw");
             int n = graphStart.numberOfVertices;
             for (int i = 0; i < n; i++) {
                 graphStart.addGraphToIndex(adjMatrix, i, index);
             }
             graphStart.counter.setColorToCheck(1);
-            int c = graphStart.findChromaticNumberOptimized(Coloring.iUMc, false, false, true, true, false);
+            int c = graphStart.findChromaticNumberOptimized(Coloring.iUMc, 2, false, false, true, true, false);
             System.err.println(c);
             if ((!checkCondition || graphStart.counter.getCondition(indexColor) != graphStart.maxColoring)) {
                 // The condition is found
