@@ -122,6 +122,8 @@ endn=-1
 method=0
 check_condition=false
 mode="triangulation"
+number_of_threads=1
+plantri_options="-g"
 
 ############################
 #### NUMBER OF VERTICES ####
@@ -148,7 +150,7 @@ fi
 #### OPTIONS ####
 #################
 
-while getopts ":hCcm:f:porsPLBax" opt; do
+while getopts ":hCcm:f:porsPLBaxM:" opt; do
   case $opt in
     h)
   		show_help
@@ -203,9 +205,17 @@ while getopts ":hCcm:f:porsPLBax" opt; do
       ;;
     a)
       mode="allplanar"
+      plantri_options="-gpc1m1"
       ;;
     x)
       check_condition=true
+      ;;
+    M)
+      number_of_threads=$OPTARG
+      if [[ number_of_threads -lt 1 ]]; then
+        echo "Error: Negative number of threads given" >&2
+        exit 1
+      fi
       ;;
     \?)
       exit 3 #invalid option

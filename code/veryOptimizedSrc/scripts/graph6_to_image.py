@@ -29,8 +29,9 @@ if __name__ == "__main__":
 
         graph6_string = line[0]
 
-        input_format = sys.argv[1]
-        output_path = f"images/graph_{count}.{input_format}"
+        path = sys.argv[1]
+        input_format = sys.argv[2]
+        output_path = f"{path}graph_{count}.{input_format}"
         # print(f"Generating {output_path} ...")
 
         # Create the graph
