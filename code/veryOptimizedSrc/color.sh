@@ -7,19 +7,6 @@ source ./scripts/utils.sh
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
-# Function that generates the plantri output in a range of vertices
-gen_range_graphs() {
-	if [[ "$raw" == 0 ]]; then
-		# Only if we are not in raw mode do we print this.
-		echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
-	fi
-	res="$3"
-	res=$(( res > 0 ? res : 0 ))
-	for num in $(seq "$1" "$2"); do
-    "./$plantri_path/plantri" "$plantri_options" "$num" "$res/$number_of_threads" 2>/dev/null # We get rid of the extra printing to the terminal
-	done
-}
-
 show_func() {
 	if [[ "$show" != "" ]]; then
 		# Check if venv has been created

@@ -39,6 +39,19 @@ usage() {
   exit 1
 }
 
+# Function that generates the plantri output in a range of vertices
+gen_range_graphs() {
+	if [[ "$raw" == 0 ]]; then
+		# Only if we are not in raw mode do we print this.
+		echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
+	fi
+	res="$3"
+	res=$(( res > 0 ? res : 0 ))
+	for num in $(seq "$1" "$2"); do
+    "./$plantri_path/plantri" "$plantri_options" "$num" "$res/$number_of_threads" 2>/dev/null
+	done
+}
+
 show_help() {
 	cat <<EOF
   Usage:
@@ -88,7 +101,7 @@ get_cached_count() {
 		echo "$count"
 	else
 		# gen_range_graphs takes care of the mode
-		count=$(gen_range_graphs "$n" "$n" 2>/dev/null | "./$nauty_path/countg" 2>/dev/null | grep "graphs altogether" | awk '{print $1}')
+		count=$(gen_range_graphs "$n" "$n" 0 2>/dev/null | "./$nauty_path/countg" 2>/dev/null | grep "graphs altogether" | awk '{print $1}')
 
 		# Save it to the JSON file
 		local tmp
@@ -129,7 +142,7 @@ plantri_options="-g"
 #### NUMBER OF VERTICES ####
 ############################
 
-if [[ "$1" =~ ^-?[0-9]+$ ]]; then
+if [[ "$1" =~ ^[0-9]+(:[0-9]+)?$ ]]; then
   # Number of vertices
   # We extract them
   if [[ "$1" == *:* ]]; then
