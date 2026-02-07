@@ -48,7 +48,7 @@ gen_range_graphs() {
 	res="$3"
 	res=$(( res > 0 ? res : 0 ))
 	for num in $(seq "$1" "$2"); do
-    "./$plantri_path/plantri" "$plantri_options" "$num" "$res/$number_of_threads" 2>/dev/null
+    "./$plantri_path/plantri" "$plantri_options" "$num" "$res/$number_of_processes" 2>/dev/null
 	done
 }
 
@@ -135,7 +135,7 @@ endn=-1
 method=0
 check_condition=false
 mode="triangulation"
-number_of_threads=1
+number_of_processes=1
 plantri_options="-g"
 
 ############################
@@ -224,9 +224,9 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
       check_condition=true
       ;;
     M)
-      number_of_threads=$OPTARG
-      if [[ number_of_threads -lt 1 ]]; then
-        echo "Error: Negative number of threads given" >&2
+      number_of_processes=$OPTARG
+      if [[ $number_of_processes -lt 1 ]]; then
+        echo "Error: Negative number of processes given" >&2
         exit 1
       fi
       ;;

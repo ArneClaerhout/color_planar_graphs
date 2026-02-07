@@ -27,12 +27,12 @@ show_func() {
 }
 
 write_to_file() {
-	if [[ $number_of_threads -ne 1 || ("$overview" == false && ("$manual" == false || "$manual" == pipe)) ]]; then
+	if [[ $number_of_processes -ne 1 || ("$overview" == false && ("$manual" == false || "$manual" == pipe)) ]]; then
 	  mkdir -p "outputs"
 
 	  path="outputs/$(date +"%F-%H-%M-%S").txt"
-    if [[ $number_of_threads -ne 1 && "$1" -ne -1 ]]; then
-      path="outputs/thread_$1.txt"
+    if [[ $number_of_processes -ne 1 && "$1" -ne -1 ]]; then
+      path="outputs/process_$1.txt"
       cat > "$path"
     else
       tee "$path"
@@ -89,10 +89,10 @@ filter_file_parse() {
   deactivate
 }
 
-exit_on_multithreading() {
-  # This is called when multithreading isn't allowed and should be exited
-  if [[ $number_of_threads -ne 1 ]]; then
-    echo "Error: Multithreading is not allowed in this context." >&2
+exit_on_multiprocessing() {
+  # This is called when multiprocessing isn't allowed and should be exited
+  if [[ $number_of_processes -ne 1 ]]; then
+    echo "Error: Multiprocessing is not allowed in this context." >&2
     exit 1
   fi
 }
@@ -100,7 +100,7 @@ exit_on_multithreading() {
 
 java_alg() {
 	if [[ -v num_graphs ]]; then
-		pv -l "-s $num_graphs" | java graphs.Main "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+		pv -l "-s $(( num_graphs / number_of_processes ))" | java graphs.Main "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
 	else
 		java graphs.Main "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
 	fi
@@ -109,25 +109,27 @@ java_alg() {
 choose_incoming_graphs() {
 	# First we check whether we have a filter file
 	if ! [[ "$filter" =~ ^-?[0-9]+$ ]]; then
-	  exit_on_multithreading
+	  exit_on_multiprocessing
 		filter_file_parse
 	elif [[ "$manual" == "" ]]; then
 		# Not manual
 		gen_range_graphs "$startn" "$endn" "$1"
 	elif [[ "$manual" == "pipe" ]]; then
-	  exit_on_multithreading
+	  exit_on_multiprocessing
 		# Own stream chosen
 		read_stdin
 	else
-	  exit_on_multithreading
+	  exit_on_multiprocessing
 		echo "$manual"
 	fi
 }
 
 combine_outputs_M() {
-  for i in $(seq 0 $(("$number_of_threads" - 1))); do
-    path="outputs/thread_$i.txt"
-#    echo "Thread $i:" >&2
+  for i in $(seq 0 $(("$number_of_processes" - 1))); do
+    path="outputs/process_$i.txt"
+    if [[ "$overview" == true ]]; then
+      echo "Process $(( i + 1 )):"
+    fi
     cat "$path"
     rm "$path"
   done
@@ -151,11 +153,11 @@ execute() {
 
 
 ### EXECUTION
-if [[ $number_of_threads -eq 1 ]]; then
+if [[ $number_of_processes -eq 1 ]]; then
   execute | show_func
 else
   execute_M 0 &
-  for i in $(seq 1 $(("$number_of_threads" - 1)));
+  for i in $(seq 1 $(("$number_of_processes" - 1)));
   do
     execute_M "$i" 2>/dev/null &
   done
