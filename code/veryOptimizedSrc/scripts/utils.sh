@@ -137,6 +137,7 @@ check_condition=false
 mode="triangulation"
 number_of_processes=1
 plantri_options="-g"
+output_path=outputs/$(date +"%F-%H-%M-%S").txt
 
 ############################
 #### NUMBER OF VERTICES ####

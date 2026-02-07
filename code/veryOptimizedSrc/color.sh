@@ -7,20 +7,25 @@ source ./scripts/utils.sh
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
+activate_venv() {
+  # Check if venv has been created
+  if [ ! -d "venv" ]; then
+    echo "Error: venv hasn't been created yet."
+    exit 1
+  fi
+  source venv/bin/activate
+}
+
 show_func() {
 	if [[ "$show" != "" ]]; then
-		# Check if venv has been created
-		if [ ! -d "venv" ]; then
-			echo "Error: venv hasn't been created yet."
-			exit 1
-		fi
-		source venv/bin/activate
 		mkdir -p images
 		# We also remove all previous files from the directory (-f ignores no file error)
 		rm -f images/*
 
+    activate_venv
+
 		# Run Python script with stdin
-		"venv/bin/python" scripts/graph6_to_image.py "$show" </dev/stdin
+		"venv/bin/python" scripts/graph6ToImage.py "$show" </dev/stdin
 	else
 		cat
 	fi
@@ -30,9 +35,11 @@ write_to_file() {
 	if [[ $number_of_processes -ne 1 || ("$overview" == false && ("$manual" == false || "$manual" == pipe)) ]]; then
 	  mkdir -p "outputs"
 
-	  path="outputs/$(date +"%F-%H-%M-%S").txt"
+	  path="$output_path"
     if [[ $number_of_processes -ne 1 && "$1" -ne -1 ]]; then
       path="outputs/process_$1.txt"
+      cat > "$path"
+    elif [[ $number_of_processes -ne 1 && "$overview" == true ]]; then
       cat > "$path"
     else
       tee "$path"
@@ -46,11 +53,7 @@ filter_file_parse() {
   # The filter is not an integer
   # We parse the given filter
   # Check if venv has been created
-  if [ ! -d "venv" ]; then
-    echo "Error: venv hasn't been created yet."
-    exit 1
-  fi
-  source venv/bin/activate
+  activate_venv
 
   change=""
   changeoverview=false
@@ -135,6 +138,12 @@ combine_outputs_M() {
   done
 }
 
+combine_overviews_M() {
+  activate_venv
+  "venv/bin/python" scripts/parseMultiOutput.py "$output_path"
+  deactivate
+}
+
 execute_M() {
   choose_incoming_graphs "$1" | java_alg | write_to_file "$1"
 }
@@ -163,6 +172,14 @@ else
   done
   wait
   combine_outputs_M | write_to_file -1 | show_func
+  
+  if [[ "$overview" == true ]]; then
+    # We first combine the overviews and then read the output
+    combine_overviews_M
+    cat "$output_path"
+    rm "$output_path"
+  fi
+
 fi
 
 
