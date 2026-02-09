@@ -97,7 +97,7 @@ public class GraphBS extends Graph {
         int vertexIndex = Long.numberOfTrailingZeros(colV);
         Vertex v = verticesIndexed[vertexIndex];
 
-        vertices[index] &= ~(1 << vertexIndex);
+        vertices[index] &= ~(1L << vertexIndex);
         changeFilledColors(index, -1);
         // We remove this vertex from the available vertices
 

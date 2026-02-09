@@ -9,7 +9,7 @@ public class Graph {
     // /**
     // * The array comprised of the vertices in this graph.
     // */
-    // protected Graphs.Vertex[] vertices;
+    // protected Vertex[] vertices;
 
     /**
      * The indexed array that stays by index.
@@ -37,6 +37,8 @@ public class Graph {
      * A simple integer that keeps track of the amount of vertices.
      */
     public int numberOfVertices;
+
+//    protected int[] countedColors = new int[10];
 
     public Graph(String graph6) {
         char[] graphArray = graph6.toCharArray();
@@ -676,6 +678,36 @@ public class Graph {
         }
         return true;
     }
+
+//    USING THIS METHOD ISN'T FASTER
+//    /**
+//     * Method that checks if all possible colors will get used in the graph by the end.
+//     * This is needed because not using all colors in the graph will not be an optimal coloring.
+//     *
+//     * @param amountOfToColorVertices
+//     *                       The amount of vertices left to color in the graph.
+//     * @param maxColor
+//     *                       The maximum color allowed in the graph.
+//     * @return True if all colors can get used,
+//     *         False otherwise.
+//     */
+//    protected boolean usageAllColors(int amountOfToColorVertices, int maxColor) {
+//        if (amountOfToColorVertices <= 3) {
+//            int count = 0;
+//            // We have less than or equal to 3 vertices left to color
+//            for (int j = 0; j < maxColor; j++) {
+//                if (countedColors[j] == 0) {
+//                    count++;
+//                }
+//            }
+//            // count is the amount of colors not used in the graph
+//            if (count > amountOfToColorVertices) {
+//                // If not all colors can get used by the end, we stop and backtrack
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      * A bit-set keeping track of which vertices are still able to be colored.
