@@ -1,11 +1,12 @@
 #!/bin/bash
 
-source ./scripts/utils.sh
 
 # Change the working directory to this one.
 # This makes sure one can run this script from a different directory.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
+
+source ./scripts/utils.sh
 
 activate_venv() {
   # Check if venv has been created

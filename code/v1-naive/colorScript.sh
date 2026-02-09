@@ -65,7 +65,7 @@ while [[ $# -gt 0 ]]; do
       filter="$2"
       shift 2
       ;;
-    --overview)
+    -o|--overview)
       overview=true
       shift
       ;;
@@ -85,7 +85,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # We make sure to recompile the code
-# javac Graphs.Main.java
+# javac Main.java
 
 #if [[ "$raw" == false ]]; then
 #  # Only if we are not in raw mode do we print this.
@@ -93,7 +93,7 @@ done
 #fi
 
 
-#echo "Graphs.Coloring: $coloring"
+#echo "Coloring: $coloring"
 #echo "Filename: $filename"
 #echo "Manual: $manual"
 
