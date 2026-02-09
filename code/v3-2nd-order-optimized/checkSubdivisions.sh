@@ -20,10 +20,10 @@ generate_graphs() {
     if [[ "$cnumber" == 4 ]]; then
       echo "$graph"
     fi
-  done < <(./colorScript.sh "$1" -c proper -p 2>/dev/null)
+  done < <(./color.sh "$1" -c proper -p 2>/dev/null)
 }
 
-generate_graphs "$1" | gen_subdivision | ./colorScript.sh -m "pipe" -c iCFo
+generate_graphs "$1" | gen_subdivision | ./color.sh -m "pipe" -c iCFo
 
 
 

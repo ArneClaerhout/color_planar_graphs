@@ -4,6 +4,22 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
+
+
+pattern="nauty"
+nauty_path=$(find ../.. -maxdepth 2 -type d -name "*${pattern}*" | head -n 1)
+if [[ -z "$nauty_path" ]]; then
+	echo >&2 "Error: Nauty not found."
+	exit 1
+fi
+
+pattern="plantri"
+plantri_path=$(find ../.. -maxdepth 2 -type d -name "*${pattern}*" | head -n 1)
+if [[ -z "$plantri_path" ]]; then
+	echo >&2 "Error: Plantri not found."
+	exit 1
+fi
+
 #######################
 ###### FUNCTIONS ######
 #######################
@@ -15,30 +31,17 @@ gen_range_graphs() {
 		echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
 	fi
 	for num in $(seq "$1" "$2"); do
-		./../../plantri55/plantri -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+		"./$plantri_path/plantri" -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
 	done
-}
-
-check_nauty() {
-	pattern="nauty"
-	dir=$(find ../.. -maxdepth 1 -type d -name "*${pattern}*" | head -n 1)
-	if [[ -z "$dir" ]]; then
-		echo >&2 "Error: Nauty not found."
-		exit 1
-	fi
-	echo "$dir"
 }
 
 use_nauty() {
 
 	# First argument for this script is the amount of vertices
-	nauty_path=$(check_nauty)
-	#echo "$nauty_path"
-
 	output2=$(gen_range_graphs "$startn" "$endn" | "./$nauty_path/countg" --N 2>/dev/null | sed '$d' | tr -d '[:space:]')
 	## We also get rid of the extra printing to the terminal
 	echo -n "  Nauty done"
-	output1=$(./colorScript.sh "$startn:$endn" -c proper --raw --overview | sed '$d' | tr -d '[:space:]')
+	output1=$(./color.sh "$startn:$endn" -c proper -r -o | sed '$d' | tr -d '[:space:]')
 	printf ", own program done.\n\n"
 
 	# The two outputs from nauty and my own program, stripped of spaces and the last line

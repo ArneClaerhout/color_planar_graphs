@@ -45,7 +45,7 @@ diff=false
 count=0
 
 # We first pipe these outputs, this will make sure that even if the length is incorrect, it will still output
-paste <(./../naiveSrc/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
+paste <(./../v1-naive/colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) \
       <(./colorScript.sh "$numvertices" -c "$coloring" 2>/dev/null) |
 while IFS=$'\t' read -r line1 line2; do
   if [[ $((count % 10000)) == 0 && "$count" != 0 ]]; then

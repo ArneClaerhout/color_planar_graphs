@@ -18,7 +18,7 @@ public class Main {
     static int minChrom = 0;
     static int raw;
     static int method;
-    static int checkCondition;
+    static boolean checkCondition;
 
     static long start;
     static long end;
@@ -72,18 +72,18 @@ public class Main {
                         graph = new Graph(line);
                         break;
                 }
-                c = graph.findChromaticNumberOptimized(coloring, Integer.max(minChrom - 1, 1), open, proper, um, checkCondition, (raw == 4));
+                c = graph.findChromaticNumberOptimized(coloring, minChrom != 0 ? minChrom - 1 : 2, open, proper, um, checkCondition, (raw == 4));
 
-                // We check if the graph should get printed
-                if (c < minChrom || (checkCondition != 0
-                        && !graph.counter.isConditionMet())) {
+                if (c < minChrom || (checkCondition
+                        && Arrays.stream(graph.counter.getCondition())
+                                .allMatch(n -> (n == graph.maxColoring || n == 0)))) {
                     continue;
                 }
 
                 boolean skip = false;
-                if (checkCondition != 0 && coloring == Coloring.iUMc) {
+                if (checkCondition && coloring == Coloring.iUMc) {
                     skip = true;
-                    for (int i = 0; i < graph.counter.getCondition().length - 1; i++) {
+                    for (int i = 0; i < 10; i++) {
                         if (graph.counter.getCondition(i) == 0 || graph.counter.getCondition(i) == graph.maxColoring)
                             continue;
                         if (checkSpecialCaseIUMC(Graph.getAdjacencyMatrix(line),
@@ -109,8 +109,22 @@ public class Main {
                             break;
                         case 3:
                             // For showing graphs, prints the colors
-                            if (checkCondition != 0) {
-                                int[] colors = graph.counter.getColoringAfterCheck();
+                            if (checkCondition) {
+                                int[] colors = new int[graph.numberOfVertices];
+                                int count = 0;
+                                for (int i = 0; i < 10; i++) {
+                                    if (graph.counter.getCondition(i) != graph.maxColoring
+                                            && graph.counter.getCondition(i) != 0) {
+                                        for (long k = (graph.maxColoring
+                                                & ~graph.counter.getCondition(i)); k != 0; k &= k - 1) {
+                                            int index = Long.numberOfTrailingZeros(k);
+                                            colors[index] = i + 1;
+                                            count++;
+                                        }
+                                        break;
+                                    }
+                                }
+                                // if (count > 1) {
                                 System.out.println(line + " " + Arrays.toString(colors));
                                 // }
                             } else {
@@ -141,7 +155,7 @@ public class Main {
             // This is the debugging code section
 
             // File file = new
-            // File("/home/arne/Bachelorproef/Code/veryOptimizedSrc/outputs/2025-11-20-17-40-35.txt");
+            // File("/home/arne/Bachelorproef/code/v3-2nd-order-optimized/outputs/2025-11-20-17-40-35.txt");
             // BufferedReader br = new BufferedReader(new FileReader(file));
             // String line;
             // while((line = br.readLine()) != null){
@@ -168,9 +182,9 @@ public class Main {
              for (String line2 : graphs) {
              Graph graph = new Graph(line2);
              //
-             int c = graph.findChromaticNumberOptimized(Coloring.iUMc, 2, false, false, true, 1, false);
+             int c = graph.findChromaticNumberOptimized(Coloring.iUMc, 2, false, false, true, true, false);
 
-             if (c < minChrom || (checkCondition != 0
+             if (c < minChrom || (checkCondition
                      && Arrays.stream(graph.counter.getCondition())
                      .allMatch(n -> (n == graph.maxColoring || n == 0)))) {
                  continue;
@@ -231,7 +245,7 @@ public class Main {
         method = Integer.parseInt(args[4]);
 
         // Lastly: whether we check a condition
-        checkCondition = Integer.parseInt(args[5]);
+        checkCondition = Boolean.parseBoolean(args[5]);
     }
 
     public static void changeOptions(String[] parts) {
@@ -285,9 +299,10 @@ public class Main {
             for (int i = 0; i < n; i++) {
                 graphStart.addGraphToIndex(adjMatrix, i, index);
             }
-            int c = graphStart.findChromaticNumberOptimized(Coloring.iUMc, 2, false, false, true, 1, false);
+            graphStart.counter.setColorToCheck(1);
+            int c = graphStart.findChromaticNumberOptimized(Coloring.iUMc, 2, false, false, true, true, false);
             System.err.println(c);
-            if ((checkCondition == 0 || graphStart.counter.getCondition(indexColor) != graphStart.maxColoring)) {
+            if ((!checkCondition || graphStart.counter.getCondition(indexColor) != graphStart.maxColoring)) {
                 // The condition is found
                 System.err.println(c);
                 // System.err.println(graphStart.numberOfVertices);
