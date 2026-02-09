@@ -26,7 +26,7 @@ public class Graph {
 
     protected int chromaticNumber = 0;
 
-    public final ColoringCounter counter = new ColoringCounter();
+    public ColoringCounter counter;
 
     /**
      * A help-bitset for checking whether the graph is almost fully colored.
@@ -52,6 +52,7 @@ public class Graph {
         // getDegreeBasedIndices(newIndices));
         maxColoring = (1L << numberOfVertices) - 1;
         availables = maxColoring;
+        counter = new ColoringCounter(maxColoring);
     }
 
     /**
@@ -62,6 +63,7 @@ public class Graph {
         this.numberOfVertices = adjMatrix.length;
         maxColoring = (1L << numberOfVertices) - 1;
         availables = maxColoring;
+        counter = new ColoringCounter(maxColoring);
     }
 
     /**
@@ -424,6 +426,7 @@ public class Graph {
         numberOfVertices = verticesIndexed.length;
         maxColoring = (1L << numberOfVertices) - 1;
         availables = maxColoring;
+        counter = new ColoringCounter(maxColoring);
     }
 
     public void addGraphToIndex(int[][] adjMatrix, int indexInThisGraph, int indexInOwnGraph) {
@@ -469,6 +472,7 @@ public class Graph {
         numberOfVertices = verticesIndexed.length;
         maxColoring = (1L << numberOfVertices) - 1;
         availables = maxColoring;
+        counter = new ColoringCounter(maxColoring);
     }
 
     /**
@@ -501,17 +505,23 @@ public class Graph {
      *                       Whether the coloring is a version of unique-maximum
      *                       coloring.
      * @param checkCondition
-     *                       True if a condition, specified in the Counter class,
-     *                       should get checked.
-     *                       False otherwise.
+     *                       Non-zero if a condition, specified in the Counter class,
+     *                       should get checked. The value dictates what gets checked.
+     *                       Zero otherwise.
      * @param allColorings
      *                       True if all colorings for a given graph should get
      *                       found.
      *                       False otherwise.
      */
     public int findChromaticNumberOptimized(Coloring coloring, int startingColor, boolean open, boolean proper, boolean um,
-                                            boolean checkCondition, boolean allColorings) {
+                                            int checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
+
+        if (checkCondition == 1) {
+            counter.setCheckAlwaysColor(true);
+        } else if (checkCondition == 2) {
+            counter.setCheckAlwaysColor(false);
+        }
 
         for (int i = startingColor; i <= n; i++) {
             for (Vertex v : verticesIndexed) {
@@ -523,7 +533,7 @@ public class Graph {
             if (optimizedAlgorithm(coloring, open, proper, um, 0, i, 0, checkCondition, allColorings)) {
                 return i;
             }
-            if ((allColorings || checkCondition) && chromaticNumber != 0) {
+            if ((allColorings || checkCondition != 0) && chromaticNumber != 0) {
                 return i; // we wanted to find all colorings
             }
         }
@@ -553,9 +563,9 @@ public class Graph {
      * @param index
      *                          The index of where this algorithm is working.
      * @param checkCondition
-     *                          True if a condition, specified in the Counter class,
-     *                          should get checked.
-     *                          False otherwise.
+     *                          Non-zero if a condition, specified in the Counter class,
+     *                          should get checked. The value dictates what gets checked.
+     *                          Zero otherwise.
      * @param allColorings
      *                          True if all colorings for a given graph should get
      *                          found.
@@ -566,7 +576,7 @@ public class Graph {
      *         False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-                                       int maxColorCurrGraph, int maxColor, int index, boolean checkCondition, boolean allColorings) {
+                                       int maxColorCurrGraph, int maxColor, int index, int checkCondition, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
             return startingStep(maxColor, checkCondition, allColorings);
         }
@@ -574,7 +584,7 @@ public class Graph {
         Vertex v = verticesIndexed[index];
         int colors = v.getAvailableColors();
 
-        int maxLoop = (um || checkCondition || allColorings) ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
+        int maxLoop = (um || checkCondition != 0 || allColorings) ? maxColor : Math.min(maxColorCurrGraph + 1, maxColor);
         // Every coloring should be tried for um, as this is different for it.
 
         // We are coloring this index
@@ -644,9 +654,9 @@ public class Graph {
      *                       this will be used to set the chromatic number of this
      *                       graph.
      * @param checkCondition
-     *                       True if a condition, specified in the Counter class,
-     *                       should get checked.
-     *                       False otherwise.
+     *                       Non-zero if a condition, specified in the Counter class,
+     *                       should get checked. The value dictates what gets checked.
+     *                       Zero otherwise.
      * @param allColorings
      *                       True if all colorings for a given graph should get
      *                       found.
@@ -654,15 +664,15 @@ public class Graph {
      * @return The return value that should be used in the startingStep of the
      *         recursive algorithm.
      */
-    protected boolean startingStep(int maxColor, boolean checkCondition, boolean allColorings) {
-        if (checkCondition || allColorings) {
+    protected boolean startingStep(int maxColor, int checkCondition, boolean allColorings) {
+        if (checkCondition != 0 || allColorings) {
             if (Main.minChrom != 0 && maxColor < Main.minChrom) {
                 // When it's going to get filtered away anyway, we stop it
                 return true;
             }
             chromaticNumber = maxColor;
             // If the counters are all full, return true and stop counting
-            return !counter.inputColors(getColors(), allColorings);
+            return !counter.inputColors(getColors(), allColorings, chromaticNumber);
         }
         return true;
     }

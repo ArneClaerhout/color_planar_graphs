@@ -133,7 +133,7 @@ coloring_method=0
 startn=-1
 endn=-1
 method=0
-check_condition=false
+check_condition=0
 mode="triangulation"
 number_of_processes=1
 plantri_options="-g"
@@ -204,10 +204,10 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
       ;;
     s)
       show=$(fetch_optional_arg "$OPTIND" "png" "$@")
-       if [[ $? -eq 0 ]]; then # Skip one index if an option was found
-         OPTIND=$((OPTIND + 1))
-       fi
-       ;;
+      if [[ $? -eq 0 ]]; then # Skip one index if an option was found
+        OPTIND=$((OPTIND + 1))
+      fi
+      ;;
     P)
       method=1
       ;;
@@ -222,7 +222,10 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
       plantri_options="-gpc1m1"
       ;;
     x)
-      check_condition=true
+      check_condition=$(fetch_optional_arg "$OPTIND" 1 "$@")
+      if [[ $? -eq 0 ]]; then # Skip one index if an option was found
+        OPTIND=$((OPTIND + 1))
+      fi
       ;;
     M)
       number_of_processes=$OPTARG

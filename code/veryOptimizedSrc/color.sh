@@ -25,7 +25,7 @@ show_func() {
     activate_venv
 
 		# Run Python script with stdin
-		"venv/bin/python" scripts/graph6ToImage.py "$show" </dev/stdin
+		"venv/bin/python" scripts/graph6ToImage.py "images/" "$show" </dev/stdin
 	else
 		cat
 	fi

@@ -37,7 +37,7 @@ public class GraphLL extends Graph {
      */
     @Override
     public int findChromaticNumberOptimized(Coloring coloring, int startingColor, boolean open, boolean proper, boolean um,
-                                            boolean checkCondition, boolean allColorings) {
+                                            int checkCondition, boolean allColorings) {
         int n = coloring.getMaxChromaticNumber();
 
         for (int i = startingColor; i <= n; i++) {
@@ -81,9 +81,9 @@ public class GraphLL extends Graph {
      * @param maxColor
      *                          The maximum color possible for this coloring method.
      * @param checkCondition
-     *                          True if a condition, specified in the Counter class,
-     *                          should get checked.
-     *                          False otherwise.
+     *                          Non-zero if a condition, specified in the Counter class,
+     *                          should get checked. The value dictates what gets checked.
+     *                          Zero otherwise.
      * @param allColorings
      *                          True if all colorings for a given graph should get
      *                          found.
@@ -94,7 +94,7 @@ public class GraphLL extends Graph {
      *         False if there is no possible coloring for this maxColor.
      */
     private boolean optimizedAlgorithm(Coloring coloring, boolean open, boolean proper, boolean um,
-                                       int maxColorCurrGraph, int maxColor, boolean checkCondition, boolean allColorings) {
+                                       int maxColorCurrGraph, int maxColor, int checkCondition, boolean allColorings) {
         if (vertexIsColored == maxColoring) {
             return startingStep(maxColor, checkCondition, allColorings);
         }
