@@ -5,9 +5,7 @@
 # script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # cd "$script_dir" || exit 1
 
-
 ## UTILS is called from within colors, this will be the home directory for this script
-
 
 #########################
 ###### DIRECTORIES ######
@@ -34,9 +32,9 @@ fi
 #######################
 
 usage() {
-  echo "Error: Invalid usage." >&2
-  echo "Check README for help." >&2
-  exit 1
+	echo "Error: Invalid usage." >&2
+	echo "Check README for help." >&2
+	exit 1
 }
 
 show_help() {
@@ -56,19 +54,19 @@ EOF
 }
 
 fetch_optional_arg() {
-  local current_ind=$1
-  local default_val=$2
-  shift 2
+	local current_ind=$1
+	local default_val=$2
+	shift 2
 
-    eval nextopt=\${$current_ind}
+	eval nextopt=\${$current_ind}
 
-  if [[ -n $nextopt && $nextopt != -* ]]; then
-    echo "$nextopt"
-    return 0
-  else
-    echo "$default_val"
-    return 1
-  fi
+	if [[ -n $nextopt && $nextopt != -* ]]; then
+		echo "$nextopt"
+		return 0
+	else
+		echo "$default_val"
+		return 1
+	fi
 }
 
 # Helper function to get/set graph counts in JSON
@@ -108,7 +106,6 @@ read_stdin() {
 #### VARIABLES ####
 ###################
 
-
 coloring=""
 filter=0
 min_chrom=0
@@ -128,20 +125,20 @@ mode="triangulation"
 ############################
 
 if [[ "$1" =~ ^-?[0-9]+$ ]]; then
-  # Number of vertices
-  # We extract them
-  if [[ "$1" == *:* ]]; then
-    # Split the argument into start and end
-    IFS=':' read -r startn endn <<<"$1"
-  else
-    # Only one value given; use it as both start and end
-    startn="$1"
-    endn="$1"
-  fi
-  OPTIND=$((OPTIND + 1))
+	# Number of vertices
+	# We extract them
+	if [[ "$1" == *:* ]]; then
+		# Split the argument into start and end
+		IFS=':' read -r startn endn <<<"$1"
+	else
+		# Only one value given; use it as both start and end
+		startn="$1"
+		endn="$1"
+	fi
+	OPTIND=$((OPTIND + 1))
 else
-  echo "Error: Number of vertices not set." >&2
-  exit 1
+	echo "Error: Number of vertices not set." >&2
+	exit 1
 fi
 
 #################
@@ -149,73 +146,73 @@ fi
 #################
 
 while getopts ":hCcm:f:porsPLBax" opt; do
-  case $opt in
-    h)
-  		show_help
-  		exit 0
-  		;;
-    C)
-      javac graphs/*.java
-      echo "Code compiled." >&2
-      ;;
-    c)
-      coloring=$(fetch_optional_arg "$OPTIND" "proper" "$@")
-      if [[ $? -eq 0 ]]; then # Skip one index if an option was found
-        OPTIND=$((OPTIND + 1))
-      fi
-      ;;
-    m)
-      manual=$OPTARG
-      ;;
-    f)
-      filter=$OPTARG
-      ;;
-    p)
-      num_graphs=0
-      ;;
-    o)
-      overview=true
-      ;;
-    r)
-      raw=$(fetch_optional_arg "$OPTIND" 1 "$@")
-      if [[ "$raw" -lt 0 || "$raw" -gt 4 ]]; then
-      	# We only want certain raw options
-      	raw=1
-      fi
-      if [[ $? -eq 0 ]]; then # Skip one index if an option was found
-        OPTIND=$((OPTIND + 1))
-      fi
-      ;;
-    s)
-      show=$(fetch_optional_arg "$OPTIND" "png" "$@")
-       if [[ $? -eq 0 ]]; then # Skip one index if an option was found
-         OPTIND=$((OPTIND + 1))
-       fi
-       ;;
-    P)
-      method=1
-      ;;
-    L)
-      method=2
-      ;;
-    B)
-      method=3
-      ;;
-    a)
-      mode="allplanar"
-      ;;
-    x)
-      check_condition=true
-      ;;
-    \?)
-      exit 3 #invalid option
-      ;;
-  esac
+	case $opt in
+	h)
+		show_help
+		exit 0
+		;;
+	C)
+		javac graphs/*.java
+		echo "Code compiled." >&2
+		;;
+	c)
+		coloring=$(fetch_optional_arg "$OPTIND" "proper" "$@")
+		if [[ $? -eq 0 ]]; then # Skip one index if an option was found
+			OPTIND=$((OPTIND + 1))
+		fi
+		;;
+	m)
+		manual=$OPTARG
+		;;
+	f)
+		filter=$OPTARG
+		;;
+	p)
+		num_graphs=0
+		;;
+	o)
+		overview=true
+		;;
+	r)
+		raw=$(fetch_optional_arg "$OPTIND" 1 "$@")
+		if [[ "$raw" -lt 0 || "$raw" -gt 4 ]]; then
+			# We only want certain raw options
+			raw=1
+		fi
+		if [[ $? -eq 0 ]]; then # Skip one index if an option was found
+			OPTIND=$((OPTIND + 1))
+		fi
+		;;
+	s)
+		show=$(fetch_optional_arg "$OPTIND" "png" "$@")
+		if [[ $? -eq 0 ]]; then # Skip one index if an option was found
+			OPTIND=$((OPTIND + 1))
+		fi
+		;;
+	P)
+		method=1
+		;;
+	L)
+		method=2
+		;;
+	B)
+		method=3
+		;;
+	a)
+		mode="allplanar"
+		;;
+	x)
+		check_condition=true
+		;;
+	\?)
+		exit 3 #invalid option
+		;;
+	esac
 done
 
 ### SHOW-CHECK
 if [[ "$show" != "" ]]; then
-  # If show is chosen, we always pick these values
+	# If show is chosen, we always pick these values
 	raw=3
 	overview=false
 	unset num_graphs
@@ -226,7 +223,6 @@ if [[ "$filter" =~ ^-?[0-9]+$ ]]; then
 	# Filter is a number
 	min_chrom="$filter"
 fi
-
 
 ### GRAPH COUNTING
 if [[ -v num_graphs ]]; then

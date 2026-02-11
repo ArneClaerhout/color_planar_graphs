@@ -1,11 +1,11 @@
 #!/bin/bash
 
-source ./scripts/utils.sh
-
 # Change the working directory to this one.
 # This makes sure one can run this script from a different directory.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
+
+source ./scripts/utils.sh
 
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
@@ -15,7 +15,7 @@ gen_range_graphs() {
 	fi
 	for num in $(seq "$1" "$2"); do
 		if [[ "$mode" == "allplanar" ]]; then
-		  echo "test" >&2
+			echo "test" >&2
 			"./$plantri_path/plantri" "-gpc1m1" "$num" 2>/dev/null | "./$nauty_path/shortg" -q 2>/dev/null
 		else
 			"./$plantri_path/plantri" -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
