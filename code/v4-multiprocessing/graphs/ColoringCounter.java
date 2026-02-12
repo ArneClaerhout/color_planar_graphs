@@ -55,7 +55,7 @@ public class ColoringCounter {
             colorings.add(colors);
         } else {
             // We check if all of them are full, if they are: stop
-            if (!Arrays.stream(condition).allMatch(n -> n == 0) && Arrays.stream(condition).allMatch(n -> (n == 0 || n == maxColoring))) {
+            if (Arrays.stream(condition).allMatch(n -> n == maxColoring)) {
                 return false;
             }
         }
@@ -79,7 +79,7 @@ public class ColoringCounter {
     }
 
     public boolean isConditionMet() {
-        return (checkAlwaysColor && conditionVertices != 0) || (!checkAlwaysColor && !Arrays.stream(condition).allMatch(n -> (n == maxColoring)));
+        return !Arrays.stream(condition).allMatch(n -> (n == maxColoring));
     }
 
     public int[] getColoringAfterCheck() {

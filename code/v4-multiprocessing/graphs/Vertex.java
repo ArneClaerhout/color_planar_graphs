@@ -261,7 +261,7 @@ public class Vertex {
                                       boolean fillUncolored, boolean open, boolean proper, boolean um) {
         if (!fillUncolored && color == 0 && !open) return false; // This vertex isn't colored.
 
-        long neighbourhood = open ? neighbours : (neighbours | (1 << index));
+        long neighbourhood = open ? neighbours : (neighbours | (1L << index));
 
         if (inputColoring == Coloring.ODD) {
             // Odd coloring
@@ -361,8 +361,16 @@ public class Vertex {
                 // We do -1 as the colors are from 1...k,
                 // but we want to later on use the colors 0...k-1
 
-                if (neighbourColor == 0 && neighbour.getAmountOfAvailableColors() == 1) { // We now for a fact that this vertex has one color available, as this was checked beforehand
-                    colorIndex = 1 << Integer.numberOfTrailingZeros(neighbour.getAvailableColors());
+                if (!fillUncolored && neighbourColor == 0) {
+                    return false;
+                    // Not all vertices have been colored yet.
+                } else if (neighbourColor == 0) {
+                    // fillUncolored is true, we check if we can fill the uncolored vertex.
+                    if (neighbour.getAmountOfAvailableColors() == 1) {
+                        colorIndex = 1 << Integer.numberOfTrailingZeros(neighbour.getAvailableColors());
+                    } else {
+                        return false;
+                    }
                 } else {
                     colorIndex = 1 << (neighbourColor - 1);
                 }
