@@ -27,7 +27,7 @@ int optimizedAlgorithm(graph* g, enum colorings coloring, int maxColorCurrGraph,
 int startingStep(graph* g, int maxColor, int allColorings);
 int getBestIndex(graph* g, int indexColored);
 int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring, uint64_t changed[]);
-void addColorsBack(graph* g, uint64_t changed[]);
+void addColorsBack(graph* g, const uint64_t changed[]);
 int handleCF(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood);
 int handleUM(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood);
 int handleOdd(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood);

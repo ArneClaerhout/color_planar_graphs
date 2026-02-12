@@ -1,10 +1,7 @@
-#include <stdio.h>
 #include "colorings.h"
 #include "graph.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include "vertex.h"
-#include "main.h"s
 
 
 extern int minChrom;
@@ -218,10 +215,10 @@ int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring,
 
         int neighbourIsColored = (SHIFTL(bit) & g->vertexIsColored) != 0;
 
-        long neighbourhood = neighbour->neighbours;
+        uint64_t neighbourhood = neighbour->neighbours;
         neighbourhood = (open ? neighbourhood : (neighbourhood | SHIFTL(bit)));
 
-        long diff = neighbourhood & ~g->vertexIsColored;
+        uint64_t diff = neighbourhood & ~g->vertexIsColored;
 
         // We will allow adding vertices with one possible color that aren't colored
         // diff &= ~vertexIsAlmostColored;
@@ -291,8 +288,8 @@ int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring,
 
 
 
-void addColorsBack(graph* g, uint64_t changed[]) {
-    for (int i = 0; i < SIZE(changed); i++) {
+void addColorsBack(graph* g, const uint64_t changed[]) {
+    for (int i = 0; i < g->numberOfVertices; i++) {
         uint64_t value = changed[i];
         if (value != 0) {
             vertex* changedNeighbour = g->verticesIndexed[i];

@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 
         graph* graph = createGraph(line);
 
-        const int c = findChromaticNumberOptimized(graph, coloring, max(minChrom - 1, 1), checkCondition, (raw == 4));
+        const int c = findChromaticNumberOptimized(graph, coloring, max(minChrom - 1, 1), (raw == 4));
 
         // We check if the graph should get printed
         if (c < minChrom || (checkCondition != 0 && isConditionMet(graph->counter, c))) {
@@ -156,7 +156,9 @@ void printOverview() {
     }
     printf("  %d graphs altogether; cpu=%f sec\n", sum, time_spent);
     // Reset
-    int cNumbers[10];
+    for (int i = 0; i < SIZE(cNumbers); i++) {
+        cNumbers[i] = 0;
+    }
     start = clock();
 }
 

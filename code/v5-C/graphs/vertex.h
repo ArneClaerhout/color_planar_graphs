@@ -1,6 +1,9 @@
 #ifndef VERTEX_H
 #define VERTEX_H
+
 #include <stdint.h>
+#include "vertex.h"
+#include "colorings.h"
 
 
 #define SHIFT(n) (1 << n)

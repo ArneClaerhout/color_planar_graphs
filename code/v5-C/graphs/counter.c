@@ -1,12 +1,9 @@
 #include "counter.h"
-
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "main.h"
 #include "vertex.h"
 
-int inputColors(counter* counter, int colors[], int allColors, int chromaticNumber) {
+int inputColors(counter* counter, const int colors[], int allColors, int chromaticNumber) {
     uint64_t oldCondition = 0;
     for (int k = 0; k < counter->numberOfVertices; k++) {
         // Here we add

@@ -11,7 +11,7 @@ typedef struct counter {
     int* allColorings[];
 } counter;
 
-int inputColors(counter* counter, int colors[], int allColors, int chromaticNumber);
+int inputColors(counter* counter, const int colors[], int allColors, int chromaticNumber);
 int isConditionMet(counter* counter, int chromaticNumber);
 void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]);
 
