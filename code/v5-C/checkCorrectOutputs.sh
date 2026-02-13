@@ -87,7 +87,7 @@ while IFS=$'\t' read -r line1 line2; do
 
 	esac
 	# We pipe these outputs, this will make sure that even if the length is incorrect, it will still output
-done < <(paste <(./../v2-optimized/colorScript.sh "${argssimple[@]}" 2>/dev/null) \
+done < <(paste <(./../v4-multiprocessing/color.sh "${argssimple[@]}" 2>/dev/null) \
 	<(./color.sh "${args[@]}" 2>/dev/null))
 
 if [[ "$diff" == true ]]; then

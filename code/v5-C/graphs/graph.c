@@ -1,6 +1,10 @@
 #include "colorings.h"
 #include "graph.h"
+
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "vertex.h"
 
 
@@ -45,13 +49,14 @@ graph* createGraph(char graphString[]) {
         }
     }
 
-
+    g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
     for (int i = 0; i < n; i++) {
         vertex* v = (vertex*) malloc(sizeof(vertex));
         g->verticesIndexed[i] = v;
         v->index = i;
         v->neighbours = 0;
-        g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
+        v->color = 0;
+
     }
     int index = 1; // First index as index 0 is the vertex count
 
@@ -76,6 +81,7 @@ graph* createGraph(char graphString[]) {
             }
         }
     }
+
     return g;
 
 }
@@ -89,9 +95,11 @@ int findChromaticNumberOptimized(graph* g, enum colorings coloring, int starting
         g->vertexIsColored = 0;
         g->availableVertices = g->maxColoringMask;
         if (optimizedAlgorithm(g, coloring, 0, i, 0, allColorings)) {
+            g->chromaticNumber = i;
             return i;
         }
         if ((allColorings || checkCondition != 0) && g->chromaticNumber != 0) {
+            g->chromaticNumber = i;
             return i; // we wanted to find all colorings
         }
     }
@@ -102,64 +110,65 @@ int optimizedAlgorithm(graph* g, enum colorings coloring, int maxColorCurrGraph,
     int maxColor, int index, int allColorings) {
 
     if (g->vertexIsColored == g->maxColoringMask) {
-            return startingStep(g, maxColor, allColorings);
+        return startingStep(g, maxColor, allColorings);
+    }
+
+    vertex* v = g->verticesIndexed[index];
+    int colors = v->availableColors;
+
+    int maxLoop = (um || checkCondition != 0 || allColorings) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
+    // Every coloring should be tried for um, as this is different for it.
+
+    // We are coloring this index
+    g->vertexIsColored |= 1L << index;
+    // vertexIsAlmostColored &= ~(1 << index);
+
+    int lastToColor = (g->maxColoringMask & ~g->vertexIsColored) == 0;
+    if (lastToColor && maxLoop < maxColor)
+        colors = 0; // We don't want to go over colors, as it can't be correct
+
+    uint64_t neighbourhood = v->neighbours;
+    int neighboursColored = (neighbourhood & g->vertexIsColored) == neighbourhood;
+
+    FOR_EACH_BIT(color, colors) {
+        if (color > maxLoop)
+            break; // We passed the highest possible color in the graph
+
+        v->color = color + 1; // + 1 as the actual colors are from 1 to n
+
+        // We have to now check if all our neighbours are colored, as this isn't checked
+        // in updateNeighbours
+        // This is an extra check for correctness
+        if (neighboursColored && !isCorrectlyColored(v, g->verticesIndexed, coloring, 0)) {
+            // This color isn't correct, we pick another
+            continue;
+        }
+        // We also change the available colors for the neighbours if the coloring is
+        // proper
+        uint64_t changed[g->numberOfVertices];
+        memset(changed,0, sizeof(changed)); // We make the array empty
+
+        if (updateNeighbours(g, v, color, coloring, changed)) {
+            // This is used to skip this color, as it isn't possible
+            continue;
         }
 
-        vertex* v = g->verticesIndexed[index];
-        int colors = v->availableColors;
-
-        int maxLoop = (um || checkCondition != 0 || allColorings) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
-        // Every coloring should be tried for um, as this is different for it.
-
-        // We are coloring this index
-        g->vertexIsColored |= 1L << index;
-        // vertexIsAlmostColored &= ~(1 << index);
-
-        int lastToColor = (g->maxColoringMask & ~g->vertexIsColored) == 0;
-        if (lastToColor && maxLoop < maxColor)
-            colors = 0; // We don't want to go over colors, as it can't be correct
-
-        uint64_t neighbourhood = v->neighbours;
-        int neighboursColored = (neighbourhood & g->vertexIsColored) == neighbourhood;
-
-        FOR_EACH_BIT(color, colors) {
-            if (color > maxLoop)
-                break; // We passed the highest possible color in the graph
-
-            v->color = color + 1; // + 1 as the actual colors are from 1 to n
-
-            // We have to now check if all our neighbours are colored, as this isn't checked
-            // in updateNeighbours
-            // This is an extra check for correctness
-            if (neighboursColored && !isCorrectlyColored(v, g->verticesIndexed, coloring, 0)) {
-                // This color isn't correct, we pick another
-                continue;
-            }
-            // We also change the available colors for the neighbours if the coloring is
-            // proper
-            uint64_t changed[g->numberOfVertices];
-
-            if (updateNeighbours(g, v, color, coloring, changed)) {
-                // This is used to skip this color, as it isn't possible
-                continue;
-            }
-
-            int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
-            int newIndex = getBestIndex(g, index);
-            if (optimizedAlgorithm(g, coloring, newMaxColorCurrGraph, maxColor, newIndex, allColorings)) {
-                return 1;
-            }
-
-            // We add back the available colors if it didn't work out
-            addColorsBack(g, changed);
+        int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
+        int newIndex = getBestIndex(g, index);
+        if (optimizedAlgorithm(g, coloring, newMaxColorCurrGraph, maxColor, newIndex, allColorings)) {
+            return 1;
         }
 
-        // We decolor this vertex
-        g->vertexIsColored &= ~(1L << index);
-        v->color = 0;
-        g->availableVertices |= (1L << index);
+        // We add back the available colors if it didn't work out
+        addColorsBack(g, changed);
+    }
 
-        return 0;
+    // We decolor this vertex
+    g->vertexIsColored &= ~(1L << index);
+    v->color = 0;
+    g->availableVertices |= (1L << index);
+
+    return 0;
 
 }
 

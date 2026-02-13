@@ -24,87 +24,46 @@ uint64_t end;
 
 int main(int argc, char **argv) {
 
-    parseArguments(argc, argv);
+    int debugging = 0;
 
-    open = coloringIsOpen(coloring);
-    proper = coloringIsProper(coloring);
-    um = coloringIsUM(coloring);
+    if (!debugging) {
+        parseArguments(argc, argv);
 
-    uint64_t start = clock();
+        open = coloringIsOpen(coloring);
+        proper = coloringIsProper(coloring);
+        um = coloringIsUM(coloring);
 
-    ssize_t read;
-    size_t len = 0;
-    char* line;
+        uint64_t start = clock();
 
-    // As long as there is something to read from stdin, we read it.
-    while ((read = getline(&line, &len, stdin)) != -1) {
+        ssize_t read;
+        size_t len = 0;
+        char* line;
 
-        // First we remove the \n from the end of the line:
-        line[strcspn(line, "\n")] = 0;
-
-        graph* graph = createGraph(line);
-
-        const int c = findChromaticNumberOptimized(graph, coloring, max(minChrom - 1, 1), (raw == 4));
-
-        // We check if the graph should get printed
-        if (c < minChrom || (checkCondition != 0 && isConditionMet(graph->counter, c))) {
-            continue;
+        // As long as there is something to read from stdin, we read it.
+        while ((read = getline(&line, &len, stdin)) != -1) {
+            // First we remove the \n from the end of the line:
+            line[strcspn(line, "\n")] = 0;
+            performComputation(line);
         }
 
         if (overview) {
-            cNumbers[c] += 1;
-        } else {
-            switch (raw) {
-                // We break here as we don't want to also output the default option
-                case 1:
-                    printf("%d\n", c);
-                    break;
-                case 2:
-                    // This option is only useful when filtering
-                    printf("%s\n", line);
-                    break;
-                case 3: {
-                    int colors[graph->numberOfVertices];
-                    // For showing graphs, prints the colors
-                    if (checkCondition != 0) {
-                        getColoringAfterCheck(graph->counter, c, colors);
-                    } else {
-                        getColors(graph, colors);
-                    }
-                    printf("%s [", line);
-                    for (int i = 0; i < graph->numberOfVertices; i++) {
-                        printf("%d ", colors[i]);
-                    }
-                    printf("]\n");
-                    break;
-                }
-                // case 4:
-                //     System.out.println(line + " " + graph.getColorings()
-                //             .stream().map(Arrays::toString).toList());
-                //     break;
-                default:
-                    printf("%s: %d\n", line, c);
-            }
+            printOverview();
         }
 
-        for (int i = 0; i < graph->numberOfVertices; i++) {
-            free(graph->verticesIndexed[i]);
+        if (raw == 0) {
+            printf("All graphs have been processed.\n");
         }
-        free(graph->counter);
 
-        free(graph);
+        // We don't forget to free line
+        free(line);
+    } else {
+        overview = 1;
+        minChrom = 0;
+        raw = 0;
+        checkCondition = 0;
+        coloring = PROPER;
+        performComputation("G@Ezu[");
     }
-
-    if (overview) {
-        printOverview();
-    }
-
-    if (raw == 0) {
-        printf("All graphs have been processed.\n");
-    }
-
-    // We don't forget to free line
-    free(line);
 
     return 0;
 }
@@ -160,6 +119,61 @@ void printOverview() {
         cNumbers[i] = 0;
     }
     start = clock();
+}
+
+
+void performComputation(char line[]) {
+    graph* graph = createGraph(line);
+
+    const int c = findChromaticNumberOptimized(graph, coloring, max(minChrom - 1, 1), (raw == 4));
+    // fprintf(stderr, "%d\n", c);
+    // We check if the graph should get printed
+    if (c < minChrom || (checkCondition != 0 && isConditionMet(graph->counter, c))) {
+        return;
+    }
+
+    if (overview) {
+        cNumbers[c] += 1;
+    } else {
+        switch (raw) {
+            // We break here as we don't want to also output the default option
+            case 1:
+                printf("%d\n", c);
+                break;
+            case 2:
+                // This option is only useful when filtering
+                printf("%s\n", line);
+                break;
+            case 3: {
+                int colors[graph->numberOfVertices];
+                // For showing graphs, prints the colors
+                if (checkCondition != 0) {
+                    getColoringAfterCheck(graph->counter, c, colors);
+                } else {
+                    getColors(graph, colors);
+                }
+                printf("%s [", line);
+                for (int i = 0; i < graph->numberOfVertices; i++) {
+                    printf("%d ", colors[i]);
+                }
+                printf("]\n");
+                break;
+            }
+                // case 4:
+                //     System.out.println(line + " " + graph.getColorings()
+                //             .stream().map(Arrays::toString).toList());
+                //     break;
+            default:
+                printf("%s: %d\n", line, c);
+        }
+    }
+
+    for (int i = 0; i < graph->numberOfVertices; i++) {
+        free(graph->verticesIndexed[i]);
+    }
+    free(graph->counter);
+
+    free(graph);
 }
 
 

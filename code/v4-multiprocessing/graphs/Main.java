@@ -26,7 +26,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         boolean debugging = false;
-//         debugging = true;
+        debugging = true;
 
         if (!debugging) {
 
@@ -168,23 +168,23 @@ public class Main {
              for (String line2 : graphs) {
              Graph graph = new Graph(line2);
              //
-             int c = graph.findChromaticNumberOptimized(Coloring.iUMc, 2, false, false, true, 1, false);
+             int c = graph.findChromaticNumberOptimized(Coloring.PROPER, 1, false, true, false, 0, false);
 
-             if (c < minChrom || (checkCondition != 0
-                     && Arrays.stream(graph.counter.getCondition())
-                     .allMatch(n -> (n == graph.maxColoring || n == 0)))) {
-                 continue;
-             }
-
-             for (int i = 0; i < 10; i++) {
-                 if (graph.counter.getCondition(i) == 0 || graph.counter.getCondition(i) == graph.maxColoring)
-                     continue;
-                 if (checkSpecialCaseIUMC(Graph.getAdjacencyMatrix(line2),
-                         (graph.maxColoring & ~graph.counter.getCondition(i)), i)) {
-                     System.out.println("yes");
-                     break;
-                 }
-             }
+//             if (c < minChrom || (checkCondition != 0
+//                     && Arrays.stream(graph.counter.getCondition())
+//                     .allMatch(n -> (n == graph.maxColoring || n == 0)))) {
+//                 continue;
+//             }
+//
+//             for (int i = 0; i < 10; i++) {
+//                 if (graph.counter.getCondition(i) == 0 || graph.counter.getCondition(i) == graph.maxColoring)
+//                     continue;
+//                 if (checkSpecialCaseIUMC(Graph.getAdjacencyMatrix(line2),
+//                         (graph.maxColoring & ~graph.counter.getCondition(i)), i)) {
+//                     System.out.println("yes");
+//                     break;
+//                 }
+//             }
              System.out.println(c);
              }
 
