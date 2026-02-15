@@ -14,6 +14,10 @@ extern int open;
 extern int proper;
 extern int um;
 
+extern graph* g;
+extern int lengthOfGraph;
+
+
 
 void getColors(graph* g, int colors[]) {
     for (int i = 0; i < g->numberOfVertices; i++) {
@@ -30,15 +34,45 @@ int getNumberOfVertices(char graphString[]) {
     return 0;
 }
 
-graph* createGraph(char graphString[]) {
+graph* createGraph(int previousN, char graphString[]) {
     int n = getNumberOfVertices(graphString);
-    graph* g = (graph*) malloc(sizeof(graph) + n * sizeof(vertex*));
-    g->numberOfVertices = n;
+
+    if (previousN < n) {
+        if (previousN == 0) {
+            lengthOfGraph = sizeof(graph) + n * sizeof(vertex*);
+            g = (graph*) malloc(sizeof(graph) + n * sizeof(vertex*));
+
+            // We also already generate the vertices
+            for (int i = 0; i < n; i++) {
+                vertex* v = (vertex*) malloc(sizeof(vertex));
+                g->verticesIndexed[i] = v;
+            }
+        } else {
+            lengthOfGraph += (n - previousN) * (int) sizeof(vertex*);
+            graph* temp = realloc(g, lengthOfGraph);
+            if (temp != NULL) {
+                g = temp;
+            } else {
+                fprintf(stderr, "Realloc can't be executed: memory full.");
+                exit(1);
+            }
+            for (int i = previousN; i < n; i++) {
+                g->verticesIndexed[i] = (vertex*) malloc(sizeof(vertex));
+            }
+        }
+
+        g->numberOfVertices = n;
+        g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
+    }
 
     if (checkCondition != 0) {
-        counter* c = (counter*) malloc(sizeof(counter));
-        g->counter = c;
-
+        counter* c;
+        if (g->counter == NULL) {
+            c = (counter*) malloc(sizeof(counter));
+            g->counter = c;
+        } else {
+            c = g->counter;
+        }
         c->numberOfVertices = n;
         c->maxColoringMask = SHIFTL(n) - 1;
         c->conditionVertices = c->maxColoringMask;
@@ -49,10 +83,8 @@ graph* createGraph(char graphString[]) {
         }
     }
 
-    g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
     for (int i = 0; i < n; i++) {
-        vertex* v = (vertex*) malloc(sizeof(vertex));
-        g->verticesIndexed[i] = v;
+        vertex *v = g->verticesIndexed[i];
         v->index = i;
         v->neighbours = 0;
         v->color = 0;

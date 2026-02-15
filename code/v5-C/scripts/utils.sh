@@ -194,12 +194,12 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
       ;;
     r)
       raw=$(fetch_optional_arg "$OPTIND" 1 "$@")
-      if [[ "$raw" -lt 0 || "$raw" -gt 4 ]]; then
-      	# We only want certain raw options
-      	raw=1
-      fi
       if [[ $? -eq 0 ]]; then # Skip one index if an option was found
         OPTIND=$((OPTIND + 1))
+      fi
+      if [[ "$raw" -lt 1 || "$raw" -gt 4 ]]; then
+        # We only want certain raw options
+        raw=1
       fi
       ;;
     s)

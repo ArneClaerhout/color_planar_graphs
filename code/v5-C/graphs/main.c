@@ -19,6 +19,10 @@ int open;
 int proper;
 int um;
 
+graph* g;
+int lengthOfGraph;
+
+
 uint64_t start;
 uint64_t end;
 
@@ -39,11 +43,12 @@ int main(int argc, char **argv) {
         size_t len = 0;
         char* line;
 
+        int previousN = 0;
         // As long as there is something to read from stdin, we read it.
         while ((read = getline(&line, &len, stdin)) != -1) {
             // First we remove the \n from the end of the line:
             line[strcspn(line, "\n")] = 0;
-            performComputation(line);
+            previousN = performComputation(previousN, line);
         }
 
         if (overview) {
@@ -62,7 +67,7 @@ int main(int argc, char **argv) {
         raw = 0;
         checkCondition = 0;
         coloring = PROPER;
-        performComputation("G@Ezu[");
+        performComputation(0, "G@Ezu[");
     }
 
     return 0;
@@ -122,14 +127,14 @@ void printOverview() {
 }
 
 
-void performComputation(char line[]) {
-    graph* graph = createGraph(line);
+int performComputation(int previousN, char line[]) {
+    graph* graph = createGraph(previousN, line);
 
     const int c = findChromaticNumberOptimized(graph, coloring, max(minChrom - 1, 1), (raw == 4));
     // fprintf(stderr, "%d\n", c);
     // We check if the graph should get printed
     if (c < minChrom || (checkCondition != 0 && isConditionMet(graph->counter, c))) {
-        return;
+        return graph->numberOfVertices;
     }
 
     if (overview) {
@@ -167,7 +172,10 @@ void performComputation(char line[]) {
                 printf("%s: %d\n", line, c);
         }
     }
+    return graph->numberOfVertices;
+}
 
+void freeGraph(graph* graph) {
     for (int i = 0; i < graph->numberOfVertices; i++) {
         free(graph->verticesIndexed[i]);
     }

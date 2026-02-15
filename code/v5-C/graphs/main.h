@@ -7,6 +7,7 @@ int parseInt(char* str);
 int parseBoolean(char* str);
 void parseArguments(int argc, char **argv);
 void printOverview(void);
-void performComputation(char line[]);
+int performComputation(int previousN, char line[]);
+void freeGraph(graph* graph);
 
 #endif //MAIN_H

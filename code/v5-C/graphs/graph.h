@@ -21,7 +21,7 @@ typedef struct graph {
 
 void getColors(graph* g, int colors[]);
 int getNumberOfVertices(char graphString[]);
-graph* createGraph(char graphString[]);
+graph* createGraph(int previousN, char graphString[]);
 int findChromaticNumberOptimized(graph* g, enum colorings coloring, int startingColor, int allColorings);
 int optimizedAlgorithm(graph* g, enum colorings coloring, int maxColorCurrGraph, int maxColor, int index, int allColorings);
 int startingStep(graph* g, int maxColor, int allColorings);
