@@ -61,13 +61,44 @@ int main(int argc, char **argv) {
 
         // We don't forget to free line
         free(line);
+        freeGraph(g);
     } else {
         overview = 1;
         minChrom = 0;
         raw = 0;
         checkCondition = 0;
-        coloring = PROPER;
-        performComputation(0, "G@Ezu[");
+        coloring = iUMo;
+        open = coloringIsOpen(coloring);
+        proper = coloringIsProper(coloring);
+        um = coloringIsUM(coloring);
+
+        uint64_t start = clock();
+
+        ssize_t read;
+        size_t len = 0;
+        char* line;
+
+        FILE *fptr = fopen("../outputs/2026-02-16-18-49-09.txt", "r");
+
+        int previousN = 0;
+        // As long as there is something to read from stdin, we read it.
+        while ((read = getline(&line, &len, fptr)) != -1) {
+            // First we remove the \n from the end of the line:
+            line[strcspn(line, "\n")] = 0;
+            previousN = performComputation(previousN, line);
+        }
+
+        if (overview) {
+            printOverview();
+        }
+
+        if (raw == 0) {
+            printf("All graphs have been processed.\n");
+        }
+
+        // We don't forget to free line
+        free(line);
+        freeGraph(g);
     }
 
     return 0;
@@ -128,13 +159,13 @@ void printOverview() {
 
 
 int performComputation(int previousN, char line[]) {
-    graph* graph = createGraph(previousN, line);
+    g = createGraph(previousN, line); // creates or modifies the graph to work with the amount of vertices
 
-    const int c = findChromaticNumberOptimized(graph, coloring, max(minChrom - 1, 1), (raw == 4));
+    const int c = findChromaticNumberOptimized(coloring, max(minChrom - 1, 1), (raw == 4));
     // fprintf(stderr, "%d\n", c);
     // We check if the graph should get printed
-    if (c < minChrom || (checkCondition != 0 && isConditionMet(graph->counter, c))) {
-        return graph->numberOfVertices;
+    if (c < minChrom || (checkCondition != 0 && isConditionMet(g->counter, c))) {
+        return g->numberOfVertices;
     }
 
     if (overview) {
@@ -150,15 +181,15 @@ int performComputation(int previousN, char line[]) {
                 printf("%s\n", line);
                 break;
             case 3: {
-                int colors[graph->numberOfVertices];
+                int colors[g->numberOfVertices];
                 // For showing graphs, prints the colors
                 if (checkCondition != 0) {
-                    getColoringAfterCheck(graph->counter, c, colors);
+                    getColoringAfterCheck(g->counter, c, colors);
                 } else {
-                    getColors(graph, colors);
+                    getColors(colors);
                 }
                 printf("%s [", line);
-                for (int i = 0; i < graph->numberOfVertices; i++) {
+                for (int i = 0; i < g->numberOfVertices; i++) {
                     printf("%d ", colors[i]);
                 }
                 printf("]\n");
@@ -172,7 +203,7 @@ int performComputation(int previousN, char line[]) {
                 printf("%s: %d\n", line, c);
         }
     }
-    return graph->numberOfVertices;
+    return g->numberOfVertices;
 }
 
 void freeGraph(graph* graph) {
@@ -182,6 +213,7 @@ void freeGraph(graph* graph) {
     free(graph->counter);
 
     free(graph);
+
 }
 
 

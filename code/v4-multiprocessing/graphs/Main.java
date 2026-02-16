@@ -140,35 +140,34 @@ public class Main {
         } else {
             // This is the debugging code section
 
-            // File file = new
-            // File("/home/arne/Bachelorproef/code/v4-multiprocessing/outputs/2025-11-20-17-40-35.txt");
-            // BufferedReader br = new BufferedReader(new FileReader(file));
-            // String line;
-            // while((line = br.readLine()) != null){
-            // Graphs.Graph graph = new Graphs.Graph(line);
-            // int c = graph.findChromaticNumberOptimized(Graphs.Coloring.getColoring("proper"),
-            // true, true, false, false, false);
-            // if (c == 0) {
-            // System.out.println(line);
-            // break;
-            // }
-            // }
+             File file = new
+             File("/home/arne/Bachelorproef/code/v5-C/outputs/2026-02-16-18-49-09.txt");
+             BufferedReader br = new BufferedReader(new FileReader(file));
+             String line;
+             while((line = br.readLine()) != null){
+                 Graph graph = new Graph(line);
+                 int c = graph.findChromaticNumberOptimized(Coloring.iUMo, Integer.max(0 - 1, 1), true, false, true, 0, false);
+                 if (c == 0) {
+                     System.out.println(line);
+                     break;
+                 }
+             }
 
-             ArrayList<String> graphs = new ArrayList<>(){{
-            // add("a???????E?S?c?a?O_CC?_OA?_B??A_?@@??OG?A?_?E???E???D???AO???a???CC???K????K????E????@_????S????");
-            // add("L|eKKEDoJxk@@w");
-            // add("L|eKKF`WI?kBNw");
-            // add("L~eKKF@oI@j{?M");
-            // add("I|~KMLKBG");
-             add("G@Ezu[");
-            // add("G|mnMC");
-//             add("I~fIIDBVg");
-             }};
-             //
-             for (String line2 : graphs) {
-             Graph graph = new Graph(line2);
-             //
-             int c = graph.findChromaticNumberOptimized(Coloring.PROPER, 1, false, true, false, 0, false);
+//             ArrayList<String> graphs = new ArrayList<>(){{
+//            // add("a???????E?S?c?a?O_CC?_OA?_B??A_?@@??OG?A?_?E???E???D???AO???a???CC???K????K????E????@_????S????");
+//            // add("L|eKKEDoJxk@@w");
+//            // add("L|eKKF`WI?kBNw");
+//            // add("L~eKKF@oI@j{?M");
+//            // add("I|~KMLKBG");
+//             add("G@Ezu[");
+//            // add("G|mnMC");
+////             add("I~fIIDBVg");
+//             }};
+//             //
+//             for (String line2 : graphs) {
+//             Graph graph = new Graph(line2);
+//             //
+//             int c = graph.findChromaticNumberOptimized(coloring, Integer.max(minChrom - 1, 1), open, proper, um, checkCondition, (raw == 4));
 
 //             if (c < minChrom || (checkCondition != 0
 //                     && Arrays.stream(graph.counter.getCondition())
@@ -185,8 +184,8 @@ public class Main {
 //                     break;
 //                 }
 //             }
-             System.out.println(c);
-             }
+//             System.out.println(c);
+//             }
 
             // Graphs.Graph graphnew = new Graphs.Graph("O~eK]f@SOuA@EBE?_X?AP");
             // System.out.println(Arrays.deepToString(Graphs.Graph.getAdjacencyMatrix("O~eK]f@SOuA@EBE?_X?AP")));

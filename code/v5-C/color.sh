@@ -33,9 +33,8 @@ show_func() {
 }
 
 write_to_file() {
-	if [[ $number_of_processes -ne 1 || ("$overview" == false && ("$manual" == false || "$manual" == pipe)) ]]; then
+	if [[ "$number_of_processes" -ne 1 || ("$overview" == false && ("$manual" == "" || "$manual" == pipe)) ]]; then
 	  mkdir -p "outputs"
-
 	  path="$output_path"
     if [[ $number_of_processes -ne 1 && "$1" -ne -1 ]]; then
       path="outputs/process_$1.txt"

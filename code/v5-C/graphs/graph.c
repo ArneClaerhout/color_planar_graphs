@@ -1,11 +1,11 @@
 #include "colorings.h"
 #include "graph.h"
+#include "vertex.h"
+#include "changedSet.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "vertex.h"
 
 
 extern int minChrom;
@@ -19,7 +19,7 @@ extern int lengthOfGraph;
 
 
 
-void getColors(graph* g, int colors[]) {
+void getColors(int colors[]) {
     for (int i = 0; i < g->numberOfVertices; i++) {
         colors[i] = g->verticesIndexed[i]->color;
     }
@@ -118,7 +118,7 @@ graph* createGraph(int previousN, char graphString[]) {
 
 }
 
-int findChromaticNumberOptimized(graph* g, enum colorings coloring, int startingColor, int allColorings) {
+int findChromaticNumberOptimized(enum colorings coloring, int startingColor, int allColorings) {
     for (int i = startingColor; i <= 10; i++) {
         for (int j = 0; j < g->numberOfVertices; j++) {
             setMaxAvailableColors(g->verticesIndexed[j], i);
@@ -126,7 +126,7 @@ int findChromaticNumberOptimized(graph* g, enum colorings coloring, int starting
         // Each time we reset which vertices are colored.
         g->vertexIsColored = 0;
         g->availableVertices = g->maxColoringMask;
-        if (optimizedAlgorithm(g, coloring, 0, i, 0, allColorings)) {
+        if (optimizedAlgorithm(coloring, 0, i, 0, allColorings)) {
             g->chromaticNumber = i;
             return i;
         }
@@ -138,11 +138,11 @@ int findChromaticNumberOptimized(graph* g, enum colorings coloring, int starting
     return 0;
 }
 
-int optimizedAlgorithm(graph* g, enum colorings coloring, int maxColorCurrGraph,
+int optimizedAlgorithm(enum colorings coloring, int maxColorCurrGraph,
     int maxColor, int index, int allColorings) {
 
     if (g->vertexIsColored == g->maxColoringMask) {
-        return startingStep(g, maxColor, allColorings);
+        return startingStep(maxColor, allColorings);
     }
 
     vertex* v = g->verticesIndexed[index];
@@ -180,19 +180,19 @@ int optimizedAlgorithm(graph* g, enum colorings coloring, int maxColorCurrGraph,
         uint64_t changed[g->numberOfVertices];
         memset(changed,0, sizeof(changed)); // We make the array empty
 
-        if (updateNeighbours(g, v, color, coloring, changed)) {
+        if (updateNeighbours(v, color, coloring, changed)) {
             // This is used to skip this color, as it isn't possible
             continue;
         }
 
         int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
-        int newIndex = getBestIndex(g, index);
-        if (optimizedAlgorithm(g, coloring, newMaxColorCurrGraph, maxColor, newIndex, allColorings)) {
+        int newIndex = getBestIndex(index);
+        if (optimizedAlgorithm(coloring, newMaxColorCurrGraph, maxColor, newIndex, allColorings)) {
             return 1;
         }
 
         // We add back the available colors if it didn't work out
-        addColorsBack(g, changed);
+        addColorsBack(changed);
     }
 
     // We decolor this vertex
@@ -206,7 +206,7 @@ int optimizedAlgorithm(graph* g, enum colorings coloring, int maxColorCurrGraph,
 
 
 
-int startingStep(graph* g, int maxColor, int allColorings) {
+int startingStep(int maxColor, int allColorings) {
     if (checkCondition != 0 || allColorings) {
         if (minChrom != 0 && maxColor < minChrom) {
             // When it's going to get filtered away anyway, we stop it
@@ -215,14 +215,14 @@ int startingStep(graph* g, int maxColor, int allColorings) {
         g->chromaticNumber = maxColor;
         // If the counters are all full, return true and stop counting
         int colors[g->numberOfVertices];
-        getColors(g, colors);
+        getColors(colors);
         return inputColors(g->counter, colors, allColorings, g->chromaticNumber);
     }
     return 1;
 }
 
 
-int getBestIndex(graph* g, int indexColored) {
+int getBestIndex(int indexColored) {
     // The addition of tiebreaks with degree only slows it down (this is done in
     // DSATUR),
     // taking the first best vertex is fastest
@@ -247,7 +247,7 @@ int getBestIndex(graph* g, int indexColored) {
 
 
 
-int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring,
+int updateNeighbours(vertex* v, int color, enum colorings coloring,
                                      uint64_t changed[]) {
     FOR_EACH_BIT(bit, v->neighbours) {
         vertex* neighbour = g->verticesIndexed[bit];
@@ -270,7 +270,7 @@ int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring,
             // We want to check if the neighbour is CORRECTLY colored
             if (!isCorrectlyColored(neighbour, g->verticesIndexed, coloring, 1)) {
                 // Early pruning
-                addColorsBack(g, changed);
+                addColorsBack(changed);
                 return 1;
                 // We skip the rest, as this color is incorrect
             }
@@ -281,18 +281,18 @@ int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring,
             vertex* toColorNeighbour = g->verticesIndexed[toColorNeighbourIndex];
             // There's one vertex that isn't colored yet.
             if (um && (neighbourIsColored || !proper)) {
-                if (handleUM(g, changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                if (handleUM(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
                     return 1;
                 }
 
             } else if (coloring == ODD && neighbourIsColored) {
                 // It shouldn't be the neighbour itself,
                 // as otherwise we can do the proper update
-                if (handleOdd(g, changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                if (handleOdd(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
                     return 1;
                 }
             } else if (coloring != PROPER && (neighbourIsColored || !proper)) {
-                if (handleCF(g, changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                if (handleCF(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
                     return 1;
                 }
 
@@ -314,7 +314,7 @@ int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring,
                 changed[bit] |= SHIFTL(color);
                 if (neighbour->amountOfAvailableColors == 0) {
                     // Early pruning
-                    addColorsBack(g, changed);
+                    addColorsBack(changed);
                     return 1;
                 }
                 // else if (neighbour.getAmountOfAvailableColors() == 1) {
@@ -329,7 +329,7 @@ int updateNeighbours(graph* g, vertex* v, int color, enum colorings coloring,
 
 
 
-void addColorsBack(graph* g, const uint64_t changed[]) {
+void addColorsBack(const uint64_t changed[]) {
     for (int i = 0; i < g->numberOfVertices; i++) {
         uint64_t value = changed[i];
         if (value != 0) {
@@ -349,7 +349,7 @@ void addColorsBack(graph* g, const uint64_t changed[]) {
 }
 
 
-int handleCF(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleCF(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
 
@@ -379,20 +379,15 @@ int handleCF(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColor
     }
 
     if (colorsOccurOnce == 0) {
-        for (int j = colorsOccur; j != 0; j &= j - 1) {
-            int bit = __builtin_ctz(j);
-            if (removeColor(g, toColorNeighbour, toColorNeighbourIndex, bit, changed))
-                return 1;
-        }
+        return removeColor(toColorNeighbour, toColorNeighbourIndex, colorsOccur, changed);
     } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
-        int j = __builtin_ctz(colorsOccurOnce);
-        return removeColor(g, toColorNeighbour, toColorNeighbourIndex, j, changed);
+        return removeColor(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, changed);
     }
     return 0;
 }
 
 
-int handleUM(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleUM(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
     int max = 1;
     int amountOfMax = 0;
 
@@ -422,18 +417,15 @@ int handleUM(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColor
     // Only allow colors bigger than the max
     // Otherwise, do nothing.
     if (amountOfMax == 1) {
-        return removeColor(g, toColorNeighbour, toColorNeighbourIndex, max - 1, changed);
+        return removeColor(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), changed);
     } else if (amountOfMax > 1) {
-        for (int colorToRemove = 0; colorToRemove < max; colorToRemove++) {
-            if (removeColor(g, toColorNeighbour, toColorNeighbourIndex, colorToRemove, changed))
-                return 1;
-        }
+        return removeColor(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, changed);
     }
     return 0;
 }
 
 
-int handleOdd(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleOdd(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
     int colorsOccurOdd = 0;
     vertex* secondNeighbour;
 
@@ -454,30 +446,30 @@ int handleOdd(graph* g, uint64_t changed[], vertex* toColorNeighbour, int toColo
 
     if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
         // Don't take this color
-        int index = __builtin_ctz(colorsOccurOdd);
-        return removeColor(g, toColorNeighbour, toColorNeighbourIndex, index, changed);
+        return removeColor(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, changed);
     }
     return 0;
 }
 
 
-
-int removeColor(graph* g, vertex* v, int index, int color, uint64_t changed[]) {
-    if (!removeColorFromAvailableColors(v, color))
+// color is a bit mask
+int removeColor(vertex* v, int index, int color, uint64_t changed[]) {
+    if ((v->availableColors & color) == 0) {
         return 0;
-    changed[index] |= SHIFT(color);
-    int m = v->amountOfAvailableColors;
-    if (m == 0) {
-        addColorsBack(g, changed);
+    }
+    if (v->availableColors == (v->availableColors & color)) {
+        // It will remove all available colors
         return 1;
     }
+    // We do a special remove colors from available colors
+    v->availableColors &= ~color;
+    v->amountOfAvailableColors = __builtin_popcount(v->availableColors);
+    changed[index] |= color;
     // else if (m == 1) {
     // vertexIsAlmostColored |= (1 << index);
     // }
     return 0;
 }
-
-
 
 
 
