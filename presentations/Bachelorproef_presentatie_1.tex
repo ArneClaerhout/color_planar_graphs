@@ -50,10 +50,14 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	\begin{frame}
 		\frametitle{Onderzoeksprobleem}
 		
+		\begin{enumerate}
+			\item Kunnen we een algoritme ontwerpen voor het kleuren van vlakke grafen dat minstens even snel is als de bestaande kleuringsalgoritmes voor algemene grafen en dat efficiënt uitgebreid kan worden voor verschillende grafenkleuringsproblemen?
+			\item In welke mate kan dit algoritme helpen om vermoedens rond  grafenkleuringsproblemen te ontkrachten of bevestigen?
+		\end{enumerate}
+		
 		\begin{itemize}
-			\item Hoe kunnen we een efficiënt algoritme voor het kleuren van vlakke grafen maken, zodat we hiermee vermoedens kunnen testen?
 			\item Knoopkleuringen van vlakke grafen
-			\item Vermoedens rond chromatische getallen weerleggen of ondersteunen door computationeel bewijs
+			\item Chromatische getallen
 		\end{itemize}
 	\end{frame}
 	
@@ -193,6 +197,18 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	\end{frame}
 	
 	\begin{frame}
+		\frametitle{Naamgeving}
+		
+		\begin{itemize}
+			\item Proper $\rightarrow$ p
+			\item Improper $\rightarrow$ i
+			\item Open neighbourhood $\rightarrow$ o
+			\item Closed neighbourhood $\rightarrow$ c
+			\item pCFo, pCFc, iCFo, iCFc
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
 		\frametitle{Andere kleuringen}
 		
 		
@@ -208,6 +224,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 					\item 4 opsplitsingen
 					\item Proper $\longleftrightarrow$ Improper
 					\item Open $\longleftrightarrow$ Closed
+					\item pUMo, pUMc, iUMo, iUMc
 				\end{itemize}
 			\end{itemize}
 			
@@ -225,39 +242,15 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	\end{frame}
 	
 	\begin{frame}
-		\frametitle{Toepassingen}
-		\begin{itemize}
-			\item Draadloze netwerken: versturen signaal van zendmast zonder interferentie 
-			
-			$\rightarrow$ Conflict free colouring
-			\item Graphs.Vertex ranking: kleuring waarbij paden tussen knopen met zelfde kleur een knoop bevatten met grotere kleur
-			
-			$\rightarrow$ Unique-Maximum colouring
-			\begin{itemize}
-				\item Toepassingen bij parallel factoriseren matrices en meer
-			\end{itemize}
-		\end{itemize}
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{Naamgeving}
-		
-		\begin{itemize}
-			\item Proper $\rightarrow$ p
-			\item Improper $\rightarrow$ i
-			\item Open neighbourhood $\rightarrow$ o
-			\item Closed neighbourhood $\rightarrow$ c
-			\item pCFo, iUMo, iUMc, pUMo, iCFc, $\dots$
-			\item $2 \times 2 \times 2 + 2 = 10 \text{ kleuringen}$
-		\end{itemize}
-	\end{frame}
-	
-	\begin{frame}
 		\frametitle{Chromatische getallen}
 		\begin{itemize}
 			\item $\chi(\mathcal{P})$, $\chi_{O}(\mathcal{P})$, $\chi_{pCFo}(\mathcal{P})$, $\dots$ ($\mathcal{P}$ de klasse van vlakke grafen)
-			\item Per kleuring
-			\item Maximaal aantal kleuren, binnen klasse van vlakke grafen, bij minimale kleuringen van die grafen
+			\item Apart per kleuring
+			\item Minimaal benodigd aantal kleuren om een willekeurige graaf binnen de klasse van de vlakke grafen te kunnen kleuren.
+			
+			\item Bijvoorbeeld: $K_4$ heeft $4$ kleuren bij klassieke kleuring $\implies$ $\chi(\mathcal{P}) \ge 4$. 
+			
+			Daarna ook bewijs voor volstaan van $4$ kleuren.
 			
 		\end{itemize}
 	\end{frame}
@@ -493,7 +486,6 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{itemize}
 			\item Optimaliseren
 			\item Patronen in maximaliserende grafen zoeken
-			\item Code omzetten naar C
 			\item Algoritme laten lopen
 			\item Bewijzen correctheid naïef algoritme
 			\item Verslag schrijven
