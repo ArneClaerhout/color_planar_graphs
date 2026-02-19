@@ -1,7 +1,6 @@
 #include "colorings.h"
 #include "graph.h"
 #include "vertex.h"
-#include "changedSet.h"
 
 #include <stdio.h>
 #include <stdlib.h>
