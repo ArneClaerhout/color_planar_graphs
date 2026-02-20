@@ -2,8 +2,8 @@
 
 # Change the working directory to this one.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$script_dir" || exit
-
+cd "$script_dir/.." || exit
+## This above line moves the working directory to the v5-C directory.
 
 pattern="plantri"
 plantri_path=$(find ../.. -maxdepth 2 -type d -name "*${pattern}*" | head -n 1)
@@ -39,18 +39,18 @@ while [[ $# -gt 0 ]]; do
 		argssimple+=(-c "$coloring")
 		shift 2
 		;;
-  -pq)
-    args+=(-pq)
-    shift 1
-    ;;
-  -ll)
-    args+=(-ll)
-    shift 1
-    ;;
-  -bs)
-    args+=(-bs)
-    shift 1
-    ;;
+	-pq)
+		args+=(-pq)
+		shift 1
+		;;
+	-ll)
+		args+=(-ll)
+		shift 1
+		;;
+	-bs)
+		args+=(-bs)
+		shift 1
+		;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1

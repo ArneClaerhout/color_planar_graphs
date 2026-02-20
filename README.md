@@ -5,11 +5,11 @@ We use Java as our main programming language. We also use Unix so we can use pla
 
 ## Setup
 
-Firstly, make sure you are working in Unix.
+Firstly, make sure you are working in a Unix-like environment.
 
 ### Plantri
 
-To check all graphs, we will use a simple planar graph generator called `plantri`.
+To check all graphs, we will use a planar graph generator called `plantri`.
 To be able to use plantri, first, change the directory to plantri55 by executing this command:
 
 ```
@@ -30,7 +30,7 @@ Now, go straight to the source directory.
 cd ../code/v4-multiprocessing/
 ```
 
-Also, make sure a python virtual environment is created by running the following command:
+Make sure a python virtual environment is created by running the following command:
 
 ```
 ./setupVenv.sh
@@ -41,8 +41,7 @@ Now you're ready to use the coloring algorithm!
 
 ## General Usage
 
-The algorithm is easily usable, starting with the two first options: 
-
+The algorithm is easily usable, starting with the two first options:
 
 - **NUMBER_OF_VERTICES**: The amount of vertices of the graphs that are to be checked is a mandatory argument.
   This should always be a value between 3 and 63, but this can also be written as a range of vertices.
@@ -53,7 +52,6 @@ The algorithm is easily usable, starting with the two first options:
   This coloring method should be like the following: `proper, odd, pCFo, iUMc, ...`.
 
 When using the algorithm for the first time, be sure to also compile the code by adding the `-C` option to the `color` command.
-
 
 Example usage:
 
@@ -98,13 +96,14 @@ Example usages:
 ### Progress in generation
 
 Instead of just computing graphs without knowing when it would end, the progress view can be used.
-This will use the `pv` command, which should be installed with:
+This will use the `pv` command, which can be installed with:
+
 ```aiignore
 sudo apt install pv
 ```
 
-Using this progress view with the program is done with the `-p` option. 
-This will also generate an extra file: `graph_counts.json`. 
+Using this progress view with the program is done with the `-p` option.
+This will also generate an extra file: `graph_counts.json`.
 This keeps track of the amount of graphs so it can quite accurately predict the needed time.
 
 > **_NOTE:_** When first using this option, it will have to start by counting and therefore take longer to start.
@@ -139,7 +138,7 @@ The images the script creates can be found in the directory `images/`, this will
 
 Parallelism of a computer can be used to speed up the computation process of coloring graphs.
 This is done by splitting the given graphs (by plantri) up in multiple disjoint portions,
-where each is then fed into their own process. 
+where each is then fed into their own process.
 With modern-day computers, this dramatically speeds things up.
 
 This multiprocessing can be done using the option `-M` with the amount of processes as the argument.
@@ -147,6 +146,7 @@ This multiprocessing can be done using the option `-M` with the amount of proces
 > **_NOTE:_** The usage of a progress view together with multiprocessing may not accurately predict the needed time.
 
 Example usage:
+
 ```
 ./color.sh 3:10 -c pUMo -f6M4o
 ./color.sh 6 -c odd -M 2 -p
@@ -154,7 +154,7 @@ Example usage:
 
 ### Manual usage
 
-If one wants to manually enter a graph into the program, one can do so by using the flag `-m` or `--manual`, followed by the _graph6_ string.
+If one wants to manually enter a graph into the program, one can do so by using the flag `-m`, followed by the _graph6_ string.
 Here it is important to always enter the _graph6_ string as a string.
 Giving the amount of vertices is not mandatory as this isn't used in the computation.
 
@@ -174,27 +174,22 @@ echo "H~eKMD^" | ./color.sh -m pipe -c odd -o
 
 ## Checking Correctness
 
-> **_NOTE:_** For this section, nauty should be installed in the main directory. Nauty can be installed from [here](https://users.cecs.anu.edu.au/~bdm/nauty/).
+> **_NOTE:_** For this section, nauty should be installed in the main directory. Nauty can be installed [here](https://users.cecs.anu.edu.au/~bdm/nauty/).
 
-If one wants to check the correctness of the output of the program. This can be done by using the other programs `checkOutputs.sh`, `checkCycles.sh` and `checkNaiveOutputs.sh`. These bash-scripts do the following:
+If one wants to check the correctness of the output of the program. This can be done by using the other programs `checkOutputs.sh` and `checkCycles.sh`. These bash-scripts do the following:
 
 - `checkOutputs.sh` compares the output from our own program in two ways:
-
   - If a proper coloring is given to be compared. Our own output is compared to that of the nauty file _countg_.
     This is only done for the (normal) chromatic numbers, as _countg_ doesn't support other types.
-  - If other colorings are given, we compare the optimized script to the output of the naive algorithm.
-    This is done by using checkNaiveOutputs.sh, explained later.
+  - If other colorings are given, we compare the optimized script to the output of a previously checked implementation, this implementation is in turn checked with the naive algorithm.
+    This is done by using `checkCorrectOutputs.sh`, found in scripts/.
 
-  The script should be run with multiple arguments: the number of vertices and then each coloring method one wishes to use as a different argument.
+  The script should be run with multiple arguments: the number of vertices and then each coloring method one wishes to use as a different argument. If all colorings should get checked, use `all` instead as an argument.
 
 - `checkCycles.sh` checks the other coloring methods, by finding the amount of colors used in cycle graphs ($C_i$).
   These can then be compared to the known values for these types of graphs.
   This lets us check whether the other colorings are also correct.
   An overview of how the cycle graphs should be colored can be found [here](#overview-cycle-graphs)
-- `checkNaiveOutputs.sh` checks, as implied by the name, the outputs to those from the naive implementation.
-  As the naive implementation is very simple, we can assume that the output for this algorithm will be correct.
-  Therefore we can always compare our optimized algorithm to the naive algorithm.
-  The found differences between the two will be displayed.
 
 The number of vertices or the coloring method should still be given to the program as explained before.
 

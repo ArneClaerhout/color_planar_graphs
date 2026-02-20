@@ -30,7 +30,7 @@ time "./$path" 14 -c iCFo -o "$@" >/dev/null 2>&1
 printf "iCFc: "
 time "./$path" 14 -c iCFc -o "$@" >/dev/null 2>&1
 printf "pCFo: "
-time "./$path" 14 -c pCFo -o "$@" >/dev/null 2>&1
+time "./$path" 14 -c pCFo -o "$@"
 
 end_time=$(date +%s%N)
 
