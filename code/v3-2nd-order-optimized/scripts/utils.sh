@@ -124,7 +124,7 @@ mode="triangulation"
 #### NUMBER OF VERTICES ####
 ############################
 
-if [[ "$1" =~ ^-?[0-9]+$ ]]; then
+if [[ "$1" =~ ^[0-9]+(:[0-9]+)?$ ]]; then
 	# Number of vertices
 	# We extract them
 	if [[ "$1" == *:* ]]; then

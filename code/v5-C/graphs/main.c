@@ -161,7 +161,15 @@ void printOverview() {
 int performComputation(int previousN, char line[]) {
     g = createGraph(previousN, line); // creates or modifies the graph to work with the amount of vertices
 
-    const int c = findChromaticNumberOptimized(coloring, max(minChrom - 1, 1), (raw == 4));
+    int (*f)(int, int, int, int);
+
+    if (coloring == ODD) f = &optimizedAlgorithmOdd;
+    else if (coloring == PROPER) f = &optimizedAlgorithmProper;
+    else if (um) f = &optimizedAlgorithmUM;
+    else f = &optimizedAlgorithmCF;
+
+    const int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4), f);
+
     // fprintf(stderr, "%d\n", c);
     // We check if the graph should get printed
     if (c < minChrom || (checkCondition != 0 && isConditionMet(g->counter, c))) {
@@ -207,9 +215,6 @@ int performComputation(int previousN, char line[]) {
 }
 
 void freeGraph(graph* graph) {
-    for (int i = 0; i < graph->numberOfVertices; i++) {
-        free(graph->verticesIndexed[i]);
-    }
     free(graph->counter);
 
     free(graph);

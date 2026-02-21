@@ -14,9 +14,9 @@ TIMEFORMAT='%R'
 start_time=$(date +%s%N)
 
 printf "Proper: "
-time "./$path" 14 -c proper -o "$@" >/dev/null 2>&1
+time "./$path" 14 -c proper -o "$@"
 printf "Odd: "
-time "./$path" 14 -c odd -o "$@" >/dev/null 2>&1
+time "./$path" 14 -c odd -o "$@"
 printf "iUMo: "
 time "./$path" 14 -c iUMo -o "$@" >/dev/null 2>&1
 printf "iUMc: "

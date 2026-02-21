@@ -23,7 +23,6 @@ gen_range_graphs() {
 	done
 }
 
-coloring="proper"
 numvertices="$1"
 shift 1
 method=""
@@ -35,8 +34,8 @@ argssimple=("$numvertices")
 while [[ $# -gt 0 ]]; do
 	case $1 in
 	-c)
-		args+=(-c "$coloring")
-		argssimple+=(-c "$coloring")
+		args+=(-c "$2")
+		argssimple+=(-c "$2")
 		shift 2
 		;;
   -pq)

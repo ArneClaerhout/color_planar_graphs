@@ -15,8 +15,8 @@ for (int i = __builtin_ctzll(_m), _once = 1; _once; _once = 0)
 
 
 typedef struct vertex {
-    int color;
     uint64_t neighbours;
+    int color;
     int availableColors;
     int amountOfAvailableColors;
     int index;
@@ -28,6 +28,10 @@ void removeNeighbour(vertex* v, vertex* neighbour);
 void setMaxAvailableColors(vertex* v, int max);
 int removeColorFromAvailableColors(vertex* v, int color);
 int addColorFromAvailableColors(vertex* v, int color);
-int isCorrectlyColored(vertex* v, vertex* verticesIndexed[], enum colorings coloring, int fillUncolored);
+int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[], int fillUncolored);
+int isCorrectlyColoredProper(vertex* v, vertex verticesIndexed[], int fillUncolored);
+int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[], int fillUncolored);
+int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[], int fillUncolored);
+int isCorrectlyColored(vertex* v, vertex verticesIndexed[], enum colorings coloring, int fillUncolored);
 
 #endif //VERTEX_H

@@ -73,7 +73,7 @@ method=""
 
 # We make sure to recompile the code, all the colorScripts DON'T do this,
 # as this is probably the script to run when checking changes
-javac Main.java
+javac graphs/Main.java
 echo "Code compiled."
 
 declare -a colorings=()

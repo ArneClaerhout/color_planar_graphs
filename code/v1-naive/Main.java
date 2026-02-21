@@ -37,7 +37,7 @@ public class Main {
         }
 
 
-        if (!raw) System.out.println("Received coloring: " + coloring);
+        if (!raw) System.err.println("Received coloring: " + coloring);
 
 
         // We start reading the graphs
@@ -68,8 +68,8 @@ public class Main {
         String finalTime = String.format("%.2f", (end - start)/1000.0); // in seconds
 
         if (!raw) {
-            System.out.println("All graphs have been processed.");
-            System.out.println("Final time: " + finalTime);
+            System.err.println("All graphs have been processed.");
+            System.err.println("Final time: " + finalTime);
         }
 
         if (overview) {

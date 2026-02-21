@@ -78,7 +78,11 @@ declare -a colorings=()
 # iCFo, iCFc, iUMo, iUMc to 14
 
 while [[ $# -gt 0 ]]; do
-  colorings+=("$1")
+  if [[ "$1" == "all" ]]; then
+      colorings+=("proper" "odd" "pUMo" "pUMc" "pCFo" "pCFc" "iUMo" "iUMc" "iCFo" "iCFc")
+  else
+      colorings+=("$1")
+  fi
   shift 1
   # We add all arguments as colorings
 done

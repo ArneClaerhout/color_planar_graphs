@@ -15,7 +15,6 @@ gen_range_graphs() {
   done
 }
 
-coloring="proper"
 numvertices="$1"
 shift 1
 
