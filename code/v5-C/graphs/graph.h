@@ -22,14 +22,11 @@ typedef struct graph {
 void getColors(int colors[]);
 int getNumberOfVertices(char graphString[]);
 graph* createGraph(int previousN, char graphString[]);
-int findChromaticNumberOptimized(int startingColor, int allColorings, int (*f)(int, int, int, int));
-int optimizedAlgorithmOdd(int maxColorCurrGraph, int maxColor, int index, int allColorings);
-int optimizedAlgorithmProper(int maxColorCurrGraph, int maxColor, int index, int allColorings);
-int optimizedAlgorithmUM(int maxColorCurrGraph, int maxColor, int index, int allColorings);
-int optimizedAlgorithmCF(int maxColorCurrGraph, int maxColor, int index, int allColorings);
+int findChromaticNumberOptimized(int startingColor, int allColorings);
+int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allColorings);
 int startingStep(int maxColor, int allColorings);
 int getBestIndex(int indexColored);
-int updateNeighbours(vertex* v, int color, uint64_t changed[], int (*f)(uint64_t*, vertex*, int, uint64_t));
+int updateNeighbours(vertex* v, int color, uint64_t changed[]);
 void addColorsBack(const uint64_t changed[]);
 int handleProper(uint64_t*, vertex*, int, uint64_t);
 int handleCF(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood);

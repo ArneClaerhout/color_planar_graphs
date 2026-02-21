@@ -22,6 +22,9 @@ int um;
 graph* g;
 int lengthOfGraph;
 
+int (*handler)(uint64_t*, vertex*, int, uint64_t);
+int (*colorCheck)(vertex*, vertex*, int);
+
 
 uint64_t start;
 uint64_t end;
@@ -161,14 +164,24 @@ void printOverview() {
 int performComputation(int previousN, char line[]) {
     g = createGraph(previousN, line); // creates or modifies the graph to work with the amount of vertices
 
-    int (*f)(int, int, int, int);
+    if (coloring == ODD) {
+        colorCheck = &isCorrectlyColoredOdd;
+        handler = &handleOdd;
+    }
+    else if (coloring == PROPER) {
+        colorCheck = &isCorrectlyColoredProper;
+        handler = &handleProper;
+    }
+    else if (um) {
+        colorCheck = &isCorrectlyColoredUM;
+        handler = &handleUM;
+    }
+    else {
+        colorCheck = &isCorrectlyColoredCF;
+        handler = &handleCF;
+    }
 
-    if (coloring == ODD) f = &optimizedAlgorithmOdd;
-    else if (coloring == PROPER) f = &optimizedAlgorithmProper;
-    else if (um) f = &optimizedAlgorithmUM;
-    else f = &optimizedAlgorithmCF;
-
-    const int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4), f);
+    const int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
 
     // fprintf(stderr, "%d\n", c);
     // We check if the graph should get printed
