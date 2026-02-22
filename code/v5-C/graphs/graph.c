@@ -18,6 +18,7 @@ extern int lengthOfGraph;
 
 extern int (*handler)(uint64_t*, vertex*, int, uint64_t);
 extern int (*colorCheck)(vertex*, vertex*, int);
+extern enum colorings coloring;
 
 
 
@@ -310,10 +311,8 @@ void addColorsBack(const uint64_t changed[]) {
         uint64_t value = changed[i];
         if (value != 0) {
             vertex* changedNeighbour = &g->verticesIndexed[i];
-            while (value != 0) {
-                int valueIndex = __builtin_ctz(value);
-                value &= value - 1; // clear the lowest set bit
-                addColorFromAvailableColors(changedNeighbour, valueIndex);
+            FOR_EACH_BIT(index, value) {
+                addColorFromAvailableColors(changedNeighbour, index);
             }
             // if (changedNeighbour.getAmountOfAvailableColors() == 1) {
             // vertexIsAlmostColored |= 1 << changedNeighbour.getIndex();
@@ -357,9 +356,9 @@ int handleCF(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourI
     }
 
     if (colorsOccurOnce == 0) {
-        return removeColor(toColorNeighbour, toColorNeighbourIndex, colorsOccur, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccur, changed);
     } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
-        return removeColor(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, changed);
     }
     return 0;
 }
@@ -393,9 +392,9 @@ int handleUM(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourI
     // Only allow colors bigger than the max
     // Otherwise, do nothing.
     if (amountOfMax == 1) {
-        return removeColor(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), changed);
     } else if (amountOfMax > 1) {
-        return removeColor(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, changed);
     }
     return 0;
 }
@@ -421,25 +420,40 @@ int handleOdd(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbour
 
     if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
         // Don't take this color
-        return removeColor(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, changed);
     }
     return 0;
 }
 
 
-// color is a bit mask
 int removeColor(vertex* v, int index, int color, uint64_t changed[]) {
+    if (!removeColorFromAvailableColors(v, color))
+        return 0;
+    changed[index] |= SHIFTL(color);
+    int m = v->amountOfAvailableColors;
+    if (m == 0) {
+        addColorsBack(changed);
+        return 1;
+    }
+    // else if (m == 1) {
+    // vertexIsAlmostColored |= (1 << index);
+    // }
+    return 0;
+}
+
+int removeColorMask(vertex* v, int index, int color, uint64_t changed[]) {
     if ((v->availableColors & color) == 0) {
         return 0;
     }
     if (v->availableColors == (v->availableColors & color)) {
         // It will remove all available colors
+        addColorsBack(changed);
         return 1;
     }
     // We do a special remove colors from available colors
+    changed[index] |= (v->availableColors & color);
     v->availableColors &= ~color;
     v->amountOfAvailableColors = __builtin_popcount(v->availableColors);
-    changed[index] |= color;
     // else if (m == 1) {
     // vertexIsAlmostColored |= (1 << index);
     // }

@@ -50,7 +50,7 @@ diff=false
 count=0
 
 while IFS=$'\t' read -r line1 line2; do
-	if [[ $((count % 10000)) == 0 && "$count" != 0 ]]; then
+	if [[ $((count % 1000000)) == 0 && "$count" != 0 ]]; then
 		echo "count: $count"
 	fi
 	((count = count + 1))

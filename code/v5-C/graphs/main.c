@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
         minChrom = 0;
         raw = 0;
         checkCondition = 0;
-        coloring = iUMo;
+        coloring = iUMc;
         open = coloringIsOpen(coloring);
         proper = coloringIsProper(coloring);
         um = coloringIsUM(coloring);
@@ -81,15 +81,16 @@ int main(int argc, char **argv) {
         size_t len = 0;
         char* line;
 
-        FILE *fptr = fopen("../outputs/2026-02-16-18-49-09.txt", "r");
+        // FILE *fptr = fopen("../outputs/2026-02-16-18-49-09.txt", "r");
 
         int previousN = 0;
         // As long as there is something to read from stdin, we read it.
-        while ((read = getline(&line, &len, fptr)) != -1) {
+        // while ((read = getline(&line, &len, fptr)) != -1) {
             // First we remove the \n from the end of the line:
-            line[strcspn(line, "\n")] = 0;
+            // line[strcspn(line, "\n")] = 0;
+        line = "C~";
             previousN = performComputation(previousN, line);
-        }
+        // }
 
         if (overview) {
             printOverview();
@@ -100,7 +101,7 @@ int main(int argc, char **argv) {
         }
 
         // We don't forget to free line
-        free(line);
+        // free(line);
         freeGraph(g);
     }
 

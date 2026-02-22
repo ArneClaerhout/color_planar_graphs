@@ -33,5 +33,6 @@ int handleCF(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourI
 int handleUM(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood);
 int handleOdd(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood);
 int removeColor(vertex* v, int index, int color, uint64_t changed[]);
+int removeColorMask(vertex* v, int index, int color, uint64_t changed[]);
 
 #endif //GRAPH_H

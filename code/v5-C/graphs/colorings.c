@@ -2,18 +2,18 @@
 #include <string.h>
 
 int coloringIsProper(enum colorings col) {
-    return col < 5 || col == 7 || col == 8;
+    return col < 4 || col == 6 || col == 7;
 }
 
 int coloringIsOpen(enum colorings col) {
-    return col % 2 == 1 || col == 2;
+    return (col % 2 == 0 && col) || col == 1;
 }
 
-int coloringIsUM(enum colorings col) {return col > 6;
+int coloringIsUM(enum colorings col) {return col > 5;
 }
 
 int coloringIsCF(enum colorings col) {
-    return col > 2 && col < 7;
+    return col > 1 && col < 6;
 }
 
 enum colorings getColoring(char coloring[]) {

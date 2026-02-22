@@ -14,9 +14,9 @@ TIMEFORMAT='%R'
 start_time=$(date +%s%N)
 
 printf "Proper: "
-time "./$path" 14 -c proper -o "$@"
+time "./$path" 14 -c proper -o "$@" >/dev/null 2>&1
 printf "Odd: "
-time "./$path" 14 -c odd -o "$@"
+time "./$path" 14 -c odd -o "$@" >/dev/null 2>&1
 printf "iUMo: "
 time "./$path" 14 -c iUMo -o "$@" >/dev/null 2>&1
 printf "iUMc: "
@@ -30,7 +30,7 @@ time "./$path" 14 -c iCFo -o "$@" >/dev/null 2>&1
 printf "iCFc: "
 time "./$path" 14 -c iCFc -o "$@" >/dev/null 2>&1
 printf "pCFo: "
-time "./$path" 14 -c pCFo -o "$@"
+time "./$path" 14 -c pCFo -o "$@" >/dev/null 2>&1
 
 end_time=$(date +%s%N)
 

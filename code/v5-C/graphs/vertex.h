@@ -32,6 +32,6 @@ int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[], int fillUncolored
 int isCorrectlyColoredProper(vertex* v, vertex verticesIndexed[], int fillUncolored);
 int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[], int fillUncolored);
 int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[], int fillUncolored);
-int isCorrectlyColored(vertex* v, vertex verticesIndexed[], enum colorings coloring, int fillUncolored);
+int isCorrectlyColored(vertex* v, vertex* verticesIndexed[], enum colorings coloring, int fillUncolored);
 
 #endif //VERTEX_H
