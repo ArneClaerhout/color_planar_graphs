@@ -22,7 +22,7 @@ int um;
 graph* g;
 int lengthOfGraph;
 
-int (*handler)(uint64_t*, vertex*, int, uint64_t);
+int (*handler)(int, vertex*, int, uint64_t);
 int (*colorCheck)(vertex*, vertex*, int);
 
 
@@ -230,7 +230,7 @@ int performComputation(int previousN, char line[]) {
 
 void freeGraph(graph* graph) {
     free(graph->counter);
-
+    free(graph->changed);
     free(graph);
 
 }

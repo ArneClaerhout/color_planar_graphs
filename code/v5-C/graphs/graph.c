@@ -16,7 +16,7 @@ extern int um;
 extern graph* g;
 extern int lengthOfGraph;
 
-extern int (*handler)(uint64_t*, vertex*, int, uint64_t);
+extern int (*handler)(int, vertex*, int, uint64_t);
 extern int (*colorCheck)(vertex*, vertex*, int);
 extern enum colorings coloring;
 
@@ -45,6 +45,7 @@ graph* createGraph(int previousN, char graphString[]) {
         if (previousN == 0) {
             lengthOfGraph = sizeof(graph) + n * sizeof(vertex);
             g = (graph*) malloc(lengthOfGraph);
+            g->changed = malloc(sizeof(uint64_t[n][10]));
         } else {
             lengthOfGraph += (n - previousN) * (int) sizeof(vertex);
             graph* temp = realloc(g, lengthOfGraph);
@@ -54,11 +55,22 @@ graph* createGraph(int previousN, char graphString[]) {
                 fprintf(stderr, "Realloc can't be executed: memory full.");
                 exit(1);
             }
+
+            uint64_t (*temp2)[10] = realloc(g->changed, sizeof(uint64_t[n][10]));
+            if (temp2 != NULL) {
+                g->changed = temp2;
+            } else {
+                fprintf(stderr, "Realloc can't be executed: memory full.");
+                exit(1);
+            }
         }
 
         g->numberOfVertices = n;
         g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
     }
+
+    // Set the changed 2D-array to zeroes
+    memset(g->changed,0, sizeof(uint64_t[n][10]));
 
     if (checkCondition != 0) {
         counter* c;
@@ -120,7 +132,7 @@ int findChromaticNumberOptimized(int startingColor, int allColorings) {
         // Each time we reset which vertices are colored.
         g->vertexIsColored = 0;
         g->availableVertices = g->maxColoringMask;
-        if (optimizedAlgorithm(0, i, 0, allColorings)) {
+        if (optimizedAlgorithm(0, i, 0, allColorings, 0)) {
             g->chromaticNumber = i;
             return i;
         }
@@ -132,7 +144,7 @@ int findChromaticNumberOptimized(int startingColor, int allColorings) {
     return 0;
 }
 
-int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allColorings) {
+int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allColorings, int depth) {
 
     if (g->vertexIsColored == g->maxColoringMask) {
         return startingStep(maxColor, allColorings);
@@ -170,22 +182,19 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
         }
         // We also change the available colors for the neighbours if the coloring is
         // proper
-        uint64_t changed[g->numberOfVertices];
-        memset(changed,0, sizeof(changed)); // We make the array empty
-
-        if (updateNeighbours(v, color, changed)) {
+        if (updateNeighbours(v, color, depth)) {
             // This is used to skip this color, as it isn't possible
             continue;
         }
 
         int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
         int newIndex = getBestIndex(index);
-        if (optimizedAlgorithm(newMaxColorCurrGraph, maxColor, newIndex, allColorings)) {
+        if (optimizedAlgorithm(newMaxColorCurrGraph, maxColor, newIndex, allColorings, depth + 1)) {
             return 1;
         }
 
         // We add back the available colors if it didn't work out
-        addColorsBack(changed);
+        addColorsBack(depth);
     }
 
     // We decolor this vertex
@@ -237,7 +246,7 @@ int getBestIndex(int indexColored) {
 
 
 
-int updateNeighbours(vertex* v, int color, uint64_t changed[]) {
+int updateNeighbours(vertex* v, int color, int depth) {
     FOR_EACH_BIT(bit, v->neighbours) {
         vertex* neighbour = &g->verticesIndexed[bit];
 
@@ -259,7 +268,7 @@ int updateNeighbours(vertex* v, int color, uint64_t changed[]) {
             // We want to check if the neighbour is CORRECTLY colored
             if (!colorCheck(neighbour, g->verticesIndexed, 1)) {
                 // Early pruning
-                addColorsBack(changed);
+                addColorsBack(depth);
                 return 1;
                 // We skip the rest, as this color is incorrect
             }
@@ -270,7 +279,7 @@ int updateNeighbours(vertex* v, int color, uint64_t changed[]) {
             vertex* toColorNeighbour = &g->verticesIndexed[toColorNeighbourIndex];
             // There's one vertex that isn't colored yet.
             if (neighbourIsColored || !proper) {
-                if (handler(changed, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                if (handler(depth, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
                     return 1;
                 }
             }
@@ -286,17 +295,8 @@ int updateNeighbours(vertex* v, int color, uint64_t changed[]) {
                 continue;
 
             // We compare the neighbours neighbourhood with the already colored vertices
-
-            if (removeColorFromAvailableColors(neighbour, color)) {
-                changed[bit] |= SHIFTL(color);
-                if (neighbour->amountOfAvailableColors == 0) {
-                    // Early pruning
-                    addColorsBack(changed);
-                    return 1;
-                }
-                // else if (neighbour.getAmountOfAvailableColors() == 1) {
-                // vertexIsAlmostColored |= (1 << bit);
-                // }
+            if (removeColorMask(neighbour, neighbour->index, SHIFT(color), depth)) {
+                return 1;
             }
         }
     }
@@ -306,14 +306,15 @@ int updateNeighbours(vertex* v, int color, uint64_t changed[]) {
 
 
 
-void addColorsBack(const uint64_t changed[]) {
-    for (int i = 0; i < g->numberOfVertices; i++) {
-        uint64_t value = changed[i];
+void addColorsBack(int depth) {
+    for (int i = 0; i < 10; i++) {
+        uint64_t value = g->changed[depth][i];
         if (value != 0) {
-            vertex* changedNeighbour = &g->verticesIndexed[i];
             FOR_EACH_BIT(index, value) {
-                addColorFromAvailableColors(changedNeighbour, index);
+                vertex* changedNeighbour = &g->verticesIndexed[index];
+                addColorFromAvailableColors(changedNeighbour, i);
             }
+            g->changed[depth][i] = 0; // We reset changed
             // if (changedNeighbour.getAmountOfAvailableColors() == 1) {
             // vertexIsAlmostColored |= 1 << changedNeighbour.getIndex();
             // } else {
@@ -323,11 +324,11 @@ void addColorsBack(const uint64_t changed[]) {
     }
 }
 
-int handleProper(uint64_t*, vertex*, int, uint64_t) {
+int handleProper(int, vertex*, int, uint64_t) {
     return 0;
 }
 
-int handleCF(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
 
@@ -356,15 +357,15 @@ int handleCF(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourI
     }
 
     if (colorsOccurOnce == 0) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccur, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccur, depth);
     } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, depth);
     }
     return 0;
 }
 
 
-int handleUM(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
     int max = 1;
     int amountOfMax = 0;
 
@@ -392,15 +393,15 @@ int handleUM(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourI
     // Only allow colors bigger than the max
     // Otherwise, do nothing.
     if (amountOfMax == 1) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), depth);
     } else if (amountOfMax > 1) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, depth);
     }
     return 0;
 }
 
 
-int handleOdd(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
     int colorsOccurOdd = 0;
 
     neighbourhood = neighbourhood & ~SHIFTL(toColorNeighbourIndex);
@@ -420,19 +421,19 @@ int handleOdd(uint64_t changed[], vertex* toColorNeighbour, int toColorNeighbour
 
     if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
         // Don't take this color
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, changed);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, depth);
     }
     return 0;
 }
 
 
-int removeColor(vertex* v, int index, int color, uint64_t changed[]) {
+int removeColor(vertex* v, int index, int color, int depth) {
     if (!removeColorFromAvailableColors(v, color))
         return 0;
-    changed[index] |= SHIFTL(color);
+    g->changed[depth][color] |= SHIFTL(index);
     int m = v->amountOfAvailableColors;
     if (m == 0) {
-        addColorsBack(changed);
+        addColorsBack(depth);
         return 1;
     }
     // else if (m == 1) {
@@ -441,17 +442,19 @@ int removeColor(vertex* v, int index, int color, uint64_t changed[]) {
     return 0;
 }
 
-int removeColorMask(vertex* v, int index, int color, uint64_t changed[]) {
+int removeColorMask(vertex* v, int index, int color, int depth) {
     if ((v->availableColors & color) == 0) {
         return 0;
     }
     if (v->availableColors == (v->availableColors & color)) {
         // It will remove all available colors
-        addColorsBack(changed);
+        addColorsBack(depth);
         return 1;
     }
     // We do a special remove colors from available colors
-    changed[index] |= (v->availableColors & color);
+    FOR_EACH_BIT(colorIndex, (v->availableColors & color)) {
+        g->changed[depth][colorIndex] |= SHIFTL(index);
+    }
     v->availableColors &= ~color;
     v->amountOfAvailableColors = __builtin_popcount(v->availableColors);
     // else if (m == 1) {
