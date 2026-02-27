@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 typedef struct counter {
+    int firstInput;
     uint64_t condition[10];
     uint64_t conditionVertices;
     int numberOfVertices;

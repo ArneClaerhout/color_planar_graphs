@@ -9,17 +9,18 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
         // Here we add
         if (counter->checkAlwaysColor) {
             oldCondition = counter->condition[colors[k] - 1];
-            counter->condition[colors[k] - 1] |= SHIFT(k);
-            if (oldCondition != 0 && oldCondition != counter->condition[colors[k] - 1]) {
+            counter->condition[colors[k] - 1] |= SHIFTL(k);
+            if (!counter->firstInput && oldCondition != counter->condition[colors[k] - 1]) {
                 // The vertex already had a color, and it wasn't this one
-                counter->conditionVertices &= ~SHIFT(k);
+                counter->conditionVertices &= ~SHIFTL(k);
             }
         } else {
             // When checking if a vertex is never a color, the above process would be too time-consuming
-            counter->condition[colors[k] - 1] |= SHIFT(k);
+            counter->condition[colors[k] - 1] |= SHIFTL(k);
         }
 
     }
+    if (counter->firstInput) counter->firstInput = 0;
     if (allColors) {
         fprintf(stderr, "Displaying all colorings is currently not implemented.");
         exit(1);
@@ -27,18 +28,22 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
         // We check if all of them are full, if they are: stop
         for (int i = 0; i < chromaticNumber; i++) {
             if (counter->condition[i] != counter->maxColoringMask) {
-                return 1;
+                return 0;
             }
         }
-        return 0;
+        return 1;
     }
 
 }
 
 int isConditionMet(counter* counter, int chromaticNumber) {
-    for (int i = 0; i < chromaticNumber; i++) {
-        if (counter->condition[i] != counter->maxColoringMask) {
-            return 1;
+    if (counter->checkAlwaysColor) {
+        return counter->conditionVertices != 0;
+    } else {
+        for (int i = 0; i < chromaticNumber; i++) {
+            if (counter->condition[i] != counter->maxColoringMask) {
+                return 1;
+            }
         }
     }
     return 0;

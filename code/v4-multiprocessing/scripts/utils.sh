@@ -168,7 +168,7 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
 		exit 0
 		;;
 	C)
-		cmake --build build
+		javac graphs/Main.java
 		echo "Code compiled." >&2
 		;;
 	c)

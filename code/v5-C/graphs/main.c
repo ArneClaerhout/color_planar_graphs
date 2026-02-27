@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
         overview = 1;
         minChrom = 0;
         raw = 0;
-        checkCondition = 0;
+        checkCondition = 1;
         coloring = iUMc;
         open = coloringIsOpen(coloring);
         proper = coloringIsProper(coloring);
@@ -186,7 +186,7 @@ int performComputation(int previousN, char line[]) {
 
     // fprintf(stderr, "%d\n", c);
     // We check if the graph should get printed
-    if (c < minChrom || (checkCondition != 0 && isConditionMet(g->counter, c))) {
+    if (c < minChrom || (checkCondition != 0 && !isConditionMet(g->counter, c))) {
         return g->numberOfVertices;
     }
 
@@ -204,17 +204,19 @@ int performComputation(int previousN, char line[]) {
                 break;
             case 3: {
                 int colors[g->numberOfVertices];
+                memset(colors, 0, sizeof(colors));
                 // For showing graphs, prints the colors
                 if (checkCondition != 0) {
                     getColoringAfterCheck(g->counter, c, colors);
+
                 } else {
                     getColors(colors);
                 }
                 printf("%s [", line);
-                for (int i = 0; i < g->numberOfVertices; i++) {
-                    printf("%d ", colors[i]);
+                for (int i = 0; i < g->numberOfVertices - 1; i++) {
+                    printf("%d, ", colors[i]);
                 }
-                printf("]\n");
+                printf("%d]\n", colors[g->numberOfVertices - 1]);
                 break;
             }
                 // case 4:

@@ -17,6 +17,8 @@ public class ColoringCounter {
 
     private final ArrayList<int[]> colorings = new ArrayList<>();
 
+    private boolean firstInput = true;
+
     public ColoringCounter(long maxColoring) {
         this.maxColoring = maxColoring;
         conditionVertices = maxColoring;
@@ -41,7 +43,7 @@ public class ColoringCounter {
             if (checkAlwaysColor) {
                 oldCondition = condition[colors[k] - 1];
                 condition[colors[k] - 1] |= (1L << k);
-                if (oldCondition != 0 && oldCondition != condition[colors[k] - 1]) {
+                if (!firstInput && oldCondition != condition[colors[k] - 1]) {
                     // The vertex already had a color, and it wasn't this one
                     conditionVertices &= ~(1L << k);
                 }
@@ -51,15 +53,18 @@ public class ColoringCounter {
             }
 
         }
+        if (firstInput) {
+            firstInput = false;
+        }
         if (allColors) {
             colorings.add(colors);
         } else {
             // We check if all of them are full, if they are: stop
             if (Arrays.stream(condition).allMatch(n -> n == maxColoring)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public long getCondition(int index) {
@@ -79,7 +84,7 @@ public class ColoringCounter {
     }
 
     public boolean isConditionMet() {
-        return !Arrays.stream(condition).allMatch(n -> (n == maxColoring));
+        return ((checkAlwaysColor && conditionVertices != 0) || (!checkAlwaysColor && !Arrays.stream(condition).allMatch(n -> (n == maxColoring))));
     }
 
     public int[] getColoringAfterCheck() {

@@ -72,6 +72,8 @@ graph* createGraph(int previousN, char graphString[]) {
     // Set the changed 2D-array to zeroes
     memset(g->changed,0, sizeof(uint64_t[n][10]));
 
+    g->chromaticNumber = 0;
+
     if (checkCondition != 0) {
         counter* c;
         if (g->counter == NULL) {
@@ -80,9 +82,11 @@ graph* createGraph(int previousN, char graphString[]) {
         } else {
             c = g->counter;
         }
+        c->firstInput = 1;
         c->numberOfVertices = n;
         c->maxColoringMask = SHIFTL(n) - 1;
         c->conditionVertices = c->maxColoringMask;
+        memset(c->condition, 0, sizeof(uint64_t[10]));
         if (checkCondition == 1) {
             c->checkAlwaysColor = 1;
         } else if (checkCondition == 2) {
@@ -209,12 +213,13 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
 
 int startingStep(int maxColor, int allColorings) {
     if (checkCondition != 0 || allColorings) {
-        if (minChrom != 0 && maxColor < minChrom) {
+        if (maxColor < minChrom) {
             // When it's going to get filtered away anyway, we stop it
             return 1;
         }
         g->chromaticNumber = maxColor;
         // If the counters are all full, return true and stop counting
+        // Otherwise, this will return false and we keep trying
         int colors[g->numberOfVertices];
         getColors(colors);
         return inputColors(g->counter, colors, allColorings, g->chromaticNumber);
@@ -224,22 +229,20 @@ int startingStep(int maxColor, int allColorings) {
 
 
 int getBestIndex(int indexColored) {
-    // The addition of tiebreaks with degree only slows it down (this is done in
-    // DSATUR),
+    // The addition of tiebreaks with degree only slows it down
     // taking the first best vertex is fastest
     if (indexColored != -1)
-        g->availableVertices &= ~(1L << indexColored);
+        g->availableVertices &= ~(SHIFTL(indexColored));
     int bestIndex = 0;
-    int smallestAC = 9999;
-    int testAC;
+    int smallestAC = 99;
     FOR_EACH_BIT(index, g->availableVertices) {
-        testAC = g->verticesIndexed[index].amountOfAvailableColors;
+        int testAC = g->verticesIndexed[index].amountOfAvailableColors;
+        if (testAC == 1)
+            return index; // We break early as this is the best possible
         if (smallestAC > testAC) {
             smallestAC = testAC;
             bestIndex = index;
         }
-        if (smallestAC == 1)
-            return bestIndex; // We break early as this is the best possible
     }
     return bestIndex;
 }

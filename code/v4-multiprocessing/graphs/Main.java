@@ -109,12 +109,13 @@ public class Main {
                             break;
                         case 3:
                             // For showing graphs, prints the colors
+                            int[] colors;
                             if (checkCondition != 0) {
-                                int[] colors = graph.counter.getColoringAfterCheck();
+                                colors = graph.counter.getColoringAfterCheck();
                                 System.out.println(line + " " + Arrays.toString(colors));
                                 // }
                             } else {
-                                int[] colors = graph.getColors();
+                                colors = graph.getColors();
                                 System.out.println(line + " " + Arrays.toString(colors));
                             }
                             break;

@@ -674,7 +674,8 @@ public class Graph {
             }
             chromaticNumber = maxColor;
             // If the counters are all full, return true and stop counting
-            return !counter.inputColors(getColors(), allColorings, chromaticNumber);
+            // Otherwise, this returns false and we keep trying
+            return counter.inputColors(getColors(), allColorings, chromaticNumber);
         }
         return true;
     }
