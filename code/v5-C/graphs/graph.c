@@ -16,7 +16,7 @@ extern int um;
 extern graph* g;
 extern int lengthOfGraph;
 
-extern int (*handler)(int, vertex*, int, uint64_t);
+extern int (*handler)(int, vertex*, int, uint64_t, int);
 extern int (*colorCheck)(vertex*, vertex*, int);
 extern enum colorings coloring;
 
@@ -87,11 +87,6 @@ graph* createGraph(int previousN, char graphString[]) {
         c->maxColoringMask = SHIFTL(n) - 1;
         c->conditionVertices = c->maxColoringMask;
         memset(c->condition, 0, sizeof(uint64_t[10]));
-        if (checkCondition == 1) {
-            c->checkAlwaysColor = 1;
-        } else if (checkCondition == 2) {
-            c->checkAlwaysColor = 0;
-        }
     }
 
     for (int i = 0; i < n; i++) {
@@ -177,6 +172,8 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
 
         v->color = color + 1; // + 1 as the actual colors are from 1 to n
 
+        int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
+
         // We have to now check if all our neighbours are colored, as this isn't checked
         // in updateNeighbours
         // This is an extra check for correctness
@@ -184,21 +181,20 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
             // This color isn't correct, we pick another
             continue;
         }
-        // We also change the available colors for the neighbours if the coloring is
-        // proper
-        if (updateNeighbours(v, color, depth)) {
+
+        // We also change the available colors for the neighbours
+        if (updateNeighbours(v, color, depth, newMaxColorCurrGraph)) {
             // This is used to skip this color, as it isn't possible
             continue;
         }
 
-        int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
         int newIndex = getBestIndex(index);
         if (optimizedAlgorithm(newMaxColorCurrGraph, maxColor, newIndex, allColorings, depth + 1)) {
             return 1;
         }
 
         // We add back the available colors if it didn't work out
-        addColorsBack(depth);
+        addColorsBack(depth, newMaxColorCurrGraph);
     }
 
     // We decolor this vertex
@@ -249,7 +245,7 @@ int getBestIndex(int indexColored) {
 
 
 
-int updateNeighbours(vertex* v, int color, int depth) {
+int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
     FOR_EACH_BIT(bit, v->neighbours) {
         vertex* neighbour = &g->verticesIndexed[bit];
 
@@ -257,9 +253,13 @@ int updateNeighbours(vertex* v, int color, int depth) {
 
         int neighbourIsColored = (SHIFTL(bit) & g->vertexIsColored) != 0;
 
+        if (proper && !neighbourIsColored) {
+            if (removeColorMask(neighbour, neighbour->index, SHIFT(color), depth, maxColorInGraph))
+                return 1;
+        }
+
         uint64_t neighbourhood = neighbour->neighbours;
         neighbourhood = (open ? neighbourhood : (neighbourhood | SHIFTL(bit)));
-
         uint64_t diff = neighbourhood & ~g->vertexIsColored;
 
         // We will allow adding vertices with one possible color that aren't colored
@@ -271,7 +271,7 @@ int updateNeighbours(vertex* v, int color, int depth) {
             // We want to check if the neighbour is CORRECTLY colored
             if (!colorCheck(neighbour, g->verticesIndexed, 1)) {
                 // Early pruning
-                addColorsBack(depth);
+                addColorsBack(depth, maxColorInGraph);
                 return 1;
                 // We skip the rest, as this color is incorrect
             }
@@ -282,25 +282,11 @@ int updateNeighbours(vertex* v, int color, int depth) {
             vertex* toColorNeighbour = &g->verticesIndexed[toColorNeighbourIndex];
             // There's one vertex that isn't colored yet.
             if (neighbourIsColored || !proper) {
-                if (handler(depth, toColorNeighbour, toColorNeighbourIndex, neighbourhood)) {
+                if (handler(depth, toColorNeighbour, toColorNeighbourIndex, neighbourhood, maxColorInGraph)) {
                     return 1;
                 }
             }
             // Proper colorings are done later
-        }
-
-        if (proper) {
-            // This section removes the color from the available colors
-
-            // We check if the neighbour is already colored, as we don't have to do anything
-            // if this is the case
-            if (neighbourIsColored)
-                continue;
-
-            // We compare the neighbours neighbourhood with the already colored vertices
-            if (removeColorMask(neighbour, neighbour->index, SHIFT(color), depth)) {
-                return 1;
-            }
         }
     }
 
@@ -309,8 +295,8 @@ int updateNeighbours(vertex* v, int color, int depth) {
 
 
 
-void addColorsBack(int depth) {
-    for (int i = 0; i < 10; i++) {
+void addColorsBack(int depth, int maxColorInGraph) {
+    for (int i = 0; i < maxColorInGraph; i++) {
         uint64_t value = g->changed[depth][i];
         if (value != 0) {
             FOR_EACH_BIT(index, value) {
@@ -327,11 +313,11 @@ void addColorsBack(int depth) {
     }
 }
 
-int handleProper(int, vertex*, int, uint64_t) {
+int handleProper(int, vertex*, int, uint64_t, int) {
     return 0;
 }
 
-int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood, int maxColorInGraph) {
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
 
@@ -360,15 +346,15 @@ int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uin
     }
 
     if (colorsOccurOnce == 0) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccur, depth);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccur, depth, maxColorInGraph);
     } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, depth);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, depth, maxColorInGraph);
     }
     return 0;
 }
 
 
-int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood, int maxColorInGraph) {
     int max = 1;
     int amountOfMax = 0;
 
@@ -396,15 +382,15 @@ int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uin
     // Only allow colors bigger than the max
     // Otherwise, do nothing.
     if (amountOfMax == 1) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), depth);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), depth, maxColorInGraph);
     } else if (amountOfMax > 1) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, depth);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, depth, maxColorInGraph);
     }
     return 0;
 }
 
 
-int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood) {
+int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood, int maxColorInGraph) {
     int colorsOccurOdd = 0;
 
     neighbourhood = neighbourhood & ~SHIFTL(toColorNeighbourIndex);
@@ -424,19 +410,19 @@ int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, ui
 
     if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
         // Don't take this color
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, depth);
+        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, depth, maxColorInGraph);
     }
     return 0;
 }
 
 
-int removeColor(vertex* v, int index, int color, int depth) {
+int removeColor(vertex* v, int index, int color, int depth, int maxColorInGraph) {
     if (!removeColorFromAvailableColors(v, color))
         return 0;
     g->changed[depth][color] |= SHIFTL(index);
     int m = v->amountOfAvailableColors;
     if (m == 0) {
-        addColorsBack(depth);
+        addColorsBack(depth, maxColorInGraph);
         return 1;
     }
     // else if (m == 1) {
@@ -445,13 +431,13 @@ int removeColor(vertex* v, int index, int color, int depth) {
     return 0;
 }
 
-int removeColorMask(vertex* v, int index, int color, int depth) {
+int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGraph) {
     if ((v->availableColors & color) == 0) {
         return 0;
     }
     if (v->availableColors == (v->availableColors & color)) {
         // It will remove all available colors
-        addColorsBack(depth);
+        addColorsBack(depth, maxColorInGraph);
         return 1;
     }
     // We do a special remove colors from available colors

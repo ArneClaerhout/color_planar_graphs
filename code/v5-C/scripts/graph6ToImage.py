@@ -22,12 +22,19 @@ if __name__ == "__main__":
         if not line:
             continue
 
+        last_bracket_idx = line.rfind(']')
+        main_part = line[:last_bracket_idx + 1]
+        if last_bracket_idx + 1 < len(line):
+            extra_info = line[last_bracket_idx + 1:].strip()
+        else:
+            extra_info = ""
+
         # We get the data from the input
-        line = line.split(" ")
-        colors_numbers = list(map(str.strip, "".join(line[1:]).strip('][').replace('"', '').split(',')))
+        parts = main_part.split(" ")
+        colors_numbers = list(map(str.strip, "".join(parts[1:]).strip('][').replace('"', '').split(',')))
         colors = list(map(convert_color, colors_numbers)) # Color 0 = index -1 -> last color
 
-        graph6_string = line[0]
+        graph6_string = parts[0]
 
         path = sys.argv[1]
         input_format = sys.argv[2]
@@ -54,6 +61,10 @@ if __name__ == "__main__":
         # Give the labels as well
         nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(G, 'color'), font_color='white', ax=ax)
 
+        ax.set_title(graph6_string, fontsize=14, pad=20)
+        if extra_info != "":
+            fig.text(0.5, 0.02, extra_info, ha='center', fontsize=10)
+            plt.tight_layout(rect=[0, 0.05, 1, 1])
 
         if input_format == "tex":
             # Save as TikZ

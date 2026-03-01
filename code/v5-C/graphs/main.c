@@ -22,7 +22,7 @@ int um;
 graph* g;
 int lengthOfGraph;
 
-int (*handler)(int, vertex*, int, uint64_t);
+int (*handler)(int, vertex*, int, uint64_t, int);
 int (*colorCheck)(vertex*, vertex*, int);
 
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
         minChrom = 0;
         raw = 0;
         checkCondition = 1;
-        coloring = iUMc;
+        coloring = pUMo;
         open = coloringIsOpen(coloring);
         proper = coloringIsProper(coloring);
         um = coloringIsUM(coloring);
@@ -206,9 +206,10 @@ int performComputation(int previousN, char line[]) {
                 int colors[g->numberOfVertices];
                 memset(colors, 0, sizeof(colors));
                 // For showing graphs, prints the colors
+                char *extraInfo = "";
                 if (checkCondition != 0) {
                     getColoringAfterCheck(g->counter, c, colors);
-
+                    extraInfo = getExtraInfoText(g->counter);
                 } else {
                     getColors(colors);
                 }
@@ -216,7 +217,7 @@ int performComputation(int previousN, char line[]) {
                 for (int i = 0; i < g->numberOfVertices - 1; i++) {
                     printf("%d, ", colors[i]);
                 }
-                printf("%d]\n", colors[g->numberOfVertices - 1]);
+                printf("%d]%s\n", colors[g->numberOfVertices - 1], extraInfo);
                 break;
             }
                 // case 4:
