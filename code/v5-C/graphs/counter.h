@@ -13,6 +13,7 @@ typedef struct counter {
     uint64_t maxColoringMask;
 } counter;
 
+void startCounter(int n);
 int inputColors(counter* counter, const int colors[], int allColors, int chromaticNumber);
 int isConditionMet(counter* counter, int chromaticNumber);
 void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]);

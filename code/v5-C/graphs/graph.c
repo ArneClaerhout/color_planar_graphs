@@ -41,59 +41,17 @@ int getNumberOfVertices(char graphString[]) {
 graph* createGraph(int previousN, char graphString[]) {
     int n = getNumberOfVertices(graphString);
 
-    if (previousN < n) {
-        if (previousN == 0) {
-            lengthOfGraph = sizeof(graph) + n * sizeof(vertex);
-            g = (graph*) malloc(lengthOfGraph);
-            g->changed = malloc(sizeof(uint64_t[n][10]));
-        } else {
-            lengthOfGraph += (n - previousN) * (int) sizeof(vertex);
-            graph* temp = realloc(g, lengthOfGraph);
-            if (temp != NULL) {
-                g = temp;
-            } else {
-                fprintf(stderr, "Realloc can't be executed: memory full.");
-                exit(1);
-            }
-
-            uint64_t (*temp2)[10] = realloc(g->changed, sizeof(uint64_t[n][10]));
-            if (temp2 != NULL) {
-                g->changed = temp2;
-            } else {
-                fprintf(stderr, "Realloc can't be executed: memory full.");
-                exit(1);
-            }
-        }
-
-        g->numberOfVertices = n;
-        g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
+    if (previousN == 0) {
+        // There wasn't a graph before, we create one
+        g = (graph*) malloc(sizeof(graph));
+        g->changed = malloc(sizeof(uint64_t[MAX_VERTICES][10]));
     }
 
-    // Set the changed 2D-array to zeroes
-    memset(g->changed,0, sizeof(uint64_t[n][10]));
-
-    g->chromaticNumber = 0;
-
-    if (checkCondition != 0) {
-        counter* c;
-        if (g->counter == NULL) {
-            c = (counter*) malloc(sizeof(counter));
-            g->counter = c;
-        } else {
-            c = g->counter;
-        }
-        c->firstInput = 1;
-        c->numberOfVertices = n;
-        c->maxColoringMask = SHIFTL(n) - 1;
-        c->conditionVertices = c->maxColoringMask;
-        memset(c->condition, 0, sizeof(uint64_t[10]));
-    }
+    resetGraph(n);
 
     for (int i = 0; i < n; i++) {
         g->verticesIndexed[i].index = i;
         g->verticesIndexed[i].neighbours = 0;
-        g->verticesIndexed[i].color = 0;
-
     }
     int index = 1; // First index as index 0 is the vertex count
 
@@ -121,6 +79,21 @@ graph* createGraph(int previousN, char graphString[]) {
 
     return g;
 
+}
+
+void resetGraph(int n) {
+    g->numberOfVertices = n;
+    g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
+    g->chromaticNumber = 0;
+
+    // Set the changed 2D-array to zeroes
+    memset(g->changed,0, sizeof(uint64_t[MAX_VERTICES][10]));
+
+    startCounter(n);
+
+    for (int i = 0; i < n; i++) {
+        g->verticesIndexed[i].color = 0;
+    }
 }
 
 int findChromaticNumberOptimized(int startingColor, int allColorings) {
@@ -450,6 +423,35 @@ int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGr
     // vertexIsAlmostColored |= (1 << index);
     // }
     return 0;
+}
+
+void subdivide(int removeOriginalEdge) {
+    // We also reset the graph during this process
+    int count = g->numberOfVertices;
+    int index = count; // Keeps track of where to add the newest subdivision
+    for (int i = 0; i < g->numberOfVertices; i++) {
+        vertex* v = &g->verticesIndexed[i];
+        v->color=0;
+        FOR_EACH_BIT(j, v->neighbours & (SHIFTL(i) - 1)) {
+            vertex* neighbour = &g->verticesIndexed[j];
+            // Make the new neighbour
+            vertex* newNeighbour = &g->verticesIndexed[count];
+            newNeighbour->index = count;
+            newNeighbour->neighbours = 0;
+            newNeighbour->color = 0;
+
+            if (removeOriginalEdge) {
+                removeNeighbour(v, neighbour);
+            }
+            addNeighbour(v, newNeighbour);
+            addNeighbour(neighbour, newNeighbour);
+            count++;
+        }
+    }
+    g->numberOfVertices = count; // We update the number of vertices
+    g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
+    g->availableVertices = g->maxColoringMask;
+    startCounter(count);
 }
 
 
