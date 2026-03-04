@@ -9,6 +9,8 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
+#define MAX_VERTICES 64
+
 typedef struct graph {
     uint64_t vertexIsColored;
     uint64_t availableVertices;
@@ -17,12 +19,13 @@ typedef struct graph {
     uint64_t maxColoringMask;
     int numberOfVertices;
     counter* counter;
-    vertex verticesIndexed[];
+    vertex verticesIndexed[MAX_VERTICES];
 } graph;
 
 void getColors(int colors[]);
 int getNumberOfVertices(char graphString[]);
 graph* createGraph(int previousN, char graphString[]);
+void resetGraph(int n);
 int findChromaticNumberOptimized(int startingColor, int allColorings);
 int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allColorings, int depth);
 int startingStep(int maxColor, int allColorings);
@@ -35,5 +38,7 @@ int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uin
 int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood, int maxColorInGraph);
 int removeColor(vertex* v, int index, int color, int depth, int maxColorInGraph);
 int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGraph);
+void subdivide(int removeOriginalEdge);
+
 
 #endif //GRAPH_H
