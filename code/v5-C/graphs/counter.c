@@ -47,6 +47,7 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
             fprintf(stderr, "Displaying all colorings is currently not implemented.");
             exit(1);
         } else {
+            if (checkCondition == 1 && counter->conditionVertices == 0) return 1;
             // We check if all of them are full, if they are: stop
             for (int i = 0; i < chromaticNumber; i++) {
                 if (counter->condition[i] != counter->maxColoringMask) {
@@ -105,9 +106,9 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
 
 int isConditionMet(counter* counter, int chromaticNumber) {
     if (um) {
-        if (counter->conditionVertices != 0) {
+        if ((checkCondition == 1 || checkCondition == 3) && counter->conditionVertices != 0) {
             return 1;
-        } else {
+        } else if (checkCondition != 1) {
             for (int i = 0; i < chromaticNumber; i++) {
                 if (counter->condition[i] != counter->maxColoringMask) {
                     return 1;
@@ -133,7 +134,7 @@ void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]) 
     }
     if (um) {
         // We first check if a vertex always has a certain color as this is more important
-        if (counter->conditionVertices != 0) {
+        if ((checkCondition == 1 || checkCondition == 3) && counter->conditionVertices != 0) {
             FOR_EACH_BIT(index, counter->conditionVertices) {
                 for (int i = 0; i < chromaticNumber; i++) {
                     if ((counter->condition[i] & SHIFTL(index)) != 0) {

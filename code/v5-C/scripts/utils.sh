@@ -219,7 +219,14 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
 		plantri_options="-gpc1m1"
 		;;
 	x)
-		check_condition=1
+		check_condition=$(fetch_optional_arg "$OPTIND" "3" "$@")
+    if [[ $? -eq 0 ]]; then # Skip one index if an option was found
+      OPTIND=$((OPTIND + 1))
+    fi
+    if [[ "$check_condition" -lt 1 || "$check_condition" -gt 3 ]]; then
+      # We only want certain raw options
+      check_condition=3
+    fi
 		;;
 	M)
 		number_of_processes=$OPTARG
