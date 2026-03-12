@@ -413,12 +413,14 @@ int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGr
         addColorsBack(depth, maxColorInGraph);
         return 1;
     }
+    int count = 0;
     // We do a special remove colors from available colors
     FOR_EACH_BIT(colorIndex, (v->availableColors & color)) {
         g->changed[depth][colorIndex] |= SHIFTL(index);
+        count++;
     }
     v->availableColors &= ~color;
-    v->amountOfAvailableColors = __builtin_popcount(v->availableColors);
+    v->amountOfAvailableColors -= count;
     // else if (m == 1) {
     // vertexIsAlmostColored |= (1 << index);
     // }

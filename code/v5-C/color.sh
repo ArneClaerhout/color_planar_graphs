@@ -102,10 +102,17 @@ exit_on_multiprocessing() {
 
 
 c_alg() {
-	if [[ -v num_graphs ]]; then
-		pv -l "-s $(( num_graphs / number_of_processes ))" | ./build/v5_C "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+  if [[ -n "$file_name" ]]; then
+    if [[ "$number_of_processes" -eq 1 ]]; then
+      pv -l "-s $num_graphs" "$file_name" | ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+    else
+      pv -l "-s $(( num_graphs / number_of_processes ))" "$file_name" | parallel --pipe --block 100k --round-robin -j "$number_of_processes" \
+                                                                        ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+    fi
+	elif [[ -v num_graphs ]]; then
+		pv -l "-s $(( num_graphs / number_of_processes ))" | ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
 	else
-		./build/v5_C "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+		./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
 	fi
 }
 
@@ -114,16 +121,20 @@ choose_incoming_graphs() {
 	if ! [[ "$filter" =~ ^-?[0-9]+$ ]]; then
 	  exit_on_multiprocessing
 		filter_file_parse
-	elif [[ "$manual" == "" ]]; then
-		# Not manual
-		gen_range_graphs "$startn" "$endn" "$1"
-	elif [[ "$manual" == "pipe" ]]; then
-	  exit_on_multiprocessing
-		# Own stream chosen
-		read_stdin
-	else
-	  exit_on_multiprocessing
-		echo "$manual"
+	elif [[ -z "$file_name" ]]; then
+	  # We don't have an input file
+
+    if [[ "$manual" == "" ]]; then
+      # Not manual
+      gen_range_graphs "$startn" "$endn" "$1"
+    elif [[ "$manual" == "pipe" ]]; then
+      exit_on_multiprocessing
+      # Own stream chosen
+      read_stdin
+    else
+      exit_on_multiprocessing
+      echo "$manual"
+    fi
 	fi
 }
 
@@ -162,9 +173,10 @@ execute() {
 
 
 ### EXECUTION
-if [[ $number_of_processes -eq 1 ]]; then
+if [[ "$number_of_processes" -eq 1 || -n "$file_name" ]]; then
   execute | show_func
 else
+  # We split up the execution
   execute_M 0 &
   for i in $(seq 1 $(("$number_of_processes" - 1)));
   do

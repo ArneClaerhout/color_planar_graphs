@@ -161,14 +161,15 @@ fi
 #### OPTIONS ####
 #################
 
-while getopts ":hCcm:f:porsPLBaxM:" opt; do
+while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
 	case $opt in
 	h)
 		show_help
 		exit 0
 		;;
 	C)
-		cmake --build build
+	  # We compile using gcc
+		gcc -o graphs/build graphs/*.c -O3
 		echo "Code compiled." >&2
 		;;
 	c)
@@ -180,12 +181,19 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
 	m)
 		manual=$OPTARG
 		;;
+  F)
+    file_name=$OPTARG
+    num_graphs=0
+    ;;
 	f)
 		filter=$OPTARG
 		;;
 	p)
 		num_graphs=0
 		;;
+  P)
+    gcc -o graphs/build graphs/*.c -O3 -pg
+    ;;
 	o)
 		overview=true
 		;;
@@ -205,7 +213,7 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
 			OPTIND=$((OPTIND + 1))
 		fi
 		;;
-	P)
+	Q)
 		method=1
 		;;
 	L)
@@ -230,7 +238,7 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
 		;;
 	M)
 		number_of_processes=$OPTARG
-		if [[ $number_of_processes -lt 1 ]]; then
+		if [[ "$number_of_processes" -lt 1 ]]; then
 			echo "Error: Negative number of processes given" >&2
 			exit 1
 		fi
@@ -242,7 +250,7 @@ while getopts ":hCcm:f:porsPLBaxM:" opt; do
 done
 
 ### VERTICES-CHECK
-if [[ "$noVerticesGiven" == "true" && manual == "" ]]; then
+if [[ "$noVerticesGiven" == "true" && manual == "" && -v "$file_name" ]]; then
 	# No manual graph given and no vertices given.
 	echo "Error: Number of vertices not set." >&2
 	exit 1
@@ -263,7 +271,7 @@ if [[ "$filter" =~ ^-?[0-9]+$ ]]; then
 fi
 
 ### GRAPH COUNTING
-if [[ -v num_graphs ]]; then
+if [[ -v "$num_graphs" ]]; then
 	echo "Calculating or retrieving graph counts." >&2
 
 	# Ensure jq is installed
@@ -275,8 +283,11 @@ if [[ -v num_graphs ]]; then
 	total_sum=0
 
 	# Calculate range and use the caching function
-	if [[ -n "$manual" ]]; then
+	if [[ "$manual" != "" ]]; then
 		num_graphs=0 # Manual/Pipe input cannot be pre-counted
+	elif [[ -n "$file_name" ]]; then
+	  # When reading from a file, this is only the word count
+	  read -r num_graphs rest < <(wc -l < "$file_name")
 	else
 		for ((n = startn; n <= endn; n++)); do
 			# Use the get_cached_count function logic here
