@@ -16,3 +16,7 @@ code/*/filters/
 verslagen/~$*.docx
 code/*/graphs/*.class
 code/*/build/
+*.gcno
+*.gcda
+*.gcov
+code/*/graphs/build
