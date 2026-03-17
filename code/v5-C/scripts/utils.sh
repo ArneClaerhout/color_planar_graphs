@@ -136,6 +136,7 @@ mode="triangulation"
 number_of_processes=1
 plantri_options="-g"
 output_path=outputs/$(date +"%F-%H-%M-%S").txt
+profiling=false
 
 ############################
 #### NUMBER OF VERTICES ####
@@ -192,7 +193,8 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
 		num_graphs=0
 		;;
   P)
-    gcc -o graphs/build graphs/*.c -O3 -pg
+    profiling=true
+    gcc --coverage -o graphs/build graphs/*.c
     ;;
 	o)
 		overview=true

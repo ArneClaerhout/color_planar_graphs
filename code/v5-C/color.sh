@@ -200,3 +200,9 @@ fi
 if [[ "$show" != "" ]]; then
 	echo "Generated all images."
 fi
+
+
+# If we're profiling, the gcda files need to be moved
+if [[ "$profiling" == "true" ]]; then
+  mv *.gcda graphs
+fi

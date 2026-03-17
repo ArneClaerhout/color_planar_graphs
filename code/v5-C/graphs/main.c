@@ -3,6 +3,7 @@
 #include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <time.h>
 #include "main.h"
@@ -15,15 +16,15 @@ int cNumbers[10];
 int minChrom;
 int raw;
 int checkCondition;
-int open;
-int proper;
-int um;
+int isOpenColoring;
+int isProperColoring;
+int isUMColoring;
 
 graph* g;
 int lengthOfGraph;
 
 int (*handler)(int, vertex*, int, uint64_t, int);
-int (*colorCheck)(vertex*, vertex*, int);
+int (*colorCheck)(vertex*, vertex*);
 
 
 uint64_t start;
@@ -36,15 +37,15 @@ int main(int argc, char **argv) {
     if (!debugging) {
         parseArguments(argc, argv);
 
-        open = coloringIsOpen(coloring);
-        proper = coloringIsProper(coloring);
-        um = coloringIsUM(coloring);
+        isOpenColoring = coloringIsOpen(coloring);
+        isProperColoring = coloringIsProper(coloring);
+        isUMColoring = coloringIsUM(coloring);
 
-        uint64_t start = clock();
+        start = clock();
 
-        ssize_t read;
+        ssize_t read = 0;
         size_t len = 0;
-        char* line;
+        char *line = NULL;
 
         int previousN = 0;
         // As long as there is something to read from stdin, we read it.
@@ -69,28 +70,28 @@ int main(int argc, char **argv) {
         overview = 1;
         minChrom = 0;
         raw = 0;
-        checkCondition = 1;
+        checkCondition = 0;
         coloring = pUMo;
-        open = coloringIsOpen(coloring);
-        proper = coloringIsProper(coloring);
-        um = coloringIsUM(coloring);
+        isOpenColoring = coloringIsOpen(coloring);
+        isProperColoring = coloringIsProper(coloring);
+        isUMColoring = coloringIsUM(coloring);
 
-        uint64_t start = clock();
+        start = clock();
 
-        ssize_t read;
+        ssize_t read = 0;
         size_t len = 0;
-        char* line;
+        char* line = NULL;
 
-        // FILE *fptr = fopen("../outputs/2026-02-16-18-49-09.txt", "r");
+        FILE *fptr = fopen("outputs/chi_pCFo_6.txt", "r");
 
         int previousN = 0;
         // As long as there is something to read from stdin, we read it.
-        // while ((read = getline(&line, &len, fptr)) != -1) {
+        while ((read = getline(&line, &len, fptr)) != -1) {
             // First we remove the \n from the end of the line:
-            // line[strcspn(line, "\n")] = 0;
-        line = "C~";
+            line[strcspn(line, "\n")] = 0;
+        // line = "C~";
             previousN = performComputation(previousN, line);
-        // }
+        }
 
         if (overview) {
             printOverview();
@@ -130,8 +131,8 @@ int parseBoolean(char* str) {
 }
 
 void parseArguments(int argc, char **argv) {
-    if (argc > 7) {
-        fprintf(stderr, "Too many arguments.\n");
+    if (argc < 7 || argc > 7) {
+        fprintf(stderr, "Expected exactly 6 arguments.\n");
         exit(1);
     }
     coloring = getColoring(argv[1]);
@@ -173,7 +174,7 @@ int performComputation(int previousN, char line[]) {
         colorCheck = &isCorrectlyColoredProper;
         handler = &handleProper;
     }
-    else if (um) {
+    else if (isUMColoring) {
         colorCheck = &isCorrectlyColoredUM;
         handler = &handleUM;
     }
@@ -232,7 +233,8 @@ int performComputation(int previousN, char line[]) {
 }
 
 void freeGraph(graph* graph) {
-    free(graph->counter);
+    if (graph->counter)
+        free(graph->counter);
     free(graph->changed);
     free(graph);
 

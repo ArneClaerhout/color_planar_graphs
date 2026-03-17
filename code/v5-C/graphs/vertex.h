@@ -7,7 +7,7 @@
 
 
 #define SHIFT(n) (1 << n)
-#define SHIFTL(n) (1L << n)
+#define SHIFTL(n) (1ULL << n)
 
 #define FOR_EACH_BIT(i, mask) \
 for (uint64_t _m = (mask); _m; _m &= _m - 1) \
@@ -27,11 +27,11 @@ void addNeighbour(vertex* v, vertex* neighbour);
 void removeNeighbour(vertex* v, vertex* neighbour);
 void setMaxAvailableColors(vertex* v, int max);
 int removeColorFromAvailableColors(vertex* v, int color);
-int addColorFromAvailableColors(vertex* v, int color);
-int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[], int fillUncolored);
-int isCorrectlyColoredProper(vertex* v, vertex verticesIndexed[], int fillUncolored);
-int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[], int fillUncolored);
-int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[], int fillUncolored);
-int isCorrectlyColored(vertex* v, vertex* verticesIndexed[], enum colorings coloring, int fillUncolored);
+// int addColorFromAvailableColors(vertex* v, int color);
+int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[]);
+int isCorrectlyColoredProper(vertex* v, vertex verticesIndexed[]);
+int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[]);
+int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[]);
+int isCorrectlyColored(vertex* v, vertex* verticesIndexed[], enum colorings coloring);
 
 #endif //VERTEX_H
