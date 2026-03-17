@@ -94,9 +94,9 @@ void resetGraph(int n) {
 
     startCounter(n);
 
-    for (int i = 0; i < n; i++) {
-        g->verticesIndexed[i].color = 0;
-    }
+    // for (int i = 0; i < n; i++) {
+    //     g->verticesIndexed[i].color = 0;
+    // }
 }
 
 int findChromaticNumberOptimized(int startingColor, int allColorings) {
@@ -105,7 +105,6 @@ int findChromaticNumberOptimized(int startingColor, int allColorings) {
             setMaxAvailableColors(&g->verticesIndexed[j], i);
         }
         // Each time we reset which vertices are colored.
-        g->vertexIsColored = 0;
         g->availableVertices = g->maxColoringMask;
         if (optimizedAlgorithm(0, i, 0, allColorings, 0)) {
             g->chromaticNumber = i;
@@ -121,25 +120,18 @@ int findChromaticNumberOptimized(int startingColor, int allColorings) {
 
 int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allColorings, int depth) {
 
-    if (g->vertexIsColored == g->maxColoringMask) {
+    if (g->availableVertices == 0) {
         return startingStep(maxColor, allColorings);
     }
 
     vertex* v = &g->verticesIndexed[index];
     int colors = v->availableColors;
 
+    // Every coloring should be tried for um, as this is different then other colorings
     int maxLoop = (isUMColoring || checkCondition != 0 || allColorings) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
-    // Every coloring should be tried for um, as this is different for it.
 
-    // We are coloring this index
-    g->vertexIsColored |= SHIFTL(index);
-
-    // int lastToColor = (g->maxColoringMask & ~g->vertexIsColored) == 0;
-    // if (lastToColor && maxLoop < maxColor)
-    //     colors = 0; // We don't want to go over colors, as it can't be correct
-
-    uint64_t neighbourhood = v->neighbours;
-    int neighboursColored = (neighbourhood & g->vertexIsColored) == neighbourhood;
+    // This vertex isn't available any more
+    g->availableVertices &= ~(SHIFTL(index));
 
     FOR_EACH_BIT(color, colors) {
         if (color > maxLoop)
@@ -149,13 +141,10 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
 
         int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
 
-        // We have to now check if all our neighbours are colored, as this isn't checked
-        // in updateNeighbours
-        // This is an extra check for correctness
-        if (neighboursColored && !colorCheck(v, g->verticesIndexed)) {
-            // This color isn't correct, we pick another
-            continue;
-        }
+        /**
+        There is no check here for when all neighbours are colored.
+        This is made sure by updateNeighbours of previous iterations
+        **/
 
         // We also change the available colors for the neighbours
         if (updateNeighbours(v, color, depth, newMaxColorCurrGraph)) {
@@ -163,7 +152,7 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
             continue;
         }
 
-        int newIndex = getBestIndex(index);
+        int newIndex = getBestIndex();
         if (optimizedAlgorithm(newMaxColorCurrGraph, maxColor, newIndex, allColorings, depth + 1)) {
             return 1;
         }
@@ -172,9 +161,11 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
         addColorsBack(depth, newMaxColorCurrGraph);
     }
 
-    // We decolor this vertex
-    g->vertexIsColored &= ~(1L << index);
-    v->color = 0;
+    /**
+    No Coloring was found.
+    We decolor this vertex.
+    **/
+    // v->color = 0; // This actually doesn't matter
     g->availableVertices |= (1L << index);
 
     return 0;
@@ -199,11 +190,9 @@ int startingStep(int maxColor, int allColorings) {
 }
 
 
-int getBestIndex(int indexColored) {
+int getBestIndex() {
     // The addition of tiebreaks with degree only slows it down
     // taking the first best vertex is fastest
-    if (indexColored != -1)
-        g->availableVertices &= ~(SHIFTL(indexColored));
     int bestIndex = 0;
     int smallestAC = 99;
     FOR_EACH_BIT(index, g->availableVertices) {
@@ -224,7 +213,7 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
     FOR_EACH_BIT(bit, v->neighbours) {
         vertex* neighbour = &g->verticesIndexed[bit];
 
-        int neighbourIsColored = (SHIFTL(bit) & g->vertexIsColored) != 0;
+        int neighbourIsColored = (SHIFTL(bit) & g->availableVertices) == 0;
 
         // Neighbouring vertices can't have the same color in proper colorings:
         if (isProperColoring && !neighbourIsColored) {
@@ -234,7 +223,7 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
 
         uint64_t neighbourhood = neighbour->neighbours;
         neighbourhood = (isOpenColoring ? neighbourhood : (neighbourhood | SHIFTL(bit)));
-        uint64_t diff = neighbourhood & ~g->vertexIsColored;
+        uint64_t diff = neighbourhood & g->availableVertices;
 
         if (diff == 0) {
             // All the neighbour's neighbours are colored and the neighbour itself is colored

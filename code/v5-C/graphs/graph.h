@@ -12,7 +12,6 @@
 #define MAX_VERTICES 64
 
 typedef struct graph {
-    uint64_t vertexIsColored;
     uint64_t availableVertices;
     uint64_t (*changed)[10];
     int chromaticNumber;
@@ -29,7 +28,7 @@ void resetGraph(int n);
 int findChromaticNumberOptimized(int startingColor, int allColorings);
 int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allColorings, int depth);
 int startingStep(int maxColor, int allColorings);
-int getBestIndex(int indexColored);
+int getBestIndex();
 int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph);
 void addColorsBack(int depth, int maxColorInGraph);
 int handleProper(int, vertex*, int, uint64_t, int);
