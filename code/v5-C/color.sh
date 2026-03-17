@@ -204,5 +204,8 @@ fi
 
 # If we're profiling, the gcda files need to be moved
 if [[ "$profiling" == "true" ]]; then
-  mv *.gcda graphs
+  gcov graphs/build-vertex.gcno
+  gcov graphs/build-graph.gcno
+  mv graph.c.gcov graphs
+  mv vertex.c.gcov graphs
 fi

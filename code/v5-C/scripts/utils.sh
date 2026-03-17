@@ -194,6 +194,7 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
 		;;
   P)
     profiling=true
+    rm graphs/*.gcda
     gcc --coverage -o graphs/build graphs/*.c
     ;;
 	o)
