@@ -22,14 +22,14 @@ void setMaxAvailableColors(vertex* v, int max) {
     v->amountOfAvailableColors = max;
 }
 
-int removeColorFromAvailableColors(vertex* v, int color) {
-    if (v->availableColors & SHIFT(color)) {
-        v->availableColors &= ~(SHIFT(color));
-        v->amountOfAvailableColors--;
-        return 1;
-    }
-    return 0;
-}
+// int removeColorFromAvailableColors(vertex* v, int color) {
+//     if (v->availableColors & SHIFT(color)) {
+//         v->availableColors &= ~(SHIFT(color));
+//         v->amountOfAvailableColors--;
+//         return 1;
+//     }
+//     return 0;
+// }
 
 // int addColorFromAvailableColors(vertex* v, int color) {
 //     if (!(v->availableColors & SHIFT(color))) {
@@ -45,19 +45,7 @@ int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[]) {
 
     int odds = 0;
     FOR_EACH_BIT(index, neighbourhood) {
-        vertex* neighbour = &verticesIndexed[index];
-        int neighbourColor = neighbour->color;
-
-        if (neighbourColor == 0) {
-            // fillUncolored is true
-            if (neighbour->amountOfAvailableColors == 1) {
-                odds ^= SHIFT(__builtin_ctz(neighbour->availableColors));
-            } else {
-                return 0;
-            }
-        } else {
-            odds ^= SHIFT(neighbourColor);
-        }
+        odds ^= SHIFT(verticesIndexed[index].color);
     }
     return odds != 0;
 }
@@ -71,17 +59,7 @@ int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[]) {
     int max = 0;
     int amountOfMax = 0;
     FOR_EACH_BIT(index, neighbourhood) {
-        vertex* neighbour = &verticesIndexed[index];
-        int neighbourColor = neighbour->color;
-
-        if (neighbourColor == 0) {
-            // fillUncolored is true, we check if we can fill the uncolored vertex.
-            if (neighbour->amountOfAvailableColors == 1) {
-                neighbourColor = __builtin_ctz(neighbour->availableColors);
-            } else {
-                return 0;
-            }
-        }
+        int neighbourColor = verticesIndexed[index].color;
 
         if (neighbourColor > max) {
             max = neighbourColor;
@@ -98,24 +76,11 @@ int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[]) {
 
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
-    int colorIndex;
 
     FOR_EACH_BIT(index, neighbourhood) {
-        vertex* neighbour = &verticesIndexed[index];
-        int neighbourColor = neighbour->color;
+        int colorIndex = SHIFT((verticesIndexed[index].color - 1));
         // We do -1 as the colors are from 1...k,
         // but we want to later on use the colors 0...k-1
-
-        if (neighbourColor == 0) {
-            // fillUncolored is true, we check if we can fill the uncolored vertex.
-            if (neighbour->amountOfAvailableColors == 1) {
-                colorIndex = SHIFT(__builtin_ctz(neighbour->availableColors));
-            } else {
-                return 0;
-            }
-        } else {
-            colorIndex = SHIFT((neighbourColor - 1));
-        }
 
         if ((colorsOccur & colorIndex) != 0) {
             colorsOccurOnce &= ~colorIndex;
@@ -124,11 +89,7 @@ int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[]) {
             colorsOccur |= colorIndex;
         }
     }
-    if (colorsOccurOnce != 0) {
-        return 1;
-    }
-    fprintf(stderr, "test");
-    return 0;
+    return colorsOccurOnce != 0;
 }
 
 

@@ -26,7 +26,7 @@ typedef struct vertex {
 void addNeighbour(vertex* v, vertex* neighbour);
 void removeNeighbour(vertex* v, vertex* neighbour);
 void setMaxAvailableColors(vertex* v, int max);
-int removeColorFromAvailableColors(vertex* v, int color);
+// int removeColorFromAvailableColors(vertex* v, int color);
 // int addColorFromAvailableColors(vertex* v, int color);
 int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[]);
 int isCorrectlyColoredProper(vertex* v, vertex verticesIndexed[]);

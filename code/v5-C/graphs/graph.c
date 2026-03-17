@@ -224,10 +224,9 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
     FOR_EACH_BIT(bit, v->neighbours) {
         vertex* neighbour = &g->verticesIndexed[bit];
 
-        // neighbour.incrementAmountOfColoredNeighbours();
-
         int neighbourIsColored = (SHIFTL(bit) & g->vertexIsColored) != 0;
 
+        // Neighbouring vertices can't have the same color in proper colorings:
         if (isProperColoring && !neighbourIsColored) {
             if (removeColorMask(neighbour, neighbour->index, SHIFT(color), depth, maxColorInGraph))
                 return 1;
@@ -237,16 +236,11 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
         neighbourhood = (isOpenColoring ? neighbourhood : (neighbourhood | SHIFTL(bit)));
         uint64_t diff = neighbourhood & ~g->vertexIsColored;
 
-        // We will allow adding vertices with one possible color that aren't colored
-        // diff &= ~vertexIsAlmostColored;
-
         if (diff == 0) {
-            // All the neighbour's neighbours are colored and the neighbour itself is
-            // colored
+            // All the neighbour's neighbours are colored and the neighbour itself is colored
             // We want to check if the neighbour is CORRECTLY colored
             if (!colorCheck(neighbour, g->verticesIndexed)) {
                 // Early pruning
-                fprintf(stderr, "test");
                 addColorsBack(depth, maxColorInGraph);
                 return 1;
                 // We skip the rest, as this color is incorrect
@@ -254,15 +248,13 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
             // It doesn't have to be checked on whether it's proper, as this is done by the
             // next section
         } else if ((diff & (diff - 1)) == 0) { // bitCount(diff) == 1
+            // The one neighbour we still have to color:
             int toColorNeighbourIndex = __builtin_ctz(diff);
             vertex* toColorNeighbour = &g->verticesIndexed[toColorNeighbourIndex];
-            // There's one vertex that isn't colored yet.
-            if (neighbourIsColored || !isProperColoring) {
-                if (handler(depth, toColorNeighbour, toColorNeighbourIndex, neighbourhood, maxColorInGraph)) {
-                    return 1;
-                }
+
+            if (handler(depth, toColorNeighbour, toColorNeighbourIndex, neighbourhood, maxColorInGraph)) {
+                return 1;
             }
-            // Proper colorings are done later
         }
     }
 
