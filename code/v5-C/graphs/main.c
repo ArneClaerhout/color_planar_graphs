@@ -8,6 +8,7 @@
 #include <time.h>
 #include "main.h"
 #include "counter.h"
+#include "types.h"
 
 
 enum colorings coloring;
@@ -23,7 +24,7 @@ int isUMColoring;
 graph* g;
 int lengthOfGraph;
 
-int (*handler)(int, vertex*, int, uint64_t, int);
+int (*handler)(int, vertex*, int, bitset_t, int);
 int (*colorCheck)(vertex*, vertex*);
 
 
@@ -70,8 +71,8 @@ int main(int argc, char **argv) {
         overview = 1;
         minChrom = 0;
         raw = 0;
-        checkCondition = 0;
-        coloring = pUMo;
+        checkCondition = 1;
+        coloring = iCFc;
         isOpenColoring = coloringIsOpen(coloring);
         isProperColoring = coloringIsProper(coloring);
         isUMColoring = coloringIsUM(coloring);
@@ -82,16 +83,16 @@ int main(int argc, char **argv) {
         size_t len = 0;
         char* line = NULL;
 
-        FILE *fptr = fopen("outputs/chi_pCFo_6.txt", "r");
+        // FILE *fptr = fopen("outputs/chi_pCFo_6.txt", "r");
 
         int previousN = 0;
         // As long as there is something to read from stdin, we read it.
-        while ((read = getline(&line, &len, fptr)) != -1) {
+        // while ((read = getline(&line, &len, fptr)) != -1) {
             // First we remove the \n from the end of the line:
-            line[strcspn(line, "\n")] = 0;
-        // line = "C~";
+            // line[strcspn(line, "\n")] = 0;
+        line = "~??B~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
             previousN = performComputation(previousN, line);
-        }
+        // }
 
         if (overview) {
             printOverview();
@@ -185,7 +186,7 @@ int performComputation(int previousN, char line[]) {
 
     const int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
 
-    // fprintf(stderr, "%d\n", c);
+    // fprintf(stderr, "%d\n", checkCondition);
     // We check if the graph should get printed
     if (c < minChrom || (checkCondition != 0 && !isConditionMet(g->counter, c))) {
         return g->numberOfVertices;

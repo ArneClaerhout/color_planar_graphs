@@ -1,6 +1,7 @@
 #include "colorings.h"
 #include "graph.h"
 #include "vertex.h"
+#include "types.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +18,7 @@ extern int isUMColoring;
 extern graph* g;
 extern int lengthOfGraph;
 
-extern int (*handler)(int, vertex*, int, uint64_t, int);
+extern int (*handler)(int, vertex*, int, bitset_t, int);
 extern int (*colorCheck)(vertex*, vertex*);
 extern enum colorings coloring;
 
@@ -30,22 +31,32 @@ void getColors(int colors[]) {
     }
 }
 
-int getNumberOfVertices(char graphString[]) {
-    int index = 0;
-    // Only works when #vertices < 63, we won't go higher than that
-    if (graphString[index] < 126) {
-        return (int) graphString[index] - 63;
+// Returns the number of vertices and updates dataStart
+// so you know where the edge bits begin.
+int getNumberOfVertices(char graphString[], int *dataStart) {
+    if (graphString[0] < 126) {
+        *dataStart = 1;
+        return (int) graphString[0] - 63;
+    }
+
+    // Check if it's the 3-byte version (n <= 258047)
+    if (graphString[0] == 126 && graphString[1] < 126) {
+        *dataStart = 4;
+        return ((graphString[1] - 63) << 12) |
+               ((graphString[2] - 63) << 6)  |
+               ((graphString[3] - 63));
     }
     return 0;
 }
 
 graph* createGraph(int previousN, char graphString[]) {
-    int n = getNumberOfVertices(graphString);
+    int dataStart;
+    int n = getNumberOfVertices(graphString, &dataStart);
 
     if (previousN == 0) {
         // There wasn't a graph before, we create one
         g = (graph*) malloc(sizeof(graph));
-        g->changed = malloc(sizeof(uint64_t[MAX_VERTICES][10]));
+        g->changed = malloc(sizeof(bitset_t[MAX_VERTICES][10]));
         for (int i = 0; i < MAX_VERTICES; i++) {
             g->verticesIndexed[i].index = i;
         }
@@ -56,7 +67,8 @@ graph* createGraph(int previousN, char graphString[]) {
     for (int i = 0; i < n; i++) {
         g->verticesIndexed[i].neighbours = 0;
     }
-    int index = 1; // First index as index 0 is the vertex count
+
+    int index = dataStart; // First index as index the first indices are the number of vertices
 
     int bitPos = 0; // Bit position per index
     for (int i = 1; i < n; i++) {
@@ -79,6 +91,7 @@ graph* createGraph(int previousN, char graphString[]) {
             }
         }
     }
+    graph* g2 = g;
 
     return g;
 
@@ -90,7 +103,7 @@ void resetGraph(int n) {
     g->chromaticNumber = 0;
 
     // Set the changed 2D-array to zeroes
-    memset(g->changed,0, sizeof(uint64_t[MAX_VERTICES][10]));
+    memset(g->changed,0, sizeof(bitset_t[n][10]));
 
     startCounter(n);
 
@@ -221,9 +234,9 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
                 return 1;
         }
 
-        uint64_t neighbourhood = neighbour->neighbours;
+        bitset_t neighbourhood = neighbour->neighbours;
         neighbourhood = (isOpenColoring ? neighbourhood : (neighbourhood | SHIFTL(bit)));
-        uint64_t diff = neighbourhood & g->availableVertices;
+        bitset_t diff = neighbourhood & g->availableVertices;
 
         if (diff == 0) {
             // All the neighbour's neighbours are colored and the neighbour itself is colored
@@ -238,7 +251,7 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
             // next section
         } else if ((diff & (diff - 1)) == 0) { // bitCount(diff) == 1
             // The one neighbour we still have to color:
-            int toColorNeighbourIndex = __builtin_ctz(diff);
+            int toColorNeighbourIndex = bitset_ctz(diff);
             vertex* toColorNeighbour = &g->verticesIndexed[toColorNeighbourIndex];
 
             if (handler(depth, toColorNeighbour, toColorNeighbourIndex, neighbourhood, maxColorInGraph)) {
@@ -254,7 +267,7 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
 
 void addColorsBack(int depth, int maxColorInGraph) {
     for (int i = 0; i < maxColorInGraph; i++) {
-        uint64_t value = g->changed[depth][i];
+        bitset_t value = g->changed[depth][i];
         if (value != 0) {
             FOR_EACH_BIT(index, value) {
                 vertex* changedNeighbour = &g->verticesIndexed[index];
@@ -269,11 +282,11 @@ void addColorsBack(int depth, int maxColorInGraph) {
     }
 }
 
-int handleProper(int, vertex*, int, uint64_t, int) {
+int handleProper(int, vertex*, int, bitset_t, int) {
     return 0;
 }
 
-int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood, int maxColorInGraph) {
+int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph) {
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
 
@@ -302,7 +315,7 @@ int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uin
 }
 
 
-int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood, int maxColorInGraph) {
+int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph) {
     int max = 1;
     int amountOfMax = 0;
 
@@ -330,7 +343,7 @@ int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uin
 }
 
 
-int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, uint64_t neighbourhood, int maxColorInGraph) {
+int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph) {
     int colorsOccurOdd = 0;
 
     neighbourhood = neighbourhood & ~SHIFTL(toColorNeighbourIndex);

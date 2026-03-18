@@ -13,4 +13,5 @@ add_executable(v5_C
         graphs/graph.h
         graphs/main.h
         graphs/counter.c
-        graphs/counter.h)
+        graphs/counter.h
+        graphs/types.h)

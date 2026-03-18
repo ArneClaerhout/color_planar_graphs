@@ -5,6 +5,7 @@
 
 #include "vertex.h"
 #include "graph.h"
+#include "types.h"
 
 extern int isUMColoring;
 extern int isProperColoring;
@@ -26,13 +27,17 @@ void startCounter(int n) {
         c->numberOfVertices = n;
         c->maxColoringMask = SHIFTL(n) - 1;
         c->conditionVertices = c->maxColoringMask;
-        memset(c->condition, 0, sizeof(uint64_t[10]));
+        memset(c->condition, 0, sizeof(c->condition));
     }
 }
 
 int inputColors(counter* counter, const int colors[], int allColors, int chromaticNumber) {
+    if (allColors) {
+        fprintf(stderr, "Displaying all colorings is currently not implemented.");
+        exit(1);
+    }
     if (isUMColoring) {
-        uint64_t oldCondition = 0;
+        bitset_t oldCondition = 0;
         for (int k = 0; k < counter->numberOfVertices; k++) {
             // Here we add
             oldCondition = counter->condition[colors[k] - 1];
@@ -43,19 +48,14 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
             }
         }
         if (counter->firstInput) counter->firstInput = 0;
-        if (allColors) {
-            fprintf(stderr, "Displaying all colorings is currently not implemented.");
-            exit(1);
-        } else {
-            if (checkCondition == 1 && counter->conditionVertices == 0) return 1;
-            // We check if all of them are full, if they are: stop
-            for (int i = 0; i < chromaticNumber; i++) {
-                if (counter->condition[i] != counter->maxColoringMask) {
-                    return 0;
-                }
+        if (checkCondition == 1 && counter->conditionVertices == 0) return 1;
+        // We check if all of them are full, if they are: stop
+        for (int i = 0; i < chromaticNumber; i++) {
+            if (counter->condition[i] != counter->maxColoringMask) {
+                return 0;
             }
-            return 1;
         }
+        return 1;
     } else if (coloring == PROPER) {
         // We can do the iCFo coloring method
         if (g->chromaticNumber == 4) {
@@ -98,6 +98,48 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
             return 1;
         }
         return 0;
+    } else if (!isProperColoring && !isOpenColoring) {
+        // Here we check if we find two vertices that never have the same color
+        for (int k = 0; k < counter->numberOfVertices; k++) {
+            for (int j = 0; j < counter->numberOfVertices; j++) {
+                if (colors[k] == colors[j]) {
+                    counter->condition[k] |= SHIFTL(j);
+                    counter->condition[j] |= SHIFTL(k);
+                } else {
+                    int neighbourColor = g->verticesIndexed[j].color;
+                    int correct = 0;
+                    FOR_EACH_BIT(index, g->verticesIndexed[k].neighbours) {
+                        if (index != j && g->verticesIndexed[index].color == neighbourColor) {
+                            correct = 1;
+                            break;
+                        }
+                    }
+                    if (!correct) {
+                        counter->condition[k] |= SHIFTL(j);
+                        counter->condition[j] |= SHIFTL(k);
+                        continue;
+                    }
+                    neighbourColor = g->verticesIndexed[k].color;
+                    correct = 0;
+                    FOR_EACH_BIT(index, g->verticesIndexed[j].neighbours) {
+                        if (index != k && g->verticesIndexed[index].color == neighbourColor) {
+                            correct = 1;
+                            break;
+                        }
+                    }
+                    if (!correct) {
+                        counter->condition[k] |= SHIFTL(j);
+                        counter->condition[j] |= SHIFTL(k);
+                        continue;
+                    }
+
+                }
+            }
+        }
+        if (!isConditionMet(counter, chromaticNumber)) {
+            return 1;
+        }
+        return 0;
     } else {
         return 1;
     }
@@ -122,6 +164,12 @@ int isConditionMet(counter* counter, int chromaticNumber) {
     }
     else if (isOpenColoring && isProperColoring) {
         return counter->conditionVertices != 0;
+    } else if (!isOpenColoring && !isProperColoring) {
+        for (int j = 0; j < counter->numberOfVertices; j++) {
+            if (counter->condition[j] != counter->maxColoringMask) {
+                return 1;
+            }
+        }
     }
     return 0;
 }
@@ -166,6 +214,17 @@ void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]) 
             colors[index] = 1;
         }
         snprintf(counter->extraInfo, MAX_STRING_LENGTH, " Vertex always sees %d colors", chromaticNumber - 1);
+    } else if (!isProperColoring && !isOpenColoring) {
+
+        for (int j = 0; j < counter->numberOfVertices; j++) {
+            if (counter->condition[j] != counter->maxColoringMask) {
+                // fprintf(stderr, "%ld\n", counter->condition[j]);
+                colors[j] = 1;
+                colors[bitset_ctz(~counter->condition[j])] = 1;
+                break;
+            }
+        }
+        snprintf(counter->extraInfo, MAX_STRING_LENGTH, " Vertices always have different colors");
     } else {
         snprintf(counter->extraInfo, MAX_STRING_LENGTH, " ");
     }

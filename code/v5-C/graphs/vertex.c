@@ -1,5 +1,6 @@
 #include "colorings.h"
 #include "vertex.h"
+#include "types.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -41,7 +42,7 @@ void setMaxAvailableColors(vertex* v, int max) {
 // }
 
 int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[]) {
-    uint64_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
+    bitset_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
 
     int odds = 0;
     FOR_EACH_BIT(index, neighbourhood) {
@@ -55,7 +56,7 @@ int isCorrectlyColoredProper(vertex* v, vertex verticesIndexed[]) {
 }
 
 int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[]) {
-    uint64_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
+    bitset_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
     int max = 0;
     int amountOfMax = 0;
     FOR_EACH_BIT(index, neighbourhood) {
@@ -72,7 +73,7 @@ int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[]) {
 }
 
 int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[]) {
-    uint64_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
+    bitset_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
 
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
@@ -96,7 +97,7 @@ int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[]) {
 int isCorrectlyColored(vertex* v, vertex* verticesIndexed[], enum colorings coloring) {
     if (v->color == 0 && coloringIsOpen(coloring) == 0) return 0;
 
-    uint64_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
+    bitset_t neighbourhood = isOpenColoring ? v->neighbours : (v->neighbours | SHIFTL(v->index));
 
     if (coloring == ODD) {
         int odds = 0;

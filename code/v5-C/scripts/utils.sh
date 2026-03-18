@@ -169,8 +169,20 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
 		exit 0
 		;;
 	C)
-	  # We compile using gcc
-		gcc -o graphs/build graphs/*.c -O3
+	  compile_arg=$(fetch_optional_arg "$OPTIND" 0 "$@")
+    if [[ $? -eq 0 ]]; then # Skip one index if an option was found
+      OPTIND=$((OPTIND + 1))
+    fi
+
+    # We compile using gcc
+    if [[ "$compile_arg" == 0 ]]; then
+      echo >&2 "Compiling with 64-bit bitsets"
+      gcc -o graphs/build graphs/*.c -O3 -march=native
+    else
+      echo >&2 "Compiling with 128-bit bitsets"
+      gcc -o graphs/build graphs/*.c -O3 -DUSE_BIG_INT -march=native
+    fi
+
 		echo "Code compiled." >&2
 		;;
 	c)
