@@ -91,7 +91,6 @@ graph* createGraph(int previousN, char graphString[]) {
             }
         }
     }
-    graph* g2 = g;
 
     return g;
 
@@ -385,6 +384,7 @@ int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGr
     return 0;
 }
 
+// Subdivide the graph so that each edge gets turned into a vertex and two edges.
 void subdivide(int removeOriginalEdge) {
     // We also reset the graph during this process
     int count = g->numberOfVertices;
@@ -412,6 +412,61 @@ void subdivide(int removeOriginalEdge) {
     g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
     g->availableVertices = g->maxColoringMask;
     startCounter(count);
+}
+
+
+// Add a given graph in graph6 format to the current graph g.
+// The graph gets linked by taking one vertex in the given graph
+// and putting that as a vertex in the current graph.
+void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGraph) {
+
+    // Grab the number of vertices of the to add graph
+    int dataStart;
+    int nbOfNewVertices = getNumberOfVertices(graphString, &dataStart);
+
+    // The intermediate vertex
+    vertex* target = &g->verticesIndexed[indexInThisGraph];
+    // The starting index in the current graph for adding new vertices
+    int startingIndex = g->numberOfVertices;
+
+    // Set the neighbours to 0
+    for (int i = startingIndex; i < startingIndex + nbOfNewVertices - 1; i++) {
+        g->verticesIndexed[i].neighbours = 0;
+    }
+
+    // First index as index the first indices are the number of vertices
+    int index = dataStart;
+
+    int bitPos = 0; // Bit position per index
+    for (int i = 1; i < nbOfNewVertices; i++) {
+        for (int j = 0; j < i; j++) {
+            // Go through the entire adjacency matrix
+            int part6bits = graphString[index] - 63;
+
+            int bitShift = 5 - bitPos;
+            // The amount you have to bitshift the number to check bitPos here:
+            int edge = ((part6bits >> bitShift) & 1) == 1;
+            if (edge) {
+                // If i or j is the linked vertex, link the target instead
+                if (i == indexInOwnGraph) {
+                    addNeighbour(&g->verticesIndexed[startingIndex + j], target);
+                } else if (j == indexInOwnGraph) {
+                    addNeighbour(&g->verticesIndexed[startingIndex + i], target);
+                } else {
+                    addNeighbour(&g->verticesIndexed[j + startingIndex], &g->verticesIndexed[i + startingIndex]);
+                }
+            }
+
+            bitPos++;
+            if (bitPos == 6) {
+                index++;
+                bitPos = 0;
+            }
+        }
+    }
+
+    // We reset the graph to recolor
+    resetGraph(g->numberOfVertices + nbOfNewVertices - 1);
 }
 
 
