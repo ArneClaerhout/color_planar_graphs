@@ -37,6 +37,10 @@ int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bi
 // int removeColor(vertex* v, int index, int color, int depth, int maxColorInGraph);
 int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGraph);
 void subdivide(int removeOriginalEdge);
+void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGraph);
+void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisGraph, int idxOneOwnGraph, int idxTwoOwnGraph);
+char encode_val(int val);
+void to_graph6_large();
 
 
 #endif //GRAPH_H

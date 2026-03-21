@@ -68,39 +68,38 @@ int main(int argc, char **argv) {
         free(line);
         freeGraph(g);
     } else {
-        overview = 1;
-        minChrom = 0;
-        raw = 0;
-        checkCondition = 1;
-        coloring = iCFc;
-        isOpenColoring = coloringIsOpen(coloring);
-        isProperColoring = coloringIsProper(coloring);
-        isUMColoring = coloringIsUM(coloring);
-
+        overview = 1;minChrom = 0;raw = 0;checkCondition = 1;coloring = iCFc;isOpenColoring = coloringIsOpen(coloring);isProperColoring = coloringIsProper(coloring);isUMColoring = coloringIsUM(coloring);
         start = clock();
-
         ssize_t read = 0;
         size_t len = 0;
         char* line = NULL;
-
         // FILE *fptr = fopen("outputs/chi_pCFo_6.txt", "r");
 
-        int previousN = 0;
-        // As long as there is something to read from stdin, we read it.
-        // while ((read = getline(&line, &len, fptr)) != -1) {
-            // First we remove the \n from the end of the line:
-            // line[strcspn(line, "\n")] = 0;
-        line = "~??B~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
-            previousN = performComputation(previousN, line);
+
+
+        // int previousN = 0;
+        // // As long as there is something to read from stdin, we read it.
+        // // while ((read = getline(&line, &len, fptr)) != -1) {
+        // // First we remove the \n from the end of the line:
+        // // line[strcspn(line, "\n")] = 0;
+        // line = "~??B~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+        // previousN = performComputation(previousN, line);
+        // // }
+
+        line = "@";
+        // previousN = performComputation(previousN, line);
+
+        createGraph(0, line);
+        addGraphToIndex("Dhc", 0, 0);
+        to_graph6_large();
+
+        // if (overview) {
+        //     printOverview();
         // }
-
-        if (overview) {
-            printOverview();
-        }
-
-        if (raw == 0) {
-            printf("All graphs have been processed.\n");
-        }
+        //
+        // if (raw == 0) {
+        //     printf("All graphs have been processed.\n");
+        // }
 
         // We don't forget to free line
         // free(line);

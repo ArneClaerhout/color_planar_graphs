@@ -447,14 +447,34 @@ void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGra
             // The amount you have to bitshift the number to check bitPos here:
             int edge = ((part6bits >> bitShift) & 1) == 1;
             if (edge) {
+                /**
+                We also need the vertices to come right after the original graph
+                We keep track of an extra int
+
+                If the index I or J have passed the indices we're linking, they should shift
+                **/
+                int addI = 0;
+                if (i >= indexInOwnGraph) addI = -1;
+
+                int addJ = 0;
+                if (j >= indexInOwnGraph) addJ = -1;
+
                 // If i or j is the linked vertex, link the target instead
+                vertex* vertex1 = &g->verticesIndexed[startingIndex + i + addI];
+                vertex* vertex2 = &g->verticesIndexed[startingIndex + j + addJ];
+
+                // I is one of the vertices that are supposed to be linked
                 if (i == indexInOwnGraph) {
-                    addNeighbour(&g->verticesIndexed[startingIndex + j], target);
-                } else if (j == indexInOwnGraph) {
-                    addNeighbour(&g->verticesIndexed[startingIndex + i], target);
-                } else {
-                    addNeighbour(&g->verticesIndexed[j + startingIndex], &g->verticesIndexed[i + startingIndex]);
+                    vertex1 = target;
                 }
+
+                // J is one of the vertices that are supposed to be linked
+                if (j == indexInOwnGraph) {
+                    vertex2 = target;
+                }
+
+                // We add the two vertices as neighbours
+                addNeighbour(vertex1, vertex2);
             }
 
             bitPos++;
@@ -467,6 +487,146 @@ void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGra
 
     // We reset the graph to recolor
     resetGraph(g->numberOfVertices + nbOfNewVertices - 1);
+}
+
+
+// A method that replaces an edge in the current graph g with a given graph in graph6 format
+void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisGraph, int idxOneOwnGraph, int idxTwoOwnGraph) {
+    // The intermediate vertices
+    vertex* targetA = &g->verticesIndexed[idxOneThisGraph];
+    vertex* targetB = &g->verticesIndexed[idxTwoThisGraph];
+
+    // Firstly, we remove the edge between the two vertices in this graph
+    removeNeighbour(targetA, targetB);
+
+    /**
+    Now it's time to add the graph to the current graph:
+    **/
+
+    // Grab the number of vertices of the graph we're adding
+    int dataStart;
+    int nbOfNewVertices = getNumberOfVertices(graphString, &dataStart);
+
+    // The starting index in the current graph for adding new vertices
+    int startingIndex = g->numberOfVertices;
+
+    // Set the neighbours to 0, two of the new vertices aren't getting added, we remove these
+    for (int i = startingIndex; i < startingIndex + nbOfNewVertices - 2; i++) {
+        g->verticesIndexed[i].neighbours = 0;
+    }
+
+    // First index as index the first indices are the number of vertices
+    int index = dataStart;
+
+    int bitPos = 0; // Bit position per index
+    for (int i = 1; i < nbOfNewVertices; i++) {
+        for (int j = 0; j < i; j++) {
+            // Go through the entire adjacency matrix
+            int part6bits = graphString[index] - 63;
+
+            int bitShift = 5 - bitPos;
+            // The amount you have to bitshift the number to check bitPos here:
+            int edge = ((part6bits >> bitShift) & 1) == 1;
+            if (edge) {
+
+                /**
+                We also need the vertices to come right after the original graph
+                We keep track of an extra int
+
+                If the index I or J have passed the indices we're linking, they should shift
+                **/
+                int addI = 0;
+                if (i >= idxOneOwnGraph) addI -= 1;
+                if (i >= idxTwoOwnGraph) addI -= 1;
+
+                int addJ = 0;
+                if (j >= idxOneOwnGraph) addJ -= 1;
+                if (j >= idxTwoOwnGraph) addJ -= 1;
+
+
+                // If i or j is the linked vertex, link the target instead
+                vertex* vertex1 = &g->verticesIndexed[startingIndex + i + addI];
+                vertex* vertex2 = &g->verticesIndexed[startingIndex + j + addJ];
+
+                // I is one of the vertices that are supposed to be linked
+                if (i == idxOneOwnGraph) {
+                    vertex1 = targetA;
+                } else if (i == idxTwoOwnGraph) {
+                    vertex1 = targetB;
+                }
+
+                // J is one of the vertices that are supposed to be linked
+                if (j == idxOneOwnGraph) {
+                    vertex2 = targetA;
+                } else if (j == idxTwoOwnGraph) {
+                    vertex2 = targetB;
+                }
+
+                // We add the two vertices as neighbours
+                addNeighbour(vertex1, vertex2);
+
+            }
+
+            bitPos++;
+            if (bitPos == 6) {
+                index++;
+                bitPos = 0;
+            }
+        }
+    }
+
+    // We reset the graph to recolor
+    resetGraph(g->numberOfVertices + nbOfNewVertices - 2);
+
+}
+
+// Helper to encode a 6-bit value into a printable graph6 character
+char encode_val(int val) {
+    return (char)(val + 63);
+}
+
+
+void to_graph6_large() {
+    int n = g->numberOfVertices;
+
+    // We start with encoding the number of vertices
+    if (n <= 62) {
+        printf("%c", encode_val(n));
+    } else {
+        // Prefix
+        printf("~");
+        // Break n into three 6-bit chunks
+        printf("%c", encode_val((n >> 12) & 0x3F));
+        printf("%c", encode_val((n >> 6) & 0x3F));
+        printf("%c", encode_val(n & 0x3F));
+    }
+
+    int bit_buffer = 0;
+    int bit_count = 0;
+
+    for (int j = 1; j < n; j++) {
+        for (int i = 0; i < j; i++) {
+            bit_buffer <<= 1;
+            if (g->verticesIndexed[i].neighbours & SHIFTL(j)) {
+                bit_buffer |= 1;
+            }
+            bit_count++;
+
+            // Pack 6 bits into one character
+            if (bit_count == 6) {
+                printf("%c", encode_val(bit_buffer));
+                bit_buffer = 0;
+                bit_count = 0;
+            }
+        }
+    }
+
+    // Padding with zeros on the right
+    if (bit_count > 0) {
+        bit_buffer <<= (6 - bit_count);
+        printf("%c", encode_val(bit_buffer));
+    }
+    printf("\n");
 }
 
 
