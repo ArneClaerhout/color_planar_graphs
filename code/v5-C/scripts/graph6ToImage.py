@@ -31,8 +31,11 @@ if __name__ == "__main__":
 
         # We get the data from the input
         parts = main_part.split(" ")
-        colors_numbers = list(map(str.strip, "".join(parts[1:]).strip('][').replace('"', '').split(',')))
-        colors = list(map(convert_color, colors_numbers)) # Color 0 = index -1 -> last color
+        try:
+            colors_numbers = list(map(str.strip, "".join(parts[1:]).strip('][').replace('"', '').split(',')))
+            colors = list(map(convert_color, colors_numbers)) # Colour 0 = index -1 -> last colour
+        except:
+            colors = []
 
         graph6_string = parts[0]
 
@@ -48,7 +51,7 @@ if __name__ == "__main__":
             print(f"Error reading graph6 string '{graph6_string}': {e}")
             continue
 
-        # We give each vertex a color attribute to also show
+        # We give each vertex a colour attribute to also show
         for i, color in enumerate(colors_numbers):
             G.nodes[i]['color'] = colors_numbers[i]
 
@@ -56,8 +59,8 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(figsize=(6,6))
         pos = nx.planar_layout(G)
 
-        # Give each vertex the respective color
-        nx.draw(G, pos, ax=ax, with_labels=False, node_color=colors, edge_color='gray', node_size=1000)
+        # Give each vertex the respective colour
+        nx.draw(G, pos, ax=ax, with_labels=False, node_color=colors, edge_color='gray', node_size=500)
         # Give the labels as well
         nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(G, 'color'), font_color='white', ax=ax)
 

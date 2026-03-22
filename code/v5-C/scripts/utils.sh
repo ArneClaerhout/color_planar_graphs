@@ -31,6 +31,15 @@ fi
 ###### FUNCTIONS ######
 #######################
 
+activate_venv() {
+  # Check if venv has been created
+  if [ ! -d "venv" ]; then
+    echo "Error: venv hasn't been created yet."
+    exit 1
+  fi
+  source venv/bin/activate
+}
+
 usage() {
 	echo "Error: Invalid usage." >&2
 	echo "Check README for help." >&2
