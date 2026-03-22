@@ -86,12 +86,29 @@ int main(int argc, char **argv) {
         // previousN = performComputation(previousN, line);
         // // }
 
-        line = "@";
+        line = "C~";
         // previousN = performComputation(previousN, line);
 
         createGraph(0, line);
-        addGraphToIndex("Dhc", 0, 0);
+        for (int i = 0; i < 4; i++) {
+            for (int j = i + 1; j < 4; j++) {
+                if (j != i) {
+                    // We found it should be at index 0 and 4
+                    replaceEdgeByGraph("P||MCQHaKA@Ga?a?p?S?AA?O", i, j, 0, 4);
+                    graph* g2 = g;
+                    to_graph6_large();
+                }
+            }
+        }
+        fprintf(stderr, "%d\n", g->numberOfVertices);
         to_graph6_large();
+
+
+        colorCheck = &isCorrectlyColoredCF;
+        handler = &handleCF;
+
+        const int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
+        fprintf(stderr, "%d\n", c);
 
         // if (overview) {
         //     printOverview();

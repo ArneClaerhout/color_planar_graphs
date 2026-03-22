@@ -113,6 +113,7 @@ void resetGraph(int n) {
 
 int findChromaticNumberOptimized(int startingColor, int allColorings) {
     for (int i = startingColor; i <= 10; i++) {
+        // fprintf(stderr, "%d\n", i);
         for (int j = 0; j < g->numberOfVertices; j++) {
             setMaxAvailableColors(&g->verticesIndexed[j], i);
         }
@@ -246,8 +247,6 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
                 return 1;
                 // We skip the rest, as this color is incorrect
             }
-            // It doesn't have to be checked on whether it's proper, as this is done by the
-            // next section
         } else if ((diff & (diff - 1)) == 0) { // bitCount(diff) == 1
             // The one neighbour we still have to color:
             int toColorNeighbourIndex = bitset_ctz(diff);

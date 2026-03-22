@@ -14,6 +14,11 @@ extern enum colorings coloring;
 extern graph* g;
 extern int checkCondition;
 
+extern int (*colorCheck)(vertex*, vertex*);
+
+int index1iCFc = 0;
+int index2iCFc = 0;
+
 void startCounter(int n) {
     if (checkCondition != 0) {
         counter* c;
@@ -105,39 +110,8 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
                 if (colors[k] == colors[j]) {
                     counter->condition[k] |= SHIFTL(j);
                     counter->condition[j] |= SHIFTL(k);
-                } else {
-                    int neighbourColor = g->verticesIndexed[j].color;
-                    int correct = 0;
-                    FOR_EACH_BIT(index, g->verticesIndexed[k].neighbours) {
-                        if (index != j && g->verticesIndexed[index].color == neighbourColor) {
-                            correct = 1;
-                            break;
-                        }
-                    }
-                    if (!correct) {
-                        counter->condition[k] |= SHIFTL(j);
-                        counter->condition[j] |= SHIFTL(k);
-                        continue;
-                    }
-                    neighbourColor = g->verticesIndexed[k].color;
-                    correct = 0;
-                    FOR_EACH_BIT(index, g->verticesIndexed[j].neighbours) {
-                        if (index != k && g->verticesIndexed[index].color == neighbourColor) {
-                            correct = 1;
-                            break;
-                        }
-                    }
-                    if (!correct) {
-                        counter->condition[k] |= SHIFTL(j);
-                        counter->condition[j] |= SHIFTL(k);
-                        continue;
-                    }
-
                 }
             }
-        }
-        if (!isConditionMet(counter, chromaticNumber)) {
-            return 1;
         }
         return 0;
     } else {
@@ -165,13 +139,56 @@ int isConditionMet(counter* counter, int chromaticNumber) {
     else if (isOpenColoring && isProperColoring) {
         return counter->conditionVertices != 0;
     } else if (!isOpenColoring && !isProperColoring) {
-        for (int j = 0; j < counter->numberOfVertices; j++) {
+        for (int j = 1; j < counter->numberOfVertices; j++) {
             if (counter->condition[j] != counter->maxColoringMask) {
-                return 1;
+                // We check all of the possible vertices
+                for (int index2 = 0; index2 < j; index2++) {
+                    // This index has different color than j
+                    if (counter->condition[j] & SHIFTL(index2)) {
+
+                        // We find two that aren't equal
+                        index1iCFc = j;
+                        index2iCFc = index2;
+
+                        // We get the chromatic number of the graph now to compare later
+                        int c = g->chromaticNumber;
+
+                        // We reset the graph, and colour the two vertices
+                        g->availableVertices = g->maxColoringMask;
+                        g->availableVertices &= ~SHIFTL(index1iCFc);
+                        g->availableVertices &= ~SHIFTL(index2iCFc);
+                        // We give them the same color
+                        g->verticesIndexed[index1iCFc].color = 1;
+                        g->verticesIndexed[index2iCFc].color = 1;
+                        // And now check, using a special colorChecker
+                        colorCheck = &colorCheckiCFc;
+                        int newC = findChromaticNumberOptimized(c, 0);
+
+                        // We don't forget to change the colorCheck function back
+                        colorCheck = &isCorrectlyColoredCF;
+
+
+                        if (newC > c) {
+                            // If we weren't able to color it when both are the same color
+                            // Even if we don't check these vertices in colorCheck
+                            // The condition is met
+                            return 1;
+                        }
+
+                    }
+                }
+
             }
         }
     }
     return 0;
+}
+
+int colorCheckiCFc(vertex* v, vertex verticesIndexed[]) {
+    if (v == &g->verticesIndexed[index1iCFc] || v == &g->verticesIndexed[index2iCFc]) {
+        return 1;
+    }
+    return isCorrectlyColoredCF(v, verticesIndexed);
 }
 
 
@@ -215,15 +232,10 @@ void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]) 
         }
         snprintf(counter->extraInfo, MAX_STRING_LENGTH, " Vertex always sees %d colors", chromaticNumber - 1);
     } else if (!isProperColoring && !isOpenColoring) {
-
-        for (int j = 0; j < counter->numberOfVertices; j++) {
-            if (counter->condition[j] != counter->maxColoringMask) {
-                // fprintf(stderr, "%ld\n", counter->condition[j]);
-                colors[j] = 1;
-                colors[bitset_ctz(~counter->condition[j])] = 1;
-                break;
-            }
-        }
+        // Before calling this method, we called the isConditionMet function
+        // If it was, the last index1iCFc and index2iCFc will be correct
+        colors[index1iCFc] = 1;
+        colors[index2iCFc] = 1;
         snprintf(counter->extraInfo, MAX_STRING_LENGTH, " Vertices always have different colors");
     } else {
         snprintf(counter->extraInfo, MAX_STRING_LENGTH, " ");

@@ -8,30 +8,6 @@ cd "$script_dir" || exit 1
 
 source ./scripts/utils.sh
 
-activate_venv() {
-  # Check if venv has been created
-  if [ ! -d "venv" ]; then
-    echo "Error: venv hasn't been created yet."
-    exit 1
-  fi
-  source venv/bin/activate
-}
-
-show_func() {
-	if [[ "$show" != "" ]]; then
-		mkdir -p images
-		# We also remove all previous files from the directory (-f ignores no file error)
-		rm -f images/*
-
-    activate_venv
-
-		# Run Python script with stdin
-		"venv/bin/python" scripts/graph6ToImage.py "images/" "$show" </dev/stdin
-	else
-		cat
-	fi
-}
-
 write_to_file() {
 	if [[ "$number_of_processes" -ne 1 || ("$overview" == false && ("$manual" == "" || "$manual" == pipe)) ]]; then
 	  mkdir -p "outputs"
@@ -174,7 +150,7 @@ execute() {
 
 ### EXECUTION
 if [[ "$number_of_processes" -eq 1 || -n "$file_name" ]]; then
-  execute | show_func
+  execute | ./scripts/showGraph6.sh "$show"
 else
   # We split up the execution
   execute_M 0 &
@@ -183,7 +159,7 @@ else
     execute_M "$i" 2>/dev/null &
   done
   wait
-  combine_outputs_M | write_to_file -1 | show_func
+  combine_outputs_M | write_to_file -1 | ./scripts/showGraph6.sh "$show"
   
   if [[ "$overview" == true ]]; then
     # We first combine the overviews and then read the output

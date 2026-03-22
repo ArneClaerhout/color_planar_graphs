@@ -2,6 +2,7 @@
 #define COUNTER_H
 #include <stdint.h>
 #include "types.h"
+#include "vertex.h"
 
 
 #define MAX_STRING_LENGTH 40
@@ -20,5 +21,6 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
 int isConditionMet(counter* counter, int chromaticNumber);
 void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]);
 char* getExtraInfoText(counter* counter);
+int colorCheckiCFc(vertex* v, vertex verticesIndexed[]);
 
 #endif //COUNTER_H
