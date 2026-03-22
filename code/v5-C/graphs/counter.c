@@ -6,6 +6,7 @@
 #include "vertex.h"
 #include "graph.h"
 #include "types.h"
+#include "main.h"
 
 extern int isUMColoring;
 extern int isProperColoring;
@@ -141,7 +142,7 @@ int isConditionMet(counter* counter, int chromaticNumber) {
     } else if (!isOpenColoring && !isProperColoring) {
         for (int j = 1; j < counter->numberOfVertices; j++) {
             if (counter->condition[j] != counter->maxColoringMask) {
-                // We check all of the possible vertices
+                // We check all the possible vertices
                 for (int index2 = 0; index2 < j; index2++) {
                     // This index has different color than j
                     if (counter->condition[j] & SHIFTL(index2)) {
@@ -162,18 +163,29 @@ int isConditionMet(counter* counter, int chromaticNumber) {
                         g->verticesIndexed[index2iCFc].color = 1;
                         // And now check, using a special colorChecker
                         colorCheck = &colorCheckiCFc;
-                        int newC = findChromaticNumberOptimized(c, 0);
+                        for (int j = 0; j < g->numberOfVertices; j++) {
+                            setMaxAvailableColors(&g->verticesIndexed[j], 3);
+                        }
+                        if (optimizedAlgorithm(0, 3, 0, 0, 0)) {
 
-                        // We don't forget to change the colorCheck function back
-                        colorCheck = &isCorrectlyColoredCF;
+                            // We don't forget to change the colorCheck function back
+                            colorCheck = &isCorrectlyColoredCF;
 
+                            // The graph was colored with only 3 colors, while the two vertices are of equal color
+                            int colors[g->numberOfVertices];
+                            getColors(colors);
+                            printColors(colors);
+                        } else {
 
-                        if (newC > c) {
+                            // We don't forget to change the colorCheck function back
+                            colorCheck = &isCorrectlyColoredCF;
+
                             // If we weren't able to color it when both are the same color
                             // Even if we don't check these vertices in colorCheck
                             // The condition is met
                             return 1;
                         }
+
 
                     }
                 }

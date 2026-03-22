@@ -13,7 +13,7 @@ if [[ "$1" != "" ]]; then
   activate_venv
 
   # Run Python script with stdin
-  "venv/bin/python" scripts/graph6ToImage.py "images/" "$show" </dev/stdin
+  "venv/bin/python" scripts/graph6ToImage.py "images/" "$1" </dev/stdin
 else
   cat
 fi

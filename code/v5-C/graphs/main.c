@@ -231,11 +231,9 @@ int performComputation(int previousN, char line[]) {
                 } else {
                     getColors(colors);
                 }
-                printf("%s [", line);
-                for (int i = 0; i < g->numberOfVertices - 1; i++) {
-                    printf("%d, ", colors[i]);
-                }
-                printf("%d]%s\n", colors[g->numberOfVertices - 1], extraInfo);
+                printf("%s ", line);
+                printColors(colors);
+                printf("%s\n", extraInfo);
                 break;
             }
                 // case 4:
@@ -255,6 +253,15 @@ void freeGraph(graph* graph) {
     free(graph->changed);
     free(graph);
 
+}
+
+
+void printColors(int colors[]) {
+    printf("[");
+    for (int i = 0; i < g->numberOfVertices - 1; i++) {
+        printf("%d, ", colors[i]);
+    }
+    printf("%d]", colors[g->numberOfVertices - 1]);
 }
 
 
