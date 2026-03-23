@@ -87,7 +87,20 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
             return 1;
         }
     } else if (coloring == ODD) {
-        return 1;
+        // This is CF coloring (only useful for pCFo)
+        for (int k = 0; k < counter->numberOfVertices; k++) {
+            int colorsForVertex = 0;
+            FOR_EACH_BIT(index, g->verticesIndexed[k].neighbours) {
+                colorsForVertex ^= SHIFT(g->verticesIndexed[index].color);
+            }
+            if (__builtin_popcount(colorsForVertex) != chromaticNumber - 1) {
+                counter->conditionVertices &= ~SHIFTL(k);
+            }
+        }
+        if (counter->conditionVertices == 0) {
+            return 1;
+        }
+        return 0;
     }
     else if (isProperColoring && isOpenColoring) {
         // This is CF coloring (only useful for pCFo)
@@ -135,9 +148,8 @@ int isConditionMet(counter* counter, int chromaticNumber) {
     } else if (coloring == PROPER) {
         return counter->conditionVertices != 0;
     } else if (coloring == ODD) {
-        return 0;
-    }
-    else if (isOpenColoring && isProperColoring) {
+        return counter->conditionVertices != 0;
+    } else if (isOpenColoring && isProperColoring) {
         return counter->conditionVertices != 0;
     } else if (!isOpenColoring && !isProperColoring) {
         for (int j = 1; j < counter->numberOfVertices; j++) {
@@ -177,6 +189,8 @@ int isConditionMet(counter* counter, int chromaticNumber) {
                             printColors(colors);
                         } else {
 
+                            fprintf(stderr, "index1: %d, index2: %d\n", index1iCFc, index2iCFc);
+
                             // We don't forget to change the colorCheck function back
                             colorCheck = &isCorrectlyColoredCF;
 
@@ -205,10 +219,10 @@ int colorCheckiCFc(vertex* v, vertex verticesIndexed[]) {
 
 
 void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]) {
-    if (!isConditionMet(counter, chromaticNumber)) {
-        fprintf(stderr, "Requested coloring after check when condition isn't met.");
-        exit(1);
-    }
+    // if (!isConditionMet(counter, chromaticNumber)) {
+    //     fprintf(stderr, "Requested coloring after check when condition isn't met.");
+    //     exit(1);
+    // }
     if (isUMColoring) {
         // We first check if a vertex always has a certain color as this is more important
         if ((checkCondition == 1 || checkCondition == 3) && counter->conditionVertices != 0) {
@@ -237,7 +251,10 @@ void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]) 
         getColors(colors);
         snprintf(counter->extraInfo, MAX_STRING_LENGTH, " ");
     } else if (coloring == ODD) {
-        snprintf(counter->extraInfo, MAX_STRING_LENGTH, " ");
+        FOR_EACH_BIT(index, counter->conditionVertices) {
+            colors[index] = 1;
+        }
+        snprintf(counter->extraInfo, MAX_STRING_LENGTH, " Vertex always sees %d colors a odd amount of times", chromaticNumber - 1);
     } else if (isProperColoring && isOpenColoring) {
         FOR_EACH_BIT(index, counter->conditionVertices) {
             colors[index] = 1;

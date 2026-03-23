@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
         free(line);
         freeGraph(g);
     } else {
-        overview = 1;minChrom = 0;raw = 0;checkCondition = 1;coloring = iCFc;isOpenColoring = coloringIsOpen(coloring);isProperColoring = coloringIsProper(coloring);isUMColoring = coloringIsUM(coloring);
+        overview = 1;minChrom = 0;raw = 0;checkCondition = 0;coloring = iCFc;isOpenColoring = coloringIsOpen(coloring);isProperColoring = coloringIsProper(coloring);isUMColoring = coloringIsUM(coloring);
         start = clock();
         ssize_t read = 0;
         size_t len = 0;
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
             for (int j = i + 1; j < 4; j++) {
                 if (j != i) {
                     // We found it should be at index 0 and 4
-                    replaceEdgeByGraph("P||MCQHaKA@Ga?a?p?S?AA?O", i, j, 0, 4);
+                    replaceEdgeByGraph("I|eHXcZ?O", i, j, 0, 7);
                     graph* g2 = g;
                     to_graph6_large();
                 }

@@ -5,7 +5,7 @@
 #include "vertex.h"
 
 
-#define MAX_STRING_LENGTH 40
+#define MAX_STRING_LENGTH 65
 
 typedef struct counter {
     int firstInput;
