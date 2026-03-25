@@ -8,7 +8,7 @@
 
 
 typedef struct vertex {
-    bitset_t neighbours;
+    bitset_t neighbors;
     int color;
     int availableColors;
     int amountOfAvailableColors;
@@ -26,6 +26,6 @@ int isCorrectlyColoredOdd(vertex* v, vertex verticesIndexed[]);
 int isCorrectlyColoredProper(vertex* v, vertex verticesIndexed[]);
 int isCorrectlyColoredUM(vertex* v, vertex verticesIndexed[]);
 int isCorrectlyColoredCF(vertex* v, vertex verticesIndexed[]);
-int isCorrectlyColored(vertex* v, vertex* verticesIndexed[], enum colorings coloring);
+int isCorrectlyColored(vertex* v, vertex* verticesIndexed[]);
 
 #endif //VERTEX_H

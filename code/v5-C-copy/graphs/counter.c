@@ -90,7 +90,7 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
         // This is CF coloring (only useful for pCFo)
         for (int k = 0; k < counter->numberOfVertices; k++) {
             int colorsForVertex = 0;
-            FOR_EACH_BIT(index, g->verticesIndexed[k].neighbours) {
+            FOR_EACH_BIT(index, g->verticesIndexed[k].neighbors) {
                 colorsForVertex ^= SHIFT(g->verticesIndexed[index].color);
             }
             if (__builtin_popcount(colorsForVertex) != chromaticNumber - 1) {
@@ -106,7 +106,7 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
         // This is CF coloring (only useful for pCFo)
         for (int k = 0; k < counter->numberOfVertices; k++) {
             int colorsForVertex = 0;
-            FOR_EACH_BIT(index, g->verticesIndexed[k].neighbours) {
+            FOR_EACH_BIT(index, g->verticesIndexed[k].neighbors) {
                 colorsForVertex |= SHIFT(g->verticesIndexed[index].color);
             }
             if (__builtin_popcount(colorsForVertex) != chromaticNumber - 1) {

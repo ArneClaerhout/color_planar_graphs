@@ -2,13 +2,12 @@
 #define VERTEX_H
 
 #include <stdint.h>
-#include "vertex.h"
 #include "colorings.h"
 #include "types.h"
 
 
 typedef struct vertex {
-    bitset_t neighbours;
+    bitset_t neighbors;
     int color;
     int availableColors;
     int amountOfAvailableColors;
@@ -17,8 +16,8 @@ typedef struct vertex {
 
 
 // Vertex functions
-void addNeighbour(vertex* v, vertex* neighbour);
-void removeNeighbour(vertex* v, vertex* neighbour);
+void addNeighbor(vertex* v, vertex* neighbor);
+void removeNeighbor(vertex* v, vertex* neighbor);
 void setMaxAvailableColors(vertex* v, int max);
 // int removeColorFromAvailableColors(vertex* v, int color);
 // int addColorFromAvailableColors(vertex* v, int color);

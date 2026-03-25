@@ -184,5 +184,5 @@ if [[ "$profiling" == "true" ]]; then
   gcov graphs/build-graph.gcno
   mv graph.c.gcov graphs
   mv vertex.c.gcov graphs
-  rm -s types.h.gcov
+  rm -f types.h.gcov
 fi

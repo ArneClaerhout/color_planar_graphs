@@ -66,7 +66,7 @@ graph* createGraph(int previousN, char graphString[]) {
     resetGraph(n);
 
     for (int i = 0; i < n; i++) {
-        g->verticesIndexed[i].neighbours = 0;
+        g->verticesIndexed[i].neighbors = 0;
     }
 
     int index = dataStart; // First index as index the first indices are the number of vertices
@@ -81,7 +81,7 @@ graph* createGraph(int previousN, char graphString[]) {
             // The amount you have to bitshift the number to check bitPos here:
             int edge = ((part6bits >> bitShift) & 1) == 1;
             if (edge) {
-                addNeighbour(&g->verticesIndexed[i], &g->verticesIndexed[j]);
+                addNeighbor(&g->verticesIndexed[i], &g->verticesIndexed[j]);
                 // The matrix is symmetrical
             }
 
@@ -157,12 +157,12 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
         int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
 
         /**
-        There is no check here for when all neighbours are colored.
-        This is made sure by updateNeighbours of previous iterations
+        There is no check here for when all neighbors are colored.
+        This is made sure by updateNeighbors of previous iterations
         **/
 
-        // We also change the available colors for the neighbours
-        if (updateNeighbours(v, color, depth, newMaxColorCurrGraph)) {
+        // We also change the available colors for the neighbors
+        if (updateNeighbors(v, color, depth, newMaxColorCurrGraph)) {
             // This is used to skip this color, as it isn't possible
             continue;
         }
@@ -224,37 +224,37 @@ int getBestIndex() {
 
 
 
-int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
-    FOR_EACH_BIT(bit, v->neighbours) {
-        vertex* neighbour = &g->verticesIndexed[bit];
+int updateNeighbors(vertex* v, int color, int depth, int maxColorInGraph) {
+    FOR_EACH_BIT(bit, v->neighbors) {
+        vertex* neighbor = &g->verticesIndexed[bit];
 
-        int neighbourIsColored = (SHIFTL(bit) & g->availableVertices) == 0;
+        int neighborIsColored = (SHIFTL(bit) & g->availableVertices) == 0;
 
-        // Neighbouring vertices can't have the same color in proper colorings:
-        if (isProperColoring && !neighbourIsColored) {
-            if (removeColorMask(neighbour, neighbour->index, SHIFT(color), depth, maxColorInGraph))
+        // Neighboring vertices can't have the same color in proper colorings:
+        if (isProperColoring && !neighborIsColored) {
+            if (removeColorMask(neighbor, neighbor->index, SHIFT(color), depth, maxColorInGraph))
                 return 1;
         }
 
-        bitset_t neighbourhood = neighbour->neighbours;
-        neighbourhood = (isOpenColoring ? neighbourhood : (neighbourhood | SHIFTL(bit)));
-        bitset_t diff = neighbourhood & g->availableVertices;
+        bitset_t neighborhood = neighbor->neighbors;
+        neighborhood = (isOpenColoring ? neighborhood : (neighborhood | SHIFTL(bit)));
+        bitset_t diff = neighborhood & g->availableVertices;
 
         if (diff == 0) {
-            // All the neighbour's neighbours are colored and the neighbour itself is colored
-            // We want to check if the neighbour is CORRECTLY colored
-            if (!colorCheck(neighbour, g->verticesIndexed)) {
+            // All the neighbor's neighbors are colored and the neighbor itself is colored
+            // We want to check if the neighbor is CORRECTLY colored
+            if (!colorCheck(neighbor, g->verticesIndexed)) {
                 // Early pruning
                 addColorsBack(depth);
                 return 1;
                 // We skip the rest, as this color is incorrect
             }
         } else if ((diff & (diff - 1)) == 0) { // bitCount(diff) == 1
-            // The one neighbour we still have to color:
-            int toColorNeighbourIndex = bitset_ctz(diff);
-            vertex* toColorNeighbour = &g->verticesIndexed[toColorNeighbourIndex];
+            // The one neighbor we still have to color:
+            int toColorNeighborIndex = bitset_ctz(diff);
+            vertex* toColorNeighbor = &g->verticesIndexed[toColorNeighborIndex];
 
-            if (handler(depth, toColorNeighbour, toColorNeighbourIndex, neighbourhood, maxColorInGraph)) {
+            if (handler(depth, toColorNeighbor, toColorNeighborIndex, neighborhood, maxColorInGraph)) {
                 return 1;
             }
         }
@@ -280,12 +280,12 @@ int handleProper(int, vertex*, int, bitset_t, int) {
     return 0;
 }
 
-int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph) {
+int handleCF(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
 
-    neighbourhood = neighbourhood & ~SHIFTL(toColorNeighbourIndex);
-    FOR_EACH_BIT(index, neighbourhood) {
+    neighborhood = neighborhood & ~SHIFTL(toColorNeighborIndex);
+    FOR_EACH_BIT(index, neighborhood) {
         int colorIndex = SHIFT((g->verticesIndexed[index].color - 1));
         // We do -1 as the colors are from 1...k,
         // but we want to later on use the colors 0...k-1
@@ -301,26 +301,26 @@ int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bit
     }
 
     if (colorsOccurOnce == 0) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccur, depth, maxColorInGraph);
+        return removeColorMask(toColorNeighbor, toColorNeighborIndex, colorsOccur, depth, maxColorInGraph);
     } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOnce, depth, maxColorInGraph);
+        return removeColorMask(toColorNeighbor, toColorNeighborIndex, colorsOccurOnce, depth, maxColorInGraph);
     }
     return 0;
 }
 
 
-int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph) {
+int handleUM(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
     int max = 1;
     int amountOfMax = 0;
 
-    neighbourhood = neighbourhood & ~SHIFTL(toColorNeighbourIndex);
-    FOR_EACH_BIT(index, neighbourhood) {
-        int neighbourColor = g->verticesIndexed[index].color;
+    neighborhood = neighborhood & ~SHIFTL(toColorNeighborIndex);
+    FOR_EACH_BIT(index, neighborhood) {
+        int neighborColor = g->verticesIndexed[index].color;
 
-        if (neighbourColor == max) {
+        if (neighborColor == max) {
             amountOfMax++;
-        } else if (neighbourColor > max) {
-            max = neighbourColor;
+        } else if (neighborColor > max) {
+            max = neighborColor;
             amountOfMax = 1;
         }
     }
@@ -330,29 +330,29 @@ int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bit
     // Only allow colors bigger than the max
     // Otherwise, do nothing.
     if (amountOfMax == 1) {
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT((max - 1)), depth, maxColorInGraph);
+        return removeColorMask(toColorNeighbor, toColorNeighborIndex, SHIFT((max - 1)), depth, maxColorInGraph);
     }
     // The number of max is greater than 1 (because it can't be 0, there is always a max)
-    return removeColorMask(toColorNeighbour, toColorNeighbourIndex, SHIFT(max) - 1, depth, maxColorInGraph);
+    return removeColorMask(toColorNeighbor, toColorNeighborIndex, SHIFT(max) - 1, depth, maxColorInGraph);
 }
 
 
-int handleOdd(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph) {
+int handleOdd(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
     int colorsOccurOdd = 0;
 
-    neighbourhood = neighbourhood & ~SHIFTL(toColorNeighbourIndex);
-    FOR_EACH_BIT(index, neighbourhood) {
-        vertex *secondNeighbour = &g->verticesIndexed[index];
-        int neighbourColor = secondNeighbour->color;
+    neighborhood = neighborhood & ~SHIFTL(toColorNeighborIndex);
+    FOR_EACH_BIT(index, neighborhood) {
+        vertex *secondNeighbor = &g->verticesIndexed[index];
+        int neighborColor = secondNeighbor->color;
 
-        colorsOccurOdd ^= SHIFT((neighbourColor - 1));
+        colorsOccurOdd ^= SHIFT((neighborColor - 1));
         // We do -1 as the colors are from 1...k,
         // but we want to later on use the colors 0...k-1
     }
 
     if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
         // Don't take this color
-        return removeColorMask(toColorNeighbour, toColorNeighbourIndex, colorsOccurOdd, depth, maxColorInGraph);
+        return removeColorMask(toColorNeighbor, toColorNeighborIndex, colorsOccurOdd, depth, maxColorInGraph);
     }
     return 0;
 }
@@ -385,19 +385,19 @@ void subdivide(int removeOriginalEdge) {
     for (int i = 0; i < g->numberOfVertices; i++) {
         vertex* v = &g->verticesIndexed[i];
         v->color=0;
-        FOR_EACH_BIT(j, v->neighbours & (SHIFTL(i) - 1)) {
-            vertex* neighbour = &g->verticesIndexed[j];
-            // Make the new neighbour
-            vertex* newNeighbour = &g->verticesIndexed[count];
-            newNeighbour->index = count;
-            newNeighbour->neighbours = 0;
-            newNeighbour->color = 0;
+        FOR_EACH_BIT(j, v->neighbors & (SHIFTL(i) - 1)) {
+            vertex* neighbor = &g->verticesIndexed[j];
+            // Make the new neighbor
+            vertex* newNeighbor = &g->verticesIndexed[count];
+            newNeighbor->index = count;
+            newNeighbor->neighbors = 0;
+            newNeighbor->color = 0;
 
             if (removeOriginalEdge) {
-                removeNeighbour(v, neighbour);
+                removeNeighbor(v, neighbor);
             }
-            addNeighbour(v, newNeighbour);
-            addNeighbour(neighbour, newNeighbour);
+            addNeighbor(v, newNeighbor);
+            addNeighbor(neighbor, newNeighbor);
             count++;
         }
     }
@@ -422,9 +422,9 @@ void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGra
     // The starting index in the current graph for adding new vertices
     int startingIndex = g->numberOfVertices;
 
-    // Set the neighbours to 0
+    // Set the neighbors to 0
     for (int i = startingIndex; i < startingIndex + nbOfNewVertices - 1; i++) {
-        g->verticesIndexed[i].neighbours = 0;
+        g->verticesIndexed[i].neighbors = 0;
     }
 
     // First index as index the first indices are the number of vertices
@@ -466,8 +466,8 @@ void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGra
                     vertex2 = target;
                 }
 
-                // We add the two vertices as neighbours
-                addNeighbour(vertex1, vertex2);
+                // We add the two vertices as neighbors
+                addNeighbor(vertex1, vertex2);
             }
 
             bitPos++;
@@ -490,7 +490,7 @@ void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisG
     vertex* targetB = &g->verticesIndexed[idxTwoThisGraph];
 
     // Firstly, we remove the edge between the two vertices in this graph
-    removeNeighbour(targetA, targetB);
+    removeNeighbor(targetA, targetB);
 
     /**
     Now it's time to add the graph to the current graph:
@@ -503,9 +503,9 @@ void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisG
     // The starting index in the current graph for adding new vertices
     int startingIndex = g->numberOfVertices;
 
-    // Set the neighbours to 0, two of the new vertices aren't getting added, we remove these
+    // Set the neighbors to 0, two of the new vertices aren't getting added, we remove these
     for (int i = startingIndex; i < startingIndex + nbOfNewVertices - 2; i++) {
-        g->verticesIndexed[i].neighbours = 0;
+        g->verticesIndexed[i].neighbors = 0;
     }
 
     // First index as index the first indices are the number of vertices
@@ -555,8 +555,8 @@ void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisG
                     vertex2 = targetB;
                 }
 
-                // We add the two vertices as neighbours
-                addNeighbour(vertex1, vertex2);
+                // We add the two vertices as neighbors
+                addNeighbor(vertex1, vertex2);
 
             }
 
@@ -600,7 +600,7 @@ void to_graph6_large() {
     for (int j = 1; j < n; j++) {
         for (int i = 0; i < j; i++) {
             bit_buffer <<= 1;
-            if (g->verticesIndexed[i].neighbours & SHIFTL(j)) {
+            if (g->verticesIndexed[i].neighbors & SHIFTL(j)) {
                 bit_buffer |= 1;
             }
             bit_count++;
