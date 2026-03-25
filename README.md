@@ -27,7 +27,7 @@ This will compile plantri and make sure you can use it.
 Now, go straight to the source directory.
 
 ```
-cd ../code/v4-multiprocessing/
+cd ../code/v5-C/
 ```
 
 Make sure a python virtual environment is created by running the following command:
