@@ -18,6 +18,10 @@
         uint64_t high = (uint64_t)(mask >> 64);
         return __builtin_ctzll(high) + 64;
     }
+    static inline int bitset_popcount(bitset_t mask) {
+        return __builtin_popcountll((uint64_t)mask) +
+               __builtin_popcountll((uint64_t)(mask >> 64));
+    }
     #define MAX_VERTICES 128
 
 #else
@@ -28,6 +32,9 @@
     #define MAX_VERTICES 64
     static inline int bitset_ctz(bitset_t mask) {
         return __builtin_ctzll(mask);
+    }
+    static inline int bitset_popcount(bitset_t mask) {
+        return __builtin_popcountll(mask);
     }
 #endif
 

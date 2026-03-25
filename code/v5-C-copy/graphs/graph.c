@@ -56,7 +56,8 @@ graph* createGraph(int previousN, char graphString[]) {
     if (previousN == 0) {
         // There wasn't a graph before, we create one
         g = (graph*) malloc(sizeof(graph));
-        g->changed = malloc(sizeof(bitset_t[MAX_VERTICES][10]));
+        g->colorStates_AC = malloc(sizeof(int[MAX_VERTICES][MAX_VERTICES]));
+        g->colorStates_nbOfAC = malloc(sizeof(int[MAX_VERTICES][MAX_VERTICES]));
         for (int i = 0; i < MAX_VERTICES; i++) {
             g->verticesIndexed[i].index = i;
         }
@@ -102,7 +103,8 @@ void resetGraph(int n) {
     g->chromaticNumber = 0;
 
     // Set the changed 2D-array to zeroes
-    memset(g->changed,0, sizeof(bitset_t[n][10]));
+    memset(g->colorStates_AC,0, sizeof(int[MAX_VERTICES][MAX_VERTICES]));
+    memset(g->colorStates_nbOfAC,0, sizeof(int[MAX_VERTICES][MAX_VERTICES]));
 
     startCounter(n);
 
@@ -171,7 +173,7 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
         }
 
         // We add back the available colors if it didn't work out
-        addColorsBack(depth, newMaxColorCurrGraph);
+        addColorsBack(depth);
     }
 
     /**
@@ -243,7 +245,7 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
             // We want to check if the neighbour is CORRECTLY colored
             if (!colorCheck(neighbour, g->verticesIndexed)) {
                 // Early pruning
-                addColorsBack(depth, maxColorInGraph);
+                addColorsBack(depth);
                 return 1;
                 // We skip the rest, as this color is incorrect
             }
@@ -263,19 +265,13 @@ int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph) {
 
 
 
-void addColorsBack(int depth, int maxColorInGraph) {
-    for (int i = 0; i < maxColorInGraph; i++) {
-        bitset_t value = g->changed[depth][i];
-        if (value != 0) {
-            FOR_EACH_BIT(index, value) {
-                vertex* changedNeighbour = &g->verticesIndexed[index];
-                // addColorFromAvailableColors(changedNeighbour, i);
-                // We know for sure that this was removed,
-                // we don't have to do the check performed in the addColorFromAvailableColors method
-                changedNeighbour->availableColors |= SHIFT(i);
-                changedNeighbour->amountOfAvailableColors++;
-            }
-            g->changed[depth][i] = 0; // We reset changed
+void addColorsBack(int depth) {
+    for (int i = 0; i < g->numberOfVertices; i++) {
+        if (g->colorStates_nbOfAC[depth][i]) {
+            g->verticesIndexed[i].amountOfAvailableColors = g->colorStates_nbOfAC[depth][i];
+            g->verticesIndexed[i].availableColors = g->colorStates_AC[depth][i];
+            g->colorStates_AC[depth][i] = 0; // We reset the states
+            g->colorStates_nbOfAC[depth][i] = 0; // We reset the states
         }
     }
 }
@@ -369,17 +365,15 @@ int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGr
     }
     if (v->availableColors == changedColors) {
         // It will remove all available colors
-        addColorsBack(depth, maxColorInGraph);
+        addColorsBack(depth);
         return 1;
     }
-    int count = 0;
+    // We store the current state of the index
+    g->colorStates_nbOfAC[depth][index] = v->amountOfAvailableColors;
+    g->colorStates_AC[depth][index] = v->availableColors;
     // We do a special remove colors from available colors
-    FOR_EACH_BIT(colorIndex, changedColors) {
-        g->changed[depth][colorIndex] |= SHIFTL(index);
-        count++;
-    }
     v->availableColors &= ~color;
-    v->amountOfAvailableColors -= count;
+    v->amountOfAvailableColors -= bitset_popcount(changedColors);
     return 0;
 }
 

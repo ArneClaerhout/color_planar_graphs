@@ -250,7 +250,8 @@ int performComputation(int previousN, char line[]) {
 void freeGraph(graph* graph) {
     if (graph->counter)
         free(graph->counter);
-    free(graph->changed);
+    free(graph->colorStates_nbOfAC);
+    free(graph->colorStates_AC);
     free(graph);
 
 }

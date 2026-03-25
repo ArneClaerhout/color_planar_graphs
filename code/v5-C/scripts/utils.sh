@@ -186,7 +186,7 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
     # We compile using gcc
     if [[ "$compile_arg" == 0 ]]; then
       echo >&2 "Compiling with 64-bit bitsets"
-      gcc -o graphs/build graphs/*.c -pg -march=native
+      gcc -o graphs/build graphs/*.c -O3 -march=native
     else
       echo >&2 "Compiling with 128-bit bitsets"
       gcc -o graphs/build graphs/*.c -O3 -DUSE_BIG_INT -march=native

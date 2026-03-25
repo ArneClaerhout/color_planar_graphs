@@ -12,7 +12,8 @@
 
 typedef struct graph {
     bitset_t availableVertices;
-    bitset_t (*changed)[10];
+    int (*colorStates_AC)[MAX_VERTICES];
+    int (*colorStates_nbOfAC)[MAX_VERTICES];
     int chromaticNumber;
     bitset_t maxColoringMask;
     int numberOfVertices;
@@ -29,7 +30,7 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
 int startingStep(int maxColor, int allColorings);
 int getBestIndex();
 int updateNeighbours(vertex* v, int color, int depth, int maxColorInGraph);
-void addColorsBack(int depth, int maxColorInGraph);
+void addColorsBack(int depth);
 int handleProper(int, vertex*, int, bitset_t, int);
 int handleCF(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph);
 int handleUM(int depth, vertex* toColorNeighbour, int toColorNeighbourIndex, bitset_t neighbourhood, int maxColorInGraph);
