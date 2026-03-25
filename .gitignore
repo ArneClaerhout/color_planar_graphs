@@ -20,3 +20,5 @@ code/*/build/
 *.gcda
 *.gcov
 code/*/graphs/build
+*.out
+code/*/analysis.txt
