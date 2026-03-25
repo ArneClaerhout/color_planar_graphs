@@ -60,7 +60,7 @@ void subdivide(int removeOriginalEdge);
 void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGraph);
 void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisGraph, int idxOneOwnGraph, int idxTwoOwnGraph);
 char encode_val(int val);
-void to_graph6_large();
+void to_graph6();
 
 
 #endif //GRAPH_H

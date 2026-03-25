@@ -27,6 +27,9 @@ int lengthOfGraph;
 int (*handler)(int, vertex*, int, bitset_t, int);
 int (*colorCheck)(vertex*, vertex*);
 
+extern int index1iCFc;
+extern int index2iCFc;
+
 
 uint64_t start;
 uint64_t end;
@@ -96,12 +99,12 @@ int main(int argc, char **argv) {
                     // We found it should be at index 0 and 4
                     replaceEdgeByGraph("I|eHXcZ?O", i, j, 0, 7);
                     graph* g2 = g;
-                    to_graph6_large();
+                    to_graph6();
                 }
             }
         }
         fprintf(stderr, "%d\n", g->numberOfVertices);
-        to_graph6_large();
+        to_graph6();
 
 
         colorCheck = &isCorrectlyColoredCF;
@@ -200,12 +203,28 @@ int performComputation(int previousN, char line[]) {
         handler = &handleCF;
     }
 
-    const int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
+    int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
 
     // fprintf(stderr, "%d\n", checkCondition);
     // We check if the graph should get printed
     if (c < minChrom || (checkCondition != 0 && !isConditionMet(g->counter, c))) {
         return g->numberOfVertices;
+    }
+
+    if (checkCondition && coloring == iCFc) {
+        char newLine[] = "C~";
+
+        createGraph(0, newLine);
+        for (int i = 0; i < 4; i++) {
+            for (int j = i + 1; j < 4; j++) {
+                if (j != i) {
+                    // We found it should be at index 0 and 4
+                    replaceEdgeByGraph(line, i, j, index1iCFc, index2iCFc);
+                }
+            }
+        }
+
+        c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
     }
 
     if (overview) {
