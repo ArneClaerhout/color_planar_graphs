@@ -20,6 +20,26 @@ typedef struct graph {
     vertex verticesIndexed[MAX_VERTICES];
 } graph;
 
+/**
+ * Used variables
+ */
+extern graph* g;
+
+extern int minChrom;
+extern int checkCondition;
+extern int isOpenColoring;
+extern int isProperColoring;
+extern int isUMColoring;
+
+extern int lengthOfGraph;
+
+extern int (*handler)(int, vertex*, int, bitset_t, int);
+extern int (*colorCheck)(vertex*, vertex*);
+extern enum colorings coloring;
+
+/**
+ * Functions
+ */
 void getColors(int colors[]);
 int getNumberOfVertices(char graphString[], int* dataStart);
 graph* createGraph(int previousN, char graphString[]);

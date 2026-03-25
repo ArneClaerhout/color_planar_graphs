@@ -9,22 +9,6 @@
 #include <unistd.h>
 
 
-extern int minChrom;
-extern int checkCondition;
-extern int isOpenColoring;
-extern int isProperColoring;
-extern int isUMColoring;
-
-extern graph* g;
-extern int lengthOfGraph;
-
-extern int (*handler)(int, vertex*, int, bitset_t, int);
-extern int (*colorCheck)(vertex*, vertex*);
-extern enum colorings coloring;
-
-
-
-
 void getColors(int colors[]) {
     for (int i = 0; i < g->numberOfVertices; i++) {
         colors[i] = g->verticesIndexed[i].color;

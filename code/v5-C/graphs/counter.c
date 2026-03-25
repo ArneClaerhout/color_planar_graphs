@@ -8,15 +8,6 @@
 #include "types.h"
 #include "main.h"
 
-extern int isUMColoring;
-extern int isProperColoring;
-extern int isOpenColoring;
-extern enum colorings coloring;
-extern graph* g;
-extern int checkCondition;
-
-extern int (*colorCheck)(vertex*, vertex*);
-
 int index1iCFc = 0;
 int index2iCFc = 0;
 

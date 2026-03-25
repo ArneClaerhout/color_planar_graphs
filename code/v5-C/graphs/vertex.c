@@ -1,12 +1,9 @@
 #include "colorings.h"
 #include "vertex.h"
 #include "types.h"
+#include "graph.h"
 #include <stdint.h>
 #include <stdio.h>
-
-extern int isOpenColoring;
-extern int isUMColoring;
-extern int isProperColoring;
 
 void addNeighbour(vertex* v, vertex* neighbour) {
     v->neighbours |= SHIFTL(neighbour->index);
