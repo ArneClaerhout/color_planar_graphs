@@ -69,12 +69,21 @@ int getNumberOfVertices(char graphString[], int* dataStart);
 graph* createGraph(int previousN, char graphString[]);
 
 /**
- * A function helping with resetting the current graph.
+ * Copies a given graph into new memory.
+ *
+ * @param g2 The graph to copy.
+ * @return The copy of the graph with its own changed array.
+ */
+graph* copyGraph(graph* g2);
+
+/**
+ * A function helping with resetting the given graph.
  * It resets the graph to work with the given number of vertices.
  *
+ * @param graph the graph to reset.
  * @param n The number of vertices to make the reset graph have.
  */
-void resetGraph(int n);
+void resetGraph(graph* graph, int n);
 
 /**
  * The function setting the maximum color for the coloring of the current graph.

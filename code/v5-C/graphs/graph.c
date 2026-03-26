@@ -34,22 +34,27 @@ int getNumberOfVertices(char graphString[], int *dataStart) {
 
 
 graph* createGraph(int previousN, char graphString[]) {
+
+    graph* g2;
+
     int dataStart;
     int n = getNumberOfVertices(graphString, &dataStart);
 
     if (previousN == 0) {
         // There wasn't a graph before, we create one
-        g = (graph*) malloc(sizeof(graph));
-        g->changed = malloc(sizeof(bitset_t[MAX_VERTICES][10]));
+        g2 = (graph*) malloc(sizeof(graph));
+        g2->changed = malloc(sizeof(bitset_t[MAX_VERTICES][10]));
         for (int i = 0; i < MAX_VERTICES; i++) {
-            g->verticesIndexed[i].index = i;
+            g2->verticesIndexed[i].index = i;
         }
+    } else {
+        g2 = g;
     }
 
-    resetGraph(n);
+    resetGraph(g2, n);
 
     for (int i = 0; i < n; i++) {
-        g->verticesIndexed[i].neighbors = 0;
+        g2->verticesIndexed[i].neighbors = 0;
     }
 
     int index = dataStart; // First index as index the first indices are the number of vertices
@@ -64,7 +69,7 @@ graph* createGraph(int previousN, char graphString[]) {
             // The amount you have to bitshift the number to check bitPos here:
             int edge = ((part6bits >> bitShift) & 1) == 1;
             if (edge) {
-                addNeighbor(&g->verticesIndexed[i], &g->verticesIndexed[j]);
+                addNeighbor(&g2->verticesIndexed[i], &g2->verticesIndexed[j]);
                 // The matrix is symmetrical
             }
 
@@ -76,18 +81,26 @@ graph* createGraph(int previousN, char graphString[]) {
         }
     }
 
-    return g;
+    return g2;
 
 }
 
+graph* copyGraph(graph* g2) {
+    graph* copy = malloc(sizeof(graph));
+    memcpy(copy, g2, sizeof(graph));
+    // We also set a different changed
+    copy->changed = calloc(MAX_VERTICES, sizeof(bitset_t[10]));
+    return copy;
+}
 
-void resetGraph(int n) {
-    g->numberOfVertices = n;
-    g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
-    g->chromaticNumber = 0;
+
+void resetGraph(graph* graph, int n) {
+    graph->numberOfVertices = n;
+    graph->maxColoringMask = SHIFTL(graph->numberOfVertices) - 1;
+    graph->chromaticNumber = 0;
 
     // Set the changed 2D-array to zeroes
-    memset(g->changed,0, sizeof(bitset_t[n][10]));
+    memset(graph->changed,0, sizeof(bitset_t[n][10]));
 
     startCounter(n);
 

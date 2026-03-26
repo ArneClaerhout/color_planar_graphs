@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
         line = "C~";
         // previousN = performComputation(previousN, line);
 
-        createGraph(0, line);
+        g = createGraph(0, line);
         for (int i = 0; i < 4; i++) {
             for (int j = i + 1; j < 4; j++) {
                 if (j != i) {
