@@ -21,10 +21,9 @@ int isOpenColoring;
 int isProperColoring;
 int isUMColoring;
 
-graph* g;
 int lengthOfGraph;
 
-int (*handler)(int, vertex*, int, bitset_t, int);
+int (*handler)(graph*, int, vertex*, int, bitset_t, int);
 int (*colorCheck)(vertex*, vertex*);
 
 extern int index1iCFc;
@@ -51,12 +50,12 @@ int main(int argc, char **argv) {
         size_t len = 0;
         char *line = NULL;
 
-        int previousN = 0;
+        graph* g = NULL;
         // As long as there is something to read from stdin, we read it.
         while ((read = getline(&line, &len, stdin)) != -1) {
             // First we remove the \n from the end of the line:
             line[strcspn(line, "\n")] = 0;
-            previousN = performComputation(previousN, line);
+            g = performComputation(g, line);
         }
 
         if (overview) {
@@ -92,25 +91,25 @@ int main(int argc, char **argv) {
         line = "C~";
         // previousN = performComputation(previousN, line);
 
-        g = createGraph(0, line);
+        graph* g = createGraph(NULL, line);
         for (int i = 0; i < 4; i++) {
             for (int j = i + 1; j < 4; j++) {
                 if (j != i) {
                     // We found it should be at index 0 and 4
-                    replaceEdgeByGraph("I|eHXcZ?O", i, j, 0, 7);
+                    replaceEdgeByGraph(g, "I|eHXcZ?O", i, j, 0, 7);
                     graph* g2 = g;
-                    to_graph6();
+                    to_graph6(g);
                 }
             }
         }
         fprintf(stderr, "%d\n", g->numberOfVertices);
-        to_graph6();
+        to_graph6(g);
 
 
         colorCheck = &isCorrectlyColoredCF;
         handler = &handleCF;
 
-        const int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
+        const int c = findChromaticNumberOptimized(g, max(minChrom - 1, 1));
         fprintf(stderr, "%d\n", c);
 
         // if (overview) {
@@ -183,8 +182,8 @@ void printOverview() {
 }
 
 
-int performComputation(int previousN, char line[]) {
-    g = createGraph(previousN, line); // creates or modifies the graph to work with the amount of vertices
+graph* performComputation(graph* g, char line[]) {
+    g = createGraph(g, line); // creates or modifies the graph to work with the amount of vertices
 
     if (coloring == ODD) {
         colorCheck = &isCorrectlyColoredOdd;
@@ -203,7 +202,7 @@ int performComputation(int previousN, char line[]) {
         handler = &handleCF;
     }
 
-    int c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
+    int c = findChromaticNumberOptimized(g, max(minChrom - 1, 1));
 
     // fprintf(stderr, "%d\n", checkCondition);
     // We check if the graph should get printed
@@ -219,12 +218,12 @@ int performComputation(int previousN, char line[]) {
             for (int j = i + 1; j < 4; j++) {
                 if (j != i) {
                     // We found it should be at index 0 and 4
-                    replaceEdgeByGraph(line, i, j, index1iCFc, index2iCFc);
+                    replaceEdgeByGraph(g, line, i, j, index1iCFc, index2iCFc);
                 }
             }
         }
 
-        c = findChromaticNumberOptimized(max(minChrom - 1, 1), (raw == 4));
+        c = findChromaticNumberOptimized(g, max(minChrom - 1, 1));
     }
 
     if (overview) {
@@ -251,7 +250,7 @@ int performComputation(int previousN, char line[]) {
                     getColors(colors);
                 }
                 printf("%s ", line);
-                printColors(colors);
+                printColors(g, colors);
                 printf("%s\n", extraInfo);
                 break;
             }
@@ -263,7 +262,7 @@ int performComputation(int previousN, char line[]) {
                 printf("%s: %d\n", line, c);
         }
     }
-    return g->numberOfVertices;
+    return g;
 }
 
 void freeGraph(graph* graph) {
@@ -275,7 +274,7 @@ void freeGraph(graph* graph) {
 }
 
 
-void printColors(int colors[]) {
+void printColors(graph* g, int colors[]) {
     printf("[");
     for (int i = 0; i < g->numberOfVertices - 1; i++) {
         printf("%d, ", colors[i]);

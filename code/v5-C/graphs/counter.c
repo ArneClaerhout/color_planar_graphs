@@ -12,7 +12,7 @@ int index1iCFc = 0;
 int index2iCFc = 0;
 
 
-void startCounter(int n) {
+void startCounter(graph* g, int n) {
     if (checkCondition != 0) {
         counter* c;
         if (g->counter == NULL) {
@@ -30,11 +30,8 @@ void startCounter(int n) {
 }
 
 
-int inputColors(counter* counter, const int colors[], int allColors, int chromaticNumber) {
-    if (allColors) {
-        fprintf(stderr, "Displaying all colorings is currently not implemented.");
-        exit(1);
-    }
+int inputColors(graph* g, const int colors[], int chromaticNumber) {
+    counter* counter = g->counter;
     if (isUMColoring) {
         bitset_t oldCondition = 0;
         for (int k = 0; k < counter->numberOfVertices; k++) {
@@ -58,14 +55,14 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
     } else if (coloring == PROPER) {
         // We can do the iCFo coloring method
         if (g->chromaticNumber == 4) {
-            subdivide(checkCondition != 1);
+            subdivide(g, checkCondition != 1);
             // We fully reset the graph
-            resetGraph(g->numberOfVertices);
+            resetGraph(g, g->numberOfVertices);
 
             // We briefly change the coloring
             coloring = iCFo; isProperColoring = 0; isOpenColoring = 1; isUMColoring = 0;
 
-            int c = findChromaticNumberOptimized(4, 0);
+            int c = findChromaticNumberOptimized(g, 4);
             if (c > 4) {
                 counter->conditionVertices = 1;
             } else {
@@ -128,7 +125,8 @@ int inputColors(counter* counter, const int colors[], int allColors, int chromat
 }
 
 
-int isConditionMet(counter* counter, int chromaticNumber) {
+int isConditionMet(graph* g, int chromaticNumber) {
+    counter* counter = g->counter;
     if (isUMColoring) {
         if ((checkCondition == 1 || checkCondition == 3) && counter->conditionVertices != 0) {
             return 1;
@@ -172,7 +170,7 @@ int isConditionMet(counter* counter, int chromaticNumber) {
                         for (int j = 0; j < g->numberOfVertices; j++) {
                             setMaxAvailableColors(&g->verticesIndexed[j], 3);
                         }
-                        if (optimizedAlgorithm(0, 3, 0, 0, 0)) {
+                        if (optimizedAlgorithm(g, 0, 3, 0, 0)) {
 
                             // We don't forget to change the colorCheck function back
                             colorCheck = &isCorrectlyColoredCF;
@@ -180,7 +178,7 @@ int isConditionMet(counter* counter, int chromaticNumber) {
                             // The graph was colored with only 3 colors, while the two vertices are of equal color
                             int colors[g->numberOfVertices];
                             getColors(colors);
-                            printColors(colors);
+                            printColors(g, colors);
                         } else {
 
                             // fprintf(stderr, "index1: %d, index2: %d\n", index1iCFc, index2iCFc);
@@ -206,14 +204,15 @@ int isConditionMet(counter* counter, int chromaticNumber) {
 
 
 int colorCheckiCFc(vertex* v, vertex verticesIndexed[]) {
-    if (v == &g->verticesIndexed[index1iCFc] || v == &g->verticesIndexed[index2iCFc]) {
+    if (v == &verticesIndexed[index1iCFc] || v == &verticesIndexed[index2iCFc]) {
         return 1;
     }
     return isCorrectlyColoredCF(v, verticesIndexed);
 }
 
 
-void getColoringAfterCheck(counter* counter, int chromaticNumber, int colors[]) {
+void getColoringAfterCheck(graph* g, int chromaticNumber, int colors[]) {
+    counter* counter = g->counter;
     // if (!isConditionMet(counter, chromaticNumber)) {
     //     fprintf(stderr, "Requested coloring after check when condition isn't met.");
     //     exit(1);

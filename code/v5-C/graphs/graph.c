@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 
-void getColors(int colors[]) {
+void getColors(graph* g, int colors[]) {
     for (int i = 0; i < g->numberOfVertices; i++) {
         colors[i] = g->verticesIndexed[i].color;
     }
@@ -33,14 +33,14 @@ int getNumberOfVertices(char graphString[], int *dataStart) {
 }
 
 
-graph* createGraph(int previousN, char graphString[]) {
+graph* createGraph(graph* g, char graphString[]) {
 
     graph* g2;
 
     int dataStart;
     int n = getNumberOfVertices(graphString, &dataStart);
 
-    if (previousN == 0) {
+    if (g == NULL) {
         // There wasn't a graph before, we create one
         g2 = (graph*) malloc(sizeof(graph));
         g2->changed = malloc(sizeof(bitset_t[MAX_VERTICES][10]));
@@ -110,7 +110,7 @@ void resetGraph(graph* graph, int n) {
 }
 
 
-int findChromaticNumberOptimized(int startingColor, int allColorings) {
+int findChromaticNumberOptimized(graph* g, int startingColor) {
     for (int i = startingColor; i <= 10; i++) {
         // fprintf(stderr, "%d\n", i);
         for (int j = 0; j < g->numberOfVertices; j++) {
@@ -118,11 +118,11 @@ int findChromaticNumberOptimized(int startingColor, int allColorings) {
         }
         // Each time we reset which vertices are colored.
         g->availableVertices = g->maxColoringMask;
-        if (optimizedAlgorithm(0, i, 0, allColorings, 0)) {
+        if (optimizedAlgorithm(g, 0, i, 0, 0)) {
             g->chromaticNumber = i;
             return i;
         }
-        if ((allColorings || checkCondition != 0) && g->chromaticNumber != 0) {
+        if (checkCondition != 0 && g->chromaticNumber != 0) {
             g->chromaticNumber = i;
             return i; // we wanted to find all colorings
         }
@@ -130,17 +130,17 @@ int findChromaticNumberOptimized(int startingColor, int allColorings) {
     return 0;
 }
 
-int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allColorings, int depth) {
+int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth) {
 
     if (g->availableVertices == 0) {
-        return startingStep(maxColor, allColorings);
+        return startingStep(g, maxColor);
     }
 
     vertex* v = &g->verticesIndexed[index];
     int colors = v->availableColors;
 
     // Every coloring should be tried for um, as this is different then other colorings
-    int maxLoop = (isUMColoring || checkCondition != 0 || allColorings) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
+    int maxLoop = (isUMColoring || checkCondition != 0) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
 
     // We remove the colors that aren't possible (those higher than maxLoop)
     colors &= SHIFT(maxLoop) - 1;
@@ -160,18 +160,18 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
         **/
 
         // We also change the available colors for the neighbors
-        if (updateNeighbors(v, color, depth, newMaxColorCurrGraph)) {
+        if (updateNeighbors(g, v, color, depth, newMaxColorCurrGraph)) {
             // This is used to skip this color, as it isn't possible
             continue;
         }
 
-        int newIndex = getBestIndex();
-        if (optimizedAlgorithm(newMaxColorCurrGraph, maxColor, newIndex, allColorings, depth + 1)) {
+        int newIndex = getBestIndex(g);
+        if (optimizedAlgorithm(g, newMaxColorCurrGraph, maxColor, newIndex, depth + 1)) {
             return 1;
         }
 
         // We add back the available colors if it didn't work out
-        addColorsBack(depth, newMaxColorCurrGraph);
+        addColorsBack(g, depth, newMaxColorCurrGraph);
     }
 
     /**
@@ -185,8 +185,8 @@ int optimizedAlgorithm(int maxColorCurrGraph, int maxColor, int index, int allCo
 }
 
 
-int startingStep(int maxColor, int allColorings) {
-    if (checkCondition != 0 || allColorings) {
+int startingStep(graph* g, int maxColor) {
+    if (checkCondition != 0) {
         if (maxColor < minChrom) {
             // When it's going to get filtered away anyway, we stop it
             return 1;
@@ -195,14 +195,14 @@ int startingStep(int maxColor, int allColorings) {
         // If the counters are all full, return true and stop counting
         // Otherwise, this will return false and we keep trying
         int colors[g->numberOfVertices];
-        getColors(colors);
-        return inputColors(g->counter, colors, allColorings, g->chromaticNumber);
+        getColors(g, colors);
+        return inputColors(g->counter, colors, g->chromaticNumber);
     }
     return 1;
 }
 
 
-int getBestIndex() {
+int getBestIndex(graph* g) {
     // The addition of tiebreaks with degree only slows it down
     // taking the first best vertex is fastest
     int bestIndex = 0;
@@ -221,7 +221,7 @@ int getBestIndex() {
 
 
 
-int updateNeighbors(vertex* v, int color, int depth, int maxColorInGraph) {
+int updateNeighbors(graph* g, vertex* v, int color, int depth, int maxColorInGraph) {
     FOR_EACH_BIT(bit, v->neighbors) {
         vertex* neighbor = &g->verticesIndexed[bit];
 
@@ -229,7 +229,7 @@ int updateNeighbors(vertex* v, int color, int depth, int maxColorInGraph) {
 
         // Neighboring vertices can't have the same color in proper colorings:
         if (isProperColoring && !neighborIsColored) {
-            if (removeColorMask(neighbor, neighbor->index, SHIFT(color), depth, maxColorInGraph))
+            if (removeColorMask(g, neighbor, neighbor->index, SHIFT(color), depth, maxColorInGraph))
                 return 1;
         }
 
@@ -242,7 +242,7 @@ int updateNeighbors(vertex* v, int color, int depth, int maxColorInGraph) {
             // We want to check if the neighbor is CORRECTLY colored
             if (!isOpenColoring && !colorCheck(neighbor, g->verticesIndexed)) {
                 // Early pruning
-                addColorsBack(depth, maxColorInGraph);
+                addColorsBack(g, depth, maxColorInGraph);
                 return 1;
                 // We skip the rest, as this color is incorrect
             }
@@ -253,7 +253,7 @@ int updateNeighbors(vertex* v, int color, int depth, int maxColorInGraph) {
 
             // Only when changing available colors leads to a state
             // where a coloring is not possible do we actually return 1.
-            if (handler(depth, toColorNeighbor, toColorNeighborIndex, neighborhood, maxColorInGraph)) {
+            if (handler(g, depth, toColorNeighbor, toColorNeighborIndex, neighborhood, maxColorInGraph)) {
                 return 1;
             }
         }
@@ -264,7 +264,7 @@ int updateNeighbors(vertex* v, int color, int depth, int maxColorInGraph) {
 
 
 
-void addColorsBack(int depth, int maxColorInGraph) {
+void addColorsBack(graph* g, int depth, int maxColorInGraph) {
     for (int i = 0; i < maxColorInGraph; i++) {
         bitset_t value = g->changed[depth][i];
         if (value != 0) {
@@ -282,12 +282,12 @@ void addColorsBack(int depth, int maxColorInGraph) {
 }
 
 
-int handleProper(int, vertex*, int, bitset_t, int) {
+int handleProper(graph*, int, vertex*, int, bitset_t, int) {
     return 0;
 }
 
 
-int handleCF(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+int handleCF(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
 
@@ -308,15 +308,15 @@ int handleCF(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitse
     }
 
     if (colorsOccurOnce == 0) {
-        return removeColorMask(toColorNeighbor, toColorNeighborIndex, colorsOccur, depth, maxColorInGraph);
+        return removeColorMask(g, toColorNeighbor, toColorNeighborIndex, colorsOccur, depth, maxColorInGraph);
     } else if ((colorsOccurOnce & (colorsOccurOnce - 1)) == 0) { // bitCount == 1
-        return removeColorMask(toColorNeighbor, toColorNeighborIndex, colorsOccurOnce, depth, maxColorInGraph);
+        return removeColorMask(g, toColorNeighbor, toColorNeighborIndex, colorsOccurOnce, depth, maxColorInGraph);
     }
     return 0;
 }
 
 
-int handleUM(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+int handleUM(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
     int max = 1;
     int amountOfMax = 0;
 
@@ -337,14 +337,14 @@ int handleUM(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitse
     // Only allow colors bigger than the max
     // Otherwise, do nothing.
     if (amountOfMax == 1) {
-        return removeColorMask(toColorNeighbor, toColorNeighborIndex, SHIFT((max - 1)), depth, maxColorInGraph);
+        return removeColorMask(g, toColorNeighbor, toColorNeighborIndex, SHIFT((max - 1)), depth, maxColorInGraph);
     }
     // The number of max is greater than 1 (because it can't be 0, there is always a max)
-    return removeColorMask(toColorNeighbor, toColorNeighborIndex, SHIFT(max) - 1, depth, maxColorInGraph);
+    return removeColorMask(g, toColorNeighbor, toColorNeighborIndex, SHIFT(max) - 1, depth, maxColorInGraph);
 }
 
 
-int handleOdd(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+int handleOdd(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
     int colorsOccurOdd = 0;
 
     neighborhood = neighborhood & ~SHIFTL(toColorNeighborIndex);
@@ -359,20 +359,20 @@ int handleOdd(int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bits
 
     if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
         // Don't take this color
-        return removeColorMask(toColorNeighbor, toColorNeighborIndex, colorsOccurOdd, depth, maxColorInGraph);
+        return removeColorMask(g, toColorNeighbor, toColorNeighborIndex, colorsOccurOdd, depth, maxColorInGraph);
     }
     return 0;
 }
 
 
-int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGraph) {
+int removeColorMask(graph* g, vertex* v, int index, int color, int depth, int maxColorInGraph) {
     int changedColors = v->availableColors & color;
     if (changedColors == 0) {
         return 0;
     }
     if (v->availableColors == changedColors) {
         // It will remove all available colors
-        addColorsBack(depth, maxColorInGraph);
+        addColorsBack(g, depth, maxColorInGraph);
         return 1;
     }
     int count = 0;
@@ -387,7 +387,7 @@ int removeColorMask(vertex* v, int index, int color, int depth, int maxColorInGr
 }
 
 
-void subdivide(int removeOriginalEdge) {
+void subdivide(graph* g, int removeOriginalEdge) {
     // We also reset the graph during this process
     int count = g->numberOfVertices;
     int index = count; // Keeps track of where to add the newest subdivision
@@ -418,7 +418,7 @@ void subdivide(int removeOriginalEdge) {
 
 
 
-void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGraph) {
+void addGraphToIndex(graph* g, char graphString[], int indexInThisGraph, int indexInOwnGraph) {
 
     // Grab the number of vertices of the to add graph
     int dataStart;
@@ -486,12 +486,12 @@ void addGraphToIndex(char graphString[], int indexInThisGraph, int indexInOwnGra
     }
 
     // We reset the graph to recolor
-    resetGraph(g->numberOfVertices + nbOfNewVertices - 1);
+    resetGraph(g, g->numberOfVertices + nbOfNewVertices - 1);
 }
 
 
 
-void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisGraph, int idxOneOwnGraph, int idxTwoOwnGraph) {
+void replaceEdgeByGraph(graph* g, char graphString[], int idxOneThisGraph, int idxTwoThisGraph, int idxOneOwnGraph, int idxTwoOwnGraph) {
     // The intermediate vertices
     vertex* targetA = &g->verticesIndexed[idxOneThisGraph];
     vertex* targetB = &g->verticesIndexed[idxTwoThisGraph];
@@ -576,7 +576,7 @@ void replaceEdgeByGraph(char graphString[], int idxOneThisGraph, int idxTwoThisG
     }
 
     // We reset the graph to recolor
-    resetGraph(g->numberOfVertices + nbOfNewVertices - 2);
+    resetGraph(g, g->numberOfVertices + nbOfNewVertices - 2);
 
 }
 
@@ -586,7 +586,7 @@ char encode_val(int val) {
 }
 
 
-void to_graph6() {
+void to_graph6(graph* g) {
     int n = g->numberOfVertices;
 
     // We start with encoding the number of vertices
