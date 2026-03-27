@@ -249,11 +249,10 @@ int updateNeighbors(graph* g, vertex* v, int color, int depth, int maxColorInGra
         } else if ((diff & (diff - 1)) == 0) { // bitCount(diff) == 1
             // The one neighbor we still have to color:
             int toColorNeighborIndex = bitset_ctz(diff);
-            vertex* toColorNeighbor = &g->verticesIndexed[toColorNeighborIndex];
 
             // Only when changing available colors leads to a state
             // where a coloring is not possible do we actually return 1.
-            if (handler(g, depth, toColorNeighbor, toColorNeighborIndex, neighborhood, maxColorInGraph)) {
+            if (handler(g, depth, toColorNeighborIndex, neighborhood, maxColorInGraph)) {
                 return 1;
             }
         }
@@ -282,12 +281,15 @@ void addColorsBack(graph* g, int depth, int maxColorInGraph) {
 }
 
 
-int handleProper(graph*, int, vertex*, int, bitset_t, int) {
+int handleProper(graph*, int, int, bitset_t, int) {
     return 0;
 }
 
 
-int handleCF(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+int handleCF(graph* g, int depth, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+
+    vertex* toColorNeighbor = &g->verticesIndexed[toColorNeighborIndex];
+
     int colorsOccurOnce = 0;
     int colorsOccur = 0;
 
@@ -316,7 +318,10 @@ int handleCF(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIn
 }
 
 
-int handleUM(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+int handleUM(graph* g, int depth, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+
+    vertex* toColorNeighbor = &g->verticesIndexed[toColorNeighborIndex];
+
     int max = 1;
     int amountOfMax = 0;
 
@@ -344,7 +349,10 @@ int handleUM(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIn
 }
 
 
-int handleOdd(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+int handleOdd(graph* g, int depth, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph) {
+
+    vertex* toColorNeighbor = &g->verticesIndexed[toColorNeighborIndex];
+
     int colorsOccurOdd = 0;
 
     neighborhood = neighborhood & ~SHIFTL(toColorNeighborIndex);

@@ -29,7 +29,7 @@ extern int isUMColoring;
 
 extern int lengthOfGraph;
 
-extern int (*handler)(graph*, int, vertex*, int, bitset_t, int);
+extern int (*handler)(graph*, int, int, bitset_t, int);
 extern int (*colorCheck)(vertex*, vertex*);
 extern enum colorings coloring;
 
@@ -39,6 +39,7 @@ extern enum colorings coloring;
  * Returns the final coloring of the current graph.
  * Calling this before actually coloring in the graph will return a nonsense answer.
  *
+ * @param g The graph.
  * @param colors The colors array that will get filled with the colors.
  */
 void getColors(graph* g, int colors[]);
@@ -59,6 +60,7 @@ int getNumberOfVertices(char graphString[], int* dataStart);
  * Only when the previousN is 0 does this actually fully create a new graph.
  * Otherwise, it resets the given graph g.
  *
+ * @param g The graph.
  * @param graphString The graph6-string of the graph that will get created.
  *
  * @return A pointer to the graph that was created (or reused).
@@ -68,7 +70,7 @@ graph* createGraph(graph* g, char graphString[]);
 /**
  * Copies a given graph into new memory.
  *
- * @param g2 The graph to copy.
+ * @param g The graph to copy.
  * @return The copy of the graph with its own changed array.
  */
 graph* copyGraph(graph* g);
@@ -77,7 +79,7 @@ graph* copyGraph(graph* g);
  * A function helping with resetting the given graph.
  * It resets the graph to work with the given number of vertices.
  *
- * @param graph the graph to reset.
+ * @param g The graph to reset.
  * @param n The number of vertices to make the reset graph have.
  */
 void resetGraph(graph* g, int n);
@@ -86,6 +88,7 @@ void resetGraph(graph* g, int n);
  * The function setting the maximum color for the coloring of the current graph.
  * It also resets the graph for every max. color to try and color it in using the algorithm.
  *
+ * @param g The graph.
  * @param startingColor The color to start with when coloring the graph.
  *                      This is useful when you only care about a certain chromatic number,
  *                      starting with that number - 1, will speed up the process, and still gets the results.
@@ -101,6 +104,7 @@ int findChromaticNumberOptimized(graph* g, int startingColor);
  * It tries all possible colors for a given vertex (kept track of by the vertex in question),
  * and updates the neighbors using updateNeighbors.
  *
+ * @param g The graph.
  * @param maxColorCurrGraph The current maximum color in the graph.
  * @param maxColor The maximum color used when coloring in the graph.
  * @param index The current index of vertex that is getting colored in.
@@ -116,6 +120,7 @@ int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index,
  * The starting step in the coloring algorithm.
  * Mainly serves to support the checking of a condition.
  *
+ * @param g The graph.
  * @param maxColor The maximum color used when coloring in the graph.
  *                 When finding the coloring, this is essentially the chromatic number.
  *
@@ -128,6 +133,8 @@ int startingStep(graph* g, int maxColor);
  * Finds the best index of a vertex to color in the current graph.
  * This can only return an index from the available vertices list in the current graph.
  *
+ * @param g The graph.
+ *
  * @return The best index in the graph.
  */
 int getBestIndex(graph* g);
@@ -135,6 +142,7 @@ int getBestIndex(graph* g);
 /**
  * Updates the available colors of the neighbors according to the newly assigned color of a given vertex.
  *
+ * @param g The graph.
  * @param v The vertex that was recently colored.
  * @param color The color assigned to the recently colored vertex.
  * @param depth The depth of the graph in the changed 2D-array.
@@ -151,6 +159,7 @@ int updateNeighbors(graph* g, vertex* v, int color, int depth, int maxColorInGra
  * In particular the colors saved in the changed list of the current graph.
  * Resets the changed entries on the given depth.
  *
+ * @param g The graph.
  * @param depth The depth of the graph in the changed 2D-array.
  *              Essentially symbolizing how many vertices have already been colored.
  * @param maxColorInGraph The current maximum color in the graph.
@@ -164,15 +173,15 @@ void addColorsBack(graph* g, int depth, int maxColorInGraph);
  *
  * @return Zero, the coloring is always correct.
  */
-int handleProper(graph*, int, vertex*, int, bitset_t, int);
+int handleProper(graph*, int, int, bitset_t, int);
 
 /**
  * A handler for the case of Conflict-free colorings used in the update neighbors method.
  * Is used in the case of one neighbor left uncolored.
  *
+ * @param g The graph.
  * @param depth The depth of the graph in the changed 2D-array.
  *              Essentially symbolizing how many vertices have already been colored.
- * @param toColorNeighbor The neighbor that still has to get colored.
  * @param toColorNeighborIndex The index of the to color neighbor.
  * @param neighborhood The neighborhood of the original vertex, a neighbor of the to color neighbor.
  * @param maxColorInGraph The current maximum color in the graph.
@@ -180,15 +189,15 @@ int handleProper(graph*, int, vertex*, int, bitset_t, int);
  * @return One, if removing the available colors allows for pruning the branch (the vertex doesn't have any colors left).
  *         Zero, otherwise.
  */
-int handleCF(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph);
+int handleCF(graph* g, int depth, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph);
 
 /**
  * A handler for the case of Unique maximum colorings used in the update neighbors method.
  * Is used in the case of one neighbor left uncolored.
  *
+ * @param g The graph.
  * @param depth The depth of the graph in the changed 2D-array.
  *              Essentially symbolizing how many vertices have already been colored.
- * @param toColorNeighbor The neighbor that still has to get colored.
  * @param toColorNeighborIndex The index of the to color neighbor.
  * @param neighborhood The neighborhood of the original vertex, a neighbor of the to color neighbor.
  * @param maxColorInGraph The current maximum color in the graph.
@@ -196,15 +205,15 @@ int handleCF(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIn
  * @return One, if removing the available colors allows for pruning the branch (the vertex doesn't have any colors left).
  *         Zero, otherwise.
  */
-int handleUM(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph);
+int handleUM(graph* g, int depth, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph);
 
 /**
  * A handler for the case of odd colorings used in the update neighbors method.
  * Is used in the case of one neighbor left uncolored.
  *
+ * @param g The graph.
  * @param depth The depth of the graph in the changed 2D-array.
  *              Essentially symbolizing how many vertices have already been colored.
- * @param toColorNeighbor The neighbor that still has to get colored.
  * @param toColorNeighborIndex The index of the to color neighbor.
  * @param neighborhood The neighborhood of the original vertex, a neighbor of the to color neighbor.
  * @param maxColorInGraph The current maximum color in the graph.
@@ -212,12 +221,13 @@ int handleUM(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIn
  * @return One, if removing the available colors allows for pruning the branch (the vertex doesn't have any colors left).
  *         Zero, otherwise.
  */
-int handleOdd(graph* g, int depth, vertex* toColorNeighbor, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph);
+int handleOdd(graph* g, int depth, int toColorNeighborIndex, bitset_t neighborhood, int maxColorInGraph);
 
 /**
  * Removes the given available colors from a vertex. The color is given as a bitset.
  * This method also updates the changed list in the graph, while this wouldn't happen in vertex.c
  *
+ * @param g The graph.
  * @param v The vertex to remove the available colors from.
  * @param index The index of the vertex.
  * @param color The color bitset to remove.
@@ -233,6 +243,7 @@ int removeColorMask(graph* g, vertex* v, int index, int color, int depth, int ma
 /**
  * Subdivide the graph so that each edge gets turned into a vertex and two edges.
  *
+ * @param g The graph.
  * @param removeOriginalEdge Boolean saying whether the original edge
  *                           in the graph that is getting subdivided should get removed.
  */
@@ -243,6 +254,7 @@ void subdivide(graph* g, int removeOriginalEdge);
  * The graph gets linked by taking one vertex in the given graph
  * and putting that as a vertex in the current graph.
  *
+ * @param g The graph.
  * @param graphString The graph to add to the current graph.
  * @param indexInThisGraph The vertex that will get the graph added to it.
  * @param indexInOwnGraph The vertex in the to add graph that will be used as the connector.
@@ -252,6 +264,7 @@ void addGraphToIndex(graph* g, char graphString[], int indexInThisGraph, int ind
 /**
  * A method that replaces an edge in the current graph g with a given graph in graph6 format.
  *
+ * @param g The graph.
  * @param graphString The graph that will be used to replace an edge.
  * @param idxOneThisGraph The first index of the edge to replace.
  * @param idxTwoThisGraph The second index of the edge to replace.
@@ -272,6 +285,8 @@ char encode_val(int val);
 
 /**
  * Converts the current global graph into graph6 format and outputs it to stdout.
+ *
+ * @param g The graph.
  */
 void to_graph6(graph* g);
 

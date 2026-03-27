@@ -36,6 +36,7 @@ void printOverview(void);
  * This will color in the graph, check if it has conditions if needed.
  * Lastly, it will also print out the graph in the correct format (given by raw and overview).
  *
+ * @param g The graph.
  * @param line The graph6-string to process.
  *
  * @return The graph object used in the computation.
@@ -52,6 +53,7 @@ void freeGraph(graph* graph);
 /**
  * Prints out a given colors array to stdout.
  *
+ * @param g The graph.
  * @param colors The colors array to print out.
  */
 void printColors(graph* g, int colors[]);

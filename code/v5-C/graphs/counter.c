@@ -177,7 +177,7 @@ int isConditionMet(graph* g, int chromaticNumber) {
 
                             // The graph was colored with only 3 colors, while the two vertices are of equal color
                             int colors[g->numberOfVertices];
-                            getColors(colors);
+                            getColors(g, colors);
                             printColors(g, colors);
                         } else {
 
@@ -242,7 +242,7 @@ void getColoringAfterCheck(graph* g, int chromaticNumber, int colors[]) {
             snprintf(counter->extraInfo, MAX_STRING_LENGTH, " Vertex never has this color");
         }
     } else if (coloring == PROPER) {
-        getColors(colors);
+        getColors(g, colors);
         snprintf(counter->extraInfo, MAX_STRING_LENGTH, " ");
     } else if (coloring == ODD) {
         FOR_EACH_BIT(index, counter->conditionVertices) {

@@ -23,7 +23,7 @@ int isUMColoring;
 
 int lengthOfGraph;
 
-int (*handler)(graph*, int, vertex*, int, bitset_t, int);
+int (*handler)(graph*, int, int, bitset_t, int);
 int (*colorCheck)(vertex*, vertex*);
 
 extern int index1iCFc;
@@ -207,7 +207,7 @@ graph* performComputation(graph* g, char line[]) {
     // fprintf(stderr, "%d\n", checkCondition);
     // We check if the graph should get printed
     if (c < minChrom || (checkCondition != 0 && !isConditionMet(g->counter, c))) {
-        return g->numberOfVertices;
+        return g;
     }
 
     if (checkCondition && coloring == iCFc) {
@@ -247,7 +247,7 @@ graph* performComputation(graph* g, char line[]) {
                     getColoringAfterCheck(g->counter, c, colors);
                     extraInfo = getExtraInfoText(g->counter);
                 } else {
-                    getColors(colors);
+                    getColors(g, colors);
                 }
                 printf("%s ", line);
                 printColors(g, colors);
