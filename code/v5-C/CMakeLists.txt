@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.22)
 project(v5_C C)
 
+find_package(OpenMP REQUIRED)
+
+
 set(CMAKE_C_STANDARD 11)
+
+
 
 add_executable(v5_C
         graphs/colorings.c
@@ -15,3 +20,5 @@ add_executable(v5_C
         graphs/counter.c
         graphs/counter.h
         graphs/types.h)
+
+target_link_libraries(v5_C PUBLIC OpenMP::OpenMP_C)

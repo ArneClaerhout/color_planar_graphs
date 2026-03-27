@@ -183,10 +183,12 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
       OPTIND=$((OPTIND + 1))
     fi
 
+    export OMP_NUM_THREADS=8
+
     # We compile using gcc
     if [[ "$compile_arg" == 0 ]]; then
       echo >&2 "Compiling with 64-bit bitsets"
-      gcc -o graphs/build graphs/*.c -O3 -march=native
+      gcc -o graphs/build graphs/*.c -O3 -march=native -fopenmp
     else
       echo >&2 "Compiling with 128-bit bitsets"
       gcc -o graphs/build graphs/*.c -O3 -DUSE_BIG_INT -march=native

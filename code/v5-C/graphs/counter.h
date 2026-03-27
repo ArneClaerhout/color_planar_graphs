@@ -2,7 +2,6 @@
 #define COUNTER_H
 #include <stdint.h>
 
-#include "graph.h"
 #include "types.h"
 #include "vertex.h"
 
@@ -17,48 +16,6 @@ typedef struct counter {
     char extraInfo[MAX_STRING_LENGTH];
     bitset_t maxColoringMask;
 } counter;
-
-/**
- * Starts up a counter for the current graph.
- * If a counter already exists, it gets reused.
- *
- * @param g The graph.
- * @param n The number of vertices this counter will keep track of.
- */
-void startCounter(graph* g, int n);
-
-/**
- * Inputs the given coloring into the given counter.
- *
- * @param g The graph.
- * @param colors The coloring of a graph to input.
- * @param chromaticNumber The chromatic number of the graph.
- * @return One, if the inputting of colorings can stop (because the condition isn't met).
- *         Zero, otherwise.
- */
-int inputColors(graph* g, const int colors[], int chromaticNumber);
-
-/**
- * Checks whether the condition has been met after inputting all the colorings into counter.
- *
- * @param g The graph.
- * @param chromaticNumber The chromatic number of the graph.
- * @return One, if the condition is met.
- *         Zero, otherwise.
- */
-int isConditionMet(graph* g, int chromaticNumber);
-
-/**
- * Finds the coloring after all possible colorings of the graph have been input into the counter.
- * This will set the given colors array to the coloring.
- * For most colorings, this will not return an actual coloring of the graph,
- * only a representation of what vertices were important in the checking of a condition.
- *
- * @param g The graph.
- * @param chromaticNumber The chromatic number of the graph.
- * @param colors The colors array used to write the coloring into.
- */
-void getColoringAfterCheck(graph* g, int chromaticNumber, int colors[]);
 
 /**
  * Helper method for finding the extra info of the counter.
