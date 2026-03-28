@@ -287,12 +287,12 @@ if [[ "$show" != "" ]]; then
 	# If show is chosen, we always pick these values
 	raw=3
 	overview=false
-	unset num_graphs
 fi
 
 ### FILTER CHECK
 if [[ "$filter" =~ ^-?[0-9]+$ ]]; then
 	# Filter is a number
+	# If it's not a number, we use it as a path to the filter json file
 	min_chrom="$filter"
 fi
 

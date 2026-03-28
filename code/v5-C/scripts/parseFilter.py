@@ -11,12 +11,9 @@ def simplify(variable, n):
 
 
 def to_nauty_args(filter):
-    n = 0
-    args = []
-    if filter.get("n", None) is None:
-        # We check if there are vertices given, this should be the case
-        raise Exception("No number of vertices specified.")
-    else:
+
+    # First, we find the number of vertices
+    try:
         n = filter.get("n")
         parts = n.split(":")
         if len(parts) == 1:
@@ -25,27 +22,13 @@ def to_nauty_args(filter):
             start, end = map(int, parts)
         else:
             raise ValueError(f"Invalid range format: {n!r}")
+    except:
+        start = end = 0
 
-    if filter.get("coloring", None) is None:
-        raise Exception("No coloring specified.")
-    else:
-        coloring = filter.get("coloring")
+    # Now, the other arguments
+    args = []
 
-    ## OUTPUT
-    raw = 0
-    overview = False
-    show = 0
-    pv = False
-    min_chrom = 0
-    output = filter.get("output", None)
-    if output is not None:
-        if output.get("raw", None) is not None:
-            raw = output.get("raw")
-        if output.get("overview", None) is not None and output.get("overview") == True:
-            overview = True
-        if output.get("min_chrom", None) is not None:
-            min_chrom = output.get("min_chrom")
-
+    # We only check for special nauty options
     for i in range(start, end + 1):
         argsnew = []
 
@@ -85,13 +68,9 @@ def to_nauty_args(filter):
         if filter.get("eulerian", None) is not None:
             argsnew.append("-E")
 
-        orbits = filter.get("orbits", None)
-        if orbits is not None:
-            argsnew.append(f"-o{simplify(orbits, i)}")
-
         args.append(argsnew)
 
-    return raw, overview, range(start, end + 1), coloring, min_chrom, args
+    return range(start, end + 1), args
 
 
 if __name__ == "__main__":
@@ -107,7 +86,6 @@ if __name__ == "__main__":
         raise Exception("The file contains invalid JSON.")
 
     for i, filter in enumerate(data):
-        print(i, filter)
-        raw, overview, n, coloring, min_chrom, args = to_nauty_args(data.get(filter))
+        n, args = to_nauty_args(data.get(filter))
         for index, arg in enumerate(args):
-            print(raw, overview, n[index], coloring, min_chrom, " ".join(arg))
+            print(n[index], " ".join(arg))

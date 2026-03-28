@@ -31,37 +31,14 @@ filter_file_parse() {
   # Check if venv has been created
   activate_venv
 
-  change=""
-  changeoverview=false
   "venv/bin/python" scripts/parseFilter.py "$filter" | while read -r line; do
     # We first parse the line
-    # This changes all the variables to the ones given in the filter
-    read -r raw overview n coloring minChrom rest <<<"$line"
-    if [[ "$change" != "" ]]; then
+    read -r n rest <<<"$line"
 
-      # Last cycle we got a filter name
-      echo ":raw $raw"
-      echo ":overview $overview"
-      echo ":coloring $coloring"
-      echo ":minChrom $minChrom"
-      if [[ "$changeoverview" == true ]]; then
-        echo ":update overview"
-        changeoverview=false
-      fi
-      if [[ "$raw" == 0 ]]; then
-        echo ":print $change"
-      fi
-      change=""
-    fi
-    if [[ "$overview" != true && "$overview" != false ]]; then
-      # overview isn't a boolean, we update the arguments
-      change="$overview"
-      if [[ "$raw" != 0 ]]; then
-        changeoverview=true
-      fi
-    fi
+#    echo "$rest" >&2
 
-    gen_range_graphs "$n" "$n" "$raw" 0 | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
+    # Then we filter the output using nauty
+    gen_range_graphs "$n" "$n" 0 | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
   done
 
   # We deactivate the venv
