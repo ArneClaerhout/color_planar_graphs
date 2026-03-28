@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <omp.h>
 
 #include "main.h"
 
@@ -134,7 +135,7 @@ int findChromaticNumberOptimized(graph* g, int startingColor) {
         g->availableVertices = g->maxColoringMask;
 
         // Color in the graph
-        if (g->numberOfVertices > 63) {
+        if (g->numberOfVertices > 0) {
             // If the graph has a lot of vertices, use multithreading
             if (startParallelColoring(g, i)) {
                 g->chromaticNumber = i;
@@ -194,7 +195,7 @@ void parallelWorker(graph* g, int maxColorCurrGraph, int maxColor, int index, in
 
         int nextIndex = getBestIndex(branchGraph);
 
-        if (depth < 3) {
+        if (depth < 4) {
             // Task creation for high-level branches
             #pragma omp task firstprivate(branchGraph, nextMax, nextIndex, depth) shared(found)
             {
@@ -218,6 +219,7 @@ int startParallelColoring(graph* originalG, int maxColor) {
 
     #pragma omp parallel
     {
+        // fprintf(stderr, "Thread %d of %d\n", omp_get_thread_num(), omp_get_num_threads());
         #pragma omp single
         {
             // We create one initial copy for the root of the parallel search
