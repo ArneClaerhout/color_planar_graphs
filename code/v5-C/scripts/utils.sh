@@ -171,7 +171,7 @@ fi
 #### OPTIONS ####
 #################
 
-while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
+while getopts ":hCcm:f:porsPLBaxM:F:PQn:" opt; do
 	case $opt in
 	h)
 		show_help
@@ -188,7 +188,7 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
     # We compile using gcc
     if [[ "$compile_arg" == 0 ]]; then
       echo >&2 "Compiling with 64-bit bitsets"
-      gcc -o graphs/build graphs/*.c -O3 -march=native
+      gcc -o graphs/build graphs/*.c -pg -march=native
     else
       echo >&2 "Compiling with 128-bit bitsets"
       gcc -fopenmp -o graphs/build graphs/*.c -O3 -DUSE_BIG_INT -march=native
@@ -210,8 +210,11 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
     num_graphs=0
     ;;
 	f)
-		filter=$OPTARG
+		min_chrom=$OPTARG
 		;;
+  n)
+    filter=$OPTARG
+    ;;
 	p)
 		num_graphs=0
 		;;
@@ -276,7 +279,7 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQ" opt; do
 done
 
 ### VERTICES-CHECK
-if [[ "$noVerticesGiven" == "true" && manual == "" && -v "$file_name" ]]; then
+if [[ "$noVerticesGiven" == "true" && "$manual" == "" && -v "$file_name" && "$filter" == "" ]]; then
 	# No manual graph given and no vertices given.
 	echo "Error: Number of vertices not set." >&2
 	exit 1
@@ -287,13 +290,6 @@ if [[ "$show" != "" ]]; then
 	# If show is chosen, we always pick these values
 	raw=3
 	overview=false
-fi
-
-### FILTER CHECK
-if [[ "$filter" =~ ^-?[0-9]+$ ]]; then
-	# Filter is a number
-	# If it's not a number, we use it as a path to the filter json file
-	min_chrom="$filter"
 fi
 
 ### GRAPH COUNTING

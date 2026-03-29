@@ -35,10 +35,10 @@ filter_file_parse() {
     # We first parse the line
     read -r n rest <<<"$line"
 
-#    echo "$rest" >&2
+#    echo "$n" >&2
 
     # Then we filter the output using nauty
-    gen_range_graphs "$n" "$n" 0 | eval "\"./$nauty_path/pickg\" $rest" 2>/dev/null
+    gen_range_graphs "$n" "$n" "$1" | "./$nauty_path/pickg" "$rest" 2>/dev/null
   done
 
   # We deactivate the venv
@@ -71,9 +71,8 @@ c_alg() {
 
 choose_incoming_graphs() {
 	# First we check whether we have a filter file
-	if ! [[ "$filter" =~ ^-?[0-9]+$ ]]; then
-	  exit_on_multiprocessing
-		filter_file_parse
+	if [[ "$filter" != 0 ]]; then
+		filter_file_parse "$1"
 	elif [[ -z "$file_name" ]]; then
 	  # We don't have an input file
 
@@ -89,6 +88,14 @@ choose_incoming_graphs() {
       echo "$manual"
     fi
 	fi
+}
+
+show_func() {
+  if [[ "$1" != "" ]]; then
+  	./scripts/showGraph6.sh "$1"
+  else
+    cat
+  fi
 }
 
 combine_outputs_M() {
@@ -124,10 +131,9 @@ execute() {
   fi
 }
 
-
 ### EXECUTION
 if [[ "$number_of_processes" -eq 1 || -n "$file_name" ]]; then
-  execute | ./scripts/showGraph6.sh "$show"
+  execute | show_func "$show"
 else
   # We split up the execution
   execute_M 0 &
@@ -136,7 +142,7 @@ else
     execute_M "$i" 2>/dev/null &
   done
   wait
-  combine_outputs_M | write_to_file -1 | ./scripts/showGraph6.sh "$show"
+  combine_outputs_M | write_to_file -1 | show_func "$show"
   
   if [[ "$overview" == true ]]; then
     # We first combine the overviews and then read the output

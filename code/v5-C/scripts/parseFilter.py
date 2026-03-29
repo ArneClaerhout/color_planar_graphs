@@ -42,8 +42,8 @@ def to_nauty_args(filter):
             argsnew.append(f"-d{min_degree}")
 
         max_degree = filter.get("max_degree", None)
-        if max_degree is not None and max_degree >= 0:
-            argsnew.append(f"-T{simplify(max_degree, i)}")
+        if max_degree is not None:
+            argsnew.append(f"-D{simplify(max_degree, i)}")
 
         radius = filter.get("radius", None)
         if radius is not None and radius >= 0:

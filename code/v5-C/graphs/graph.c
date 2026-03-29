@@ -135,7 +135,7 @@ int findChromaticNumberOptimized(graph* g, int startingColor) {
         g->availableVertices = g->maxColoringMask;
 
         // Color in the graph
-        if (g->numberOfVertices > 0) {
+        if (g->numberOfVertices > 63) {
             // If the graph has a lot of vertices, use multithreading
             if (startParallelColoring(g, i)) {
                 g->chromaticNumber = i;

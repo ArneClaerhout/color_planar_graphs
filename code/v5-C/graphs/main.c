@@ -64,8 +64,10 @@ int main(int argc, char **argv) {
         }
 
         // We don't forget to free line
-        free(line);
-        freeGraph(g);
+        if (g != NULL) {
+            free(line);
+            freeGraph(g);
+        }
     } else {
         overview = 1;minChrom = 0;raw = 0;checkCondition = 0;coloring = iCFc;isOpenColoring = coloringIsOpen(coloring);isProperColoring = coloringIsProper(coloring);isUMColoring = coloringIsUM(coloring);
         start = clock();
