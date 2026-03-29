@@ -36,12 +36,14 @@ int main(int argc, char **argv) {
     int debugging = 0;
 
     if (!debugging) {
+        // First: parse the arguments
         parseArguments(argc, argv);
 
         isOpenColoring = coloringIsOpen(coloring);
         isProperColoring = coloringIsProper(coloring);
         isUMColoring = coloringIsUM(coloring);
 
+        // Then, the coloring of the graphs in stdin starts
         start = clock();
 
         ssize_t read = 0;
@@ -56,17 +58,22 @@ int main(int argc, char **argv) {
             g = performComputation(g, line);
         }
 
+        // Show the overview
         if (overview) {
             printOverview();
         }
 
+        // We show that we have finished
         if (raw == 0) {
             printf("All graphs have been processed.\n");
         }
 
         // We don't forget to free line
+        free(line);
+
+        // Only if any graphs were input do we actually free the graph
+        // When no graphs are found in stdin, the graph doesn't get created
         if (g != NULL) {
-            free(line);
             freeGraph(g);
         }
     } else {

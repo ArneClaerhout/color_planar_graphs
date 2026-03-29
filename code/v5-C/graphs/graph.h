@@ -290,9 +290,30 @@ char encode_val(int val);
  */
 void to_graph6(graph* g);
 
+/**
+ * Helper method helping with coloring in the graph in a parallel way.
+ * Has the same functionality as optimizedAlgorithm,
+ * but instead of working recursively for each color,
+ * it starts a new thread for each available color of the current vertex.
+ *
+ * @param g The graph to color in.
+ * @param maxColorCurrGraph The maximum color in the graph.
+ * @param maxColor The maximum color allowed when coloring in the graph;
+ * @param index The index of the next vertex we can color in.
+ * @param depth The depth of the algorithm.
+ */
 void parallelWorker(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth);
 
-int startParallelColoring(graph* originalG, int maxColor);
+/**
+ * Starts the coloring of a given graph using multithreading.
+ *
+ * @param g The starting graph to color.
+ * @param maxColor The max color allowed when coloring the graph.
+ *
+ * @return One, if the chromatic number of the graph is found.
+ *         Zero, otherwise.
+ */
+int startParallelColoring(graph* g, int maxColor);
 
 
 #endif //GRAPH_H

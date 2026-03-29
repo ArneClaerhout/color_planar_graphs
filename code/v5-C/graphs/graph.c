@@ -156,10 +156,13 @@ int findChromaticNumberOptimized(graph* g, int startingColor) {
 }
 
 void parallelWorker(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth) {
-    // 1. ATOMIC READ: Check if we should stop
+    // We work with a found variable
     int localFound;
     #pragma omp atomic read
     localFound = found;
+
+    // If there was a thread that found a coloring, return
+    // If the entire graph was colored in, return
     if (localFound || g->availableVertices == 0) {
         if (g->availableVertices == 0 && startingStep(g, maxColor)) {
             #pragma omp atomic write
@@ -168,6 +171,7 @@ void parallelWorker(graph* g, int maxColorCurrGraph, int maxColor, int index, in
         return;
     }
 
+    // Start coloring in
     vertex* v = &g->verticesIndexed[index];
     int colors = v->availableColors;
     int maxLoop = (isUMColoring || checkCondition != 0) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
@@ -176,12 +180,15 @@ void parallelWorker(graph* g, int maxColorCurrGraph, int maxColor, int index, in
     g->availableVertices &= ~(1L << index);
 
     FOR_EACH_BIT(color, colors) {
+
         // Check flag inside the loop to break early
         #pragma omp atomic read
         localFound = found;
         if (localFound) break;
 
+        // Make a new graph for each branch
         graph* branchGraph = copyGraph(g);
+        // Color in the copied graph
         vertex* branchV = &branchGraph->verticesIndexed[index];
         branchV->color = color + 1;
         int nextMax = max(color + 1, maxColorCurrGraph);
@@ -211,17 +218,15 @@ void parallelWorker(graph* g, int maxColorCurrGraph, int maxColor, int index, in
     }
 }
 
-int startParallelColoring(graph* originalG, int maxColor) {
+int startParallelColoring(graph* g, int maxColor) {
     found = 0;
-
-
     #pragma omp parallel
     {
         // fprintf(stderr, "Thread %d of %d\n", omp_get_thread_num(), omp_get_num_threads());
         #pragma omp single
         {
             // We create one initial copy for the root of the parallel search
-            graph* rootCopy = copyGraph(originalG);
+            graph* rootCopy = copyGraph(g);
 
             parallelWorker(rootCopy, 0, maxColor, 0, 0);
 
