@@ -8,6 +8,7 @@
 #include <time.h>
 #include "main.h"
 #include "counter.h"
+#include "counterInput.h"
 #include "types.h"
 
 
@@ -206,22 +207,6 @@ graph* performComputation(graph* g, char line[]) {
     // We check if the graph should get printed
     if (c < minChrom || (checkCondition != 0 && !isConditionMet(g, c))) {
         return g;
-    }
-
-    if (checkCondition && coloring == iCFc) {
-        char newLine[] = "C~";
-
-        createGraph(0, newLine);
-        for (int i = 0; i < 4; i++) {
-            for (int j = i + 1; j < 4; j++) {
-                if (j != i) {
-                    // We found it should be at index 0 and 4
-                    replaceEdgeByGraph(g, line, i, j, index1iCFc, index2iCFc);
-                }
-            }
-        }
-
-        c = findChromaticNumberOptimized(g, max(minChrom - 1, 1));
     }
 
     if (overview) {

@@ -17,23 +17,4 @@ typedef struct counter {
     bitset_t maxColoringMask;
 } counter;
 
-/**
- * Helper method for finding the extra info of the counter.
- * The coloring should have already been asked for.
- *
- * @param counter The counter to get the extra info of.
- * @return The extra info.
- */
-char* getExtraInfoText(counter* counter);
-
-/**
- * A helper function used to alternatively color in a graph using this special color checker method.
- *
- * @param v The vertex that is going to get checked for correctness of coloring.
- * @param verticesIndexed The array of vertices in the current graph.
- * @return One, if the vertex is correctly colored.
- *         Zero, otherwise.
- */
-int colorCheckiCFc(vertex* v, vertex verticesIndexed[]);
-
 #endif //COUNTER_H

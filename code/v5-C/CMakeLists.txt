@@ -17,8 +17,9 @@ add_executable(v5_C
         graphs/graph.c
         graphs/graph.h
         graphs/main.h
-        graphs/counter.c
+        graphs/counterInput.c
         graphs/counter.h
-        graphs/types.h)
+        graphs/types.h
+        graphs/counterInput.h)
 
 target_link_libraries(v5_C PUBLIC OpenMP::OpenMP_C)

@@ -39,7 +39,7 @@ use_nauty() {
 	output2=$(gen_range_graphs "$startn" "$endn" | "./$nauty_path/countg" --N 2>/dev/null | sed '$d' | tr -d '[:space:]')
 	## We also get rid of the extra printing to the terminal
 	echo -n "  Nauty done"
-	output1=$(./color.sh "$startn:$endn" -c proper -ro | sed '$d' | tr -d '[:space:]')
+	output1=$(./color.sh "$startn:$endn" -c proper -ro -M 10 | sed '$d' | tr -d '[:space:]')
 	printf ", own program done.\n\n"
 
 	# The two outputs from nauty and my own program, stripped of spaces and the last line
