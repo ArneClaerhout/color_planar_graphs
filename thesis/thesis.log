@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.3)  29 MAR 2026 16:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.3)  29 MAR 2026 22:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -363,7 +363,7 @@ Package: algorithmic 2009/08/24 v0.1 Document Style `algorithmic'
 \algorithmicindent=\skip58
 )
 LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 7
-2.
+3.
 
 (c:/texlive/2023/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -376,25 +376,25 @@ File: l3backend-pdftex.def 2023-04-19 L3 backend support: PDF output (pdfTeX)
 (./thesis.aux)
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-Package hyperref Info: Link coloring OFF on input line 72.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+Package hyperref Info: Link coloring OFF on input line 73.
  (./thesis.out) (./thesis.out)
 \@outlinefile=\write3
 \openout3 = `thesis.out'.
@@ -427,94 +427,65 @@ e
 ))
 \titlearea=\box57
 \actualheight=\skip59
-
-
-LaTeX Warning: Citation `gottlob:nonmon' on page 1 undefined on input line 87.
-
-
-LaTeX Warning: Citation `abelson-et-al:scheme' on page 1 undefined on input lin
-e 89.
-
-
-LaTeX Warning: Citation `bgf:Lixto' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `brachman-schmolze:kl-one' on page 1 undefined on input
- line 91.
-
-
-LaTeX Warning: Citation `nebel:jair-2000' on page 1 undefined on input line 93.
-
-
-
-LaTeX Warning: Citation `gls:hypertrees' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `levesque:functional-foundations' on page 1 undefined o
-n input line 94.
-
-
-LaTeX Warning: Citation `abelson-et-al:scheme' undefined on input line 95.
-
-
-LaTeX Warning: Citation `bgf:Lixto' undefined on input line 96.
-
-
-LaTeX Warning: Citation `brachman-schmolze:kl-one' undefined on input line 97.
-
-
-LaTeX Warning: Citation `gottlob:nonmon' undefined on input line 98.
-
-
-LaTeX Warning: Citation `gls:hypertrees' undefined on input line 99.
-
-
-LaTeX Warning: Citation `levesque:functional-foundations' undefined on input li
-ne 100.
-
-
-LaTeX Warning: Citation `levesque:belief' undefined on input line 101.
-
-
-LaTeX Warning: Citation `nebel:jair-2000' undefined on input line 102.
-
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 111.
+put line 99.
+LaTeX Font Info:    Trying to load font information for OT1+txtt on input line 
+102.
+
+(c:/texlive/2023/texmf-dist/tex/latex/txfonts/ot1txtt.fd
+File: ot1txtt.fd 2000/12/15 v3.1
+)
+Underfull \hbox (badness 8151) in paragraph at lines 125--125
+[] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 neighbourhood\OT1/ptm/m/n/10 ($\OML/cm
+m/m/it/10 vertex$\OT1/ptm/m/n/10 ) is fully col-ored $\OMS/cmsy/m/n/10 ^$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 131--131
+[] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 colorGraph\OT1/ptm/m/n/10 ($\OML/cmm/m
+/it/10 G; maxColor;$ \OT1/txtt/m/n/10 getBestIndex\OT1/ptm/m/n/10 ())
+ []
+
+
+Overfull \hbox (59.09743pt too wide) in paragraph at lines 154--155
+[] []\OT1/txtt/m/n/10 removeAvailableColorsForColoring\OT1/ptm/m/n/10 ($\OML/cm
+m/m/it/10 uncoloredNeighbour$\OT1/ptm/m/n/10 ) 
+ []
+
 (./thesis.bbl) [1{c:/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 {c:/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
 
+] [2
 
 ] (./thesis.aux)
  ***********
 LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2023-08-29>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 6BCA41687203F5E76033F183E787E819;355.
+(rerunfilecheck)             Checksum: 75AABF7A8DCD17946225FA63BC7F0A4F;253.
  ) 
 Here is how much of TeX's memory you used:
- 11175 strings out of 474928
- 176270 string characters out of 5763562
- 1930785 words of memory out of 5000000
- 32563 multiletter control sequences out of 15000+600000
- 572386 words of font info for 64 fonts, out of 8000000 for 9000
+ 11263 strings out of 474928
+ 177543 string characters out of 5763562
+ 1949785 words of memory out of 5000000
+ 32603 multiletter control sequences out of 15000+600000
+ 578589 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,7n,79p,259b,673s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,7n,79p,369b,729s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/tex
 live/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2023/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2023/texmf-dist/
-fonts/type1/urw/times/utmb8a.pfb><c:/texlive/2023/texmf-dist/fonts/type1/urw/ti
-mes/utmr8a.pfb>
-Output written on thesis.pdf (1 page, 57535 bytes).
+fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2023/texmf-dist/fonts/typ
+e1/public/txfonts/txtt.pfb><c:/texlive/2023/texmf-dist/fonts/type1/urw/times/ut
+mb8a.pfb><c:/texlive/2023/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/texli
+ve/2023/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on thesis.pdf (2 pages, 89349 bytes).
 PDF statistics:
- 66 PDF objects out of 1000 (max. 8388607)
- 52 compressed objects within 1 object stream
- 16 named destinations out of 1000 (max. 500000)
+ 134 PDF objects out of 1000 (max. 8388607)
+ 112 compressed objects within 2 object streams
+ 56 named destinations out of 1000 (max. 500000)
  25 words of extra memory for PDF output out of 10000 (max. 10000000)
 
