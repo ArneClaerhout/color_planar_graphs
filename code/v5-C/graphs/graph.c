@@ -132,19 +132,10 @@ int findChromaticNumberOptimized(graph* g, int startingColor) {
         // Each time we reset which vertices are colored.
         g->availableVertices = g->maxColoringMask;
 
-        // Color in the graph
-        if (g->numberOfVertices > 63) {
-            // If the graph has a lot of vertices, use multithreading
-            if (startParallelColoring(g, i)) {
-                g->chromaticNumber = i;
-                return i;
-            }
-        } else {
-            // Otherwise, color it in normally
-            if (optimizedAlgorithm(g, 0, i, 0, 0)) {
-                g->chromaticNumber = i;
-                return i;
-            }
+        // Otherwise, color it in normally
+        if (optimizedAlgorithm(g, 0, i, 0, 0)) {
+            g->chromaticNumber = i;
+            return i;
         }
 
         if (checkCondition != 0 && g->chromaticNumber != 0) {
@@ -153,90 +144,6 @@ int findChromaticNumberOptimized(graph* g, int startingColor) {
         }
     }
     return 0;
-}
-
-void parallelWorker(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth) {
-    // We work with a found variable
-    int localFound;
-    #pragma omp atomic read
-    localFound = found;
-
-    // If there was a thread that found a coloring, return
-    // If the entire graph was colored in, return
-    if (localFound || g->availableVertices == 0) {
-        if (g->availableVertices == 0 && startingStep(g, maxColor)) {
-            #pragma omp atomic write
-            found = 1;
-        }
-        return;
-    }
-
-    // Start coloring in
-    vertex* v = &g->verticesIndexed[index];
-    int colors = v->availableColors;
-    int maxLoop = (isUMColoring || checkCondition != 0) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
-    colors &= SHIFT(maxLoop) - 1;
-
-    g->availableVertices &= ~(1L << index);
-
-    FOR_EACH_BIT(color, colors) {
-
-        // Check flag inside the loop to break early
-        #pragma omp atomic read
-        localFound = found;
-        if (localFound) break;
-
-        // Make a new graph for each branch
-        graph* branchGraph = copyGraph(g);
-        // Color in the copied graph
-        vertex* branchV = &branchGraph->verticesIndexed[index];
-        branchV->color = color + 1;
-        int nextMax = max(color + 1, maxColorCurrGraph);
-
-        if (updateNeighbors(branchGraph, branchV, color, depth, nextMax)) {
-            freeGraph(branchGraph);
-            continue;
-        }
-
-        int nextIndex = getBestIndex(branchGraph);
-
-        if (depth < 4) {
-            // Task creation for high-level branches
-            #pragma omp task firstprivate(branchGraph, nextMax, nextIndex, depth) shared(found)
-            {
-                parallelWorker(branchGraph, nextMax, maxColor, nextIndex, depth + 1);
-                freeGraph(branchGraph); // Clean up the copy inside the task
-            }
-        } else {
-            // Serial execution for deep branches
-            if (optimizedAlgorithm(branchGraph, nextMax, maxColor, nextIndex, depth + 1)) {
-                #pragma omp atomic write
-                found = 1;
-            }
-            freeGraph(branchGraph);
-        }
-    }
-}
-
-int startParallelColoring(graph* g, int maxColor) {
-    found = 0;
-    #pragma omp parallel
-    {
-        // fprintf(stderr, "Thread %d of %d\n", omp_get_thread_num(), omp_get_num_threads());
-        #pragma omp single
-        {
-            // We create one initial copy for the root of the parallel search
-            graph* rootCopy = copyGraph(g);
-
-            parallelWorker(rootCopy, 0, maxColor, 0, 0);
-
-            // This ensures all tasks finish before we exit the parallel region
-            #pragma omp taskwait
-            freeGraph(rootCopy);
-        }
-    }
-
-    return found;
 }
 
 int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth) {

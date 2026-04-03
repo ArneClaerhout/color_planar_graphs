@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// #ifdef USE_BIG_INT
+#ifdef USE_BIG_INT
 
     // #pragma message "Compiling with 128-bit bitsets"
     typedef __uint128_t bitset_t;
@@ -20,16 +20,16 @@
     }
     #define MAX_VERTICES 128
 
-// #else
-//
-//     // #pragma message "Compiling with 64-bit bitsets"
-//
-//     typedef uint64_t bitset_t;
-//     #define MAX_VERTICES 64
-//     static inline int bitset_ctz(bitset_t mask) {
-//         return __builtin_ctzll(mask);
-//     }
-// #endif
+#else
+
+    // #pragma message "Compiling with 64-bit bitsets"
+
+    typedef uint64_t bitset_t;
+    #define MAX_VERTICES 64
+    static inline int bitset_ctz(bitset_t mask) {
+        return __builtin_ctzll(mask);
+    }
+#endif
 
 
 #define SIZE(array) (sizeof(array)/sizeof(array[0]))
