@@ -80,9 +80,20 @@ jan.goedgebeur@kuleuven.be
 
 \section{Introduction}
 
-A graph $G = (V, E)$ is a collection of vertices ($V$) and edges ($E$), where edges are pairs of vertices, linking them. In this paper, the focus is solely laid on \textit{planar graphs}, a variant of graphs with the added property of having a planar embedding. Meaning the graph can be displayed in the plane without any crossing edges.
+A graph $G = (V, E)$ is a pair of collections of vertices ($V$) and edges ($E$), where edges are pairs of vertices, linking them. In this paper, the focus is solely laid on \textit{planar graphs}, a variant of graphs with the added property of having a planar embedding. Meaning the graph can be displayed in the plane without any crossing edges.
 
 Additionally, a vertex coloring of a graph is the assigning of colors to all vertices in the graph. The proper coloring of a graph is a coloring of vertices such that all neighboring vertices have different colors.
+
+
+
+
+Here, simple undirected graphs are used, graphs without loops nor directed edges.
+
+
+An open neighborhood of a vertex $v$ is defined as $N(v) = \{w | (v, w) \in E\}$. This does therefore not include the vertex $v$ itself. A closed neighborhood of a vertex $v$ is $N[v] = N(v) \cup \{v\}$, the open neighborhood of $v$, including the vertex itself. 
+
+A \textit{conflict-free coloring with respect to open neighborhoods} (respectively \textit{closed nighborhoods}) is an image $C: V  \rightarrow \{1, ..., k\}$, an assignment of colors to all vertices, such that there is at least one color $c$ with $|N(v) \cap C^{-1}(c)| = 1$ (respectively $|N[v] \cap C^{-1}(c)| = 1$) for all vertices $v \in V$. 
+This can be further split up into 2 seperate colorings, a proper and improper variant,
 
 
 \subsection{Q}

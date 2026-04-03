@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.3)  29 MAR 2026 22:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.3)  30 MAR 2026 16:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -428,26 +428,26 @@ e
 \titlearea=\box57
 \actualheight=\skip59
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 99.
+put line 110.
 LaTeX Font Info:    Trying to load font information for OT1+txtt on input line 
-102.
+113.
 
 (c:/texlive/2023/texmf-dist/tex/latex/txfonts/ot1txtt.fd
 File: ot1txtt.fd 2000/12/15 v3.1
 )
-Underfull \hbox (badness 8151) in paragraph at lines 125--125
+Underfull \hbox (badness 8151) in paragraph at lines 136--136
 [] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 neighbourhood\OT1/ptm/m/n/10 ($\OML/cm
 m/m/it/10 vertex$\OT1/ptm/m/n/10 ) is fully col-ored $\OMS/cmsy/m/n/10 ^$
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 131--131
+Underfull \hbox (badness 10000) in paragraph at lines 142--142
 [] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 colorGraph\OT1/ptm/m/n/10 ($\OML/cmm/m
 /it/10 G; maxColor;$ \OT1/txtt/m/n/10 getBestIndex\OT1/ptm/m/n/10 ())
  []
 
 
-Overfull \hbox (59.09743pt too wide) in paragraph at lines 154--155
+Overfull \hbox (59.09743pt too wide) in paragraph at lines 165--166
 [] []\OT1/txtt/m/n/10 removeAvailableColorsForColoring\OT1/ptm/m/n/10 ($\OML/cm
 m/m/it/10 uncoloredNeighbour$\OT1/ptm/m/n/10 ) 
  []
@@ -470,22 +470,24 @@ Package rerunfilecheck Info: File `thesis.out' has not changed.
 Here is how much of TeX's memory you used:
  11263 strings out of 474928
  177543 string characters out of 5763562
- 1949785 words of memory out of 5000000
+ 1950785 words of memory out of 5000000
  32603 multiletter control sequences out of 15000+600000
  578589 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,7n,79p,369b,729s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,7n,79p,378b,727s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/tex
 live/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2023/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2023/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2023/texmf-dist/fonts/typ
-e1/public/txfonts/txtt.pfb><c:/texlive/2023/texmf-dist/fonts/type1/urw/times/ut
-mb8a.pfb><c:/texlive/2023/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/texli
-ve/2023/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on thesis.pdf (2 pages, 89349 bytes).
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2023/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2023/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmsy7.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/txfonts/txt
+t.pfb><c:/texlive/2023/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><c:/texlive/
+2023/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/texlive/2023/texmf-dist/fo
+nts/type1/urw/times/utmri8a.pfb>
+Output written on thesis.pdf (2 pages, 112266 bytes).
 PDF statistics:
- 134 PDF objects out of 1000 (max. 8388607)
- 112 compressed objects within 2 object streams
+ 144 PDF objects out of 1000 (max. 8388607)
+ 118 compressed objects within 2 object streams
  56 named destinations out of 1000 (max. 500000)
  25 words of extra memory for PDF output out of 10000 (max. 10000000)
 
