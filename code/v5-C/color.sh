@@ -59,10 +59,9 @@ c_alg() {
     if [[ "$number_of_processes" -eq 1 ]]; then
       pv -l "-s $num_graphs" "$file_name" | ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
     else
-      pv -l "-s $(( num_graphs / number_of_processes ))" "$file_name" | parallel --pipe --block 100k --round-robin -j "$number_of_processes" \
-                                                                        ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+      echo "TODO"
     fi
-	elif [[ -v num_graphs ]]; then
+	elif [[ "$1" -eq 1 ]]; then
 		pv -l "-s $(( num_graphs / number_of_processes ))" | ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
 	else
 		./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
@@ -116,7 +115,7 @@ combine_overviews_M() {
 }
 
 execute_M() {
-  choose_incoming_graphs "$1" | c_alg | write_to_file "$1"
+  choose_incoming_graphs "$1" | c_alg "$2" | write_to_file "$1"
 }
 
 execute() {
@@ -135,11 +134,14 @@ execute() {
 if [[ "$number_of_processes" -eq 1 || -n "$file_name" ]]; then
   execute | show_func "$show"
 else
-  # We split up the execution
-  execute_M 0 &
+  # We check if the number of graphs is set
+  [[ -v num_graphs ]] && val=1 || val=0
+
+  # We split up the execution, only using pv on the first process
+  execute_M 0 "$val" &
   for i in $(seq 1 $(("$number_of_processes" - 1)));
   do
-    execute_M "$i" 2>/dev/null &
+    execute_M "$i" 0 2>/dev/null &
   done
   wait
   combine_outputs_M | write_to_file -1 | show_func "$show"
