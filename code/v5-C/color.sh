@@ -13,7 +13,8 @@ write_to_file() {
 	  mkdir -p "outputs"
 	  path="$output_path"
     if [[ "$number_of_processes" -ne 1 && "$1" -ne -1 ]]; then
-      path="outputs/process_$1.txt"
+      num_proc="$1"
+      path="outputs/process_$((offset + num_proc)).txt"
       cat > "$path"
     elif [[ "$number_of_processes" -ne 1 && "$overview" == true ]]; then
       cat > "$path"
@@ -99,7 +100,7 @@ show_func() {
 
 combine_outputs_M() {
   for i in $(seq 0 $(("$number_of_processes" - 1))); do
-    path="outputs/process_$i.txt"
+    path="outputs/process_$((offset + i)).txt"
     if [[ "$overview" == true ]]; then
       echo "Process $(( i + 1 )):"
     fi

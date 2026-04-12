@@ -124,6 +124,16 @@ read_stdin() {
 	done
 }
 
+# Function to find the max index of processes
+get_highest_process_val() {
+    local folder=$1
+    # Use local to keep the variable scoped inside the function
+    local highest=$(ls "$folder"/process_* 2>/dev/null | grep -oP 'process_\K\d+' | sort -n | tail -1)
+
+    # Return 0 if no files are found, otherwise echo the value
+    echo "${highest:-0}"
+}
+
 ###################
 #### VARIABLES ####
 ###################
@@ -146,6 +156,7 @@ number_of_processes=1
 plantri_options="-g"
 output_path=outputs/$(date +"%F-%H-%M-%S").txt
 profiling=false
+offset=0
 
 ############################
 #### NUMBER OF VERTICES ####
@@ -271,6 +282,10 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQn:" opt; do
 			echo "Error: Negative number of processes given" >&2
 			exit 1
 		fi
+
+		# We also find the offset for the outputs
+		offset=$(get_highest_process_val "outputs")
+		offset=$((offset + 1))
 		;;
 	\?)
 		exit 3 #invalid option
