@@ -8,22 +8,30 @@ cd "$script_dir" || exit 1
 
 source ./scripts/utils.sh
 
+get_view_cmd() {
+  if [[ "$1" -gt 0 ]]; then
+    echo "pv -l -s $(( num_graphs / number_of_processes ))"
+  else
+    echo "" # No command needed
+  fi
+}
+
 write_to_file() {
-	if [[ "$number_of_processes" -ne 1 || ("$overview" == false && ("$manual" == "" || "$manual" == pipe)) ]]; then
-	  mkdir -p "outputs"
-	  path="$output_path"
+  if [[ "$number_of_processes" -ne 1 || ("$overview" == false && ("$manual" == "" || "$manual" == pipe)) ]]; then
+    mkdir -p "outputs"
+    local path="$output_path"
+
     if [[ "$number_of_processes" -ne 1 && "$1" -ne -1 ]]; then
-      num_proc="$1"
-      path="outputs/process_$((offset + num_proc)).txt"
+      path="outputs/process_$((offset + $1)).txt"
       cat > "$path"
     elif [[ "$number_of_processes" -ne 1 && "$overview" == true ]]; then
       cat > "$path"
     else
       tee "$path"
     fi
-	else
-		cat
-	fi
+  else
+    cat
+  fi
 }
 
 filter_file_parse() {
@@ -55,34 +63,36 @@ exit_on_multiprocessing() {
 }
 
 
-c_alg() {
-  if [[ -n "$file_name" ]]; then
-    if [[ "$number_of_processes" -eq 1 ]]; then
-      pv -l "-s $num_graphs" "$file_name" | ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
-    else
-      echo "TODO"
-    fi
-	elif [[ "$1" -eq 1 ]]; then
-		pv -l "-s $(( num_graphs / number_of_processes ))" | ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
-	else
-		./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
-	fi
-}
-
 choose_incoming_graphs() {
 	# First we check whether we have a filter file
 	if [[ "$filter" != 0 ]]; then
-		filter_file_parse "$1"
-	elif [[ -z "$file_name" ]]; then
-	  # We don't have an input file
 
+	  # When both a filter- and input file are given, ignore one of the two
+	  if [[ "$file_name" != "" ]]; then
+	    echo >&2 "Ignoring the given input file and using the filter file instead."
+	  fi
+		filter_file_parse "$1"
+
+	# We have an input file to read
+	elif [[ "$file_name" != "" ]]; then
+
+    echo >&2 "Reading the input file."
+	  # We read the file as a different process
+	  exec < "$file_name" && cat
+
+	# We don't have a filter file
+	else
+
+	  # Not manual, this is the normal path to take
     if [[ "$manual" == "" ]]; then
-      # Not manual
       gen_range_graphs "$startn" "$endn" "$1"
+
+    # There is a piped input to use
     elif [[ "$manual" == "pipe" ]]; then
       exit_on_multiprocessing
-      # Own stream chosen
-      read_stdin
+      cat
+
+    # There is one single manual input graph
     else
       exit_on_multiprocessing
       echo "$manual"
@@ -115,38 +125,64 @@ combine_overviews_M() {
   deactivate
 }
 
+c_alg() {
+  ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+}
+
 execute_M() {
-  choose_incoming_graphs "$1" | c_alg "$2" | write_to_file "$1"
+  local proc_id="$1"
+  local show_pv="$2"
+
+  # Determine the view command
+  local view_cmd=$(get_view_cmd "$show_pv")
+
+  # If view_cmd is empty, the data flows directly to c_alg, it doesn't create a pv process.
+  if [[ -n "$view_cmd" ]]; then
+    choose_incoming_graphs "$proc_id" | $view_cmd | c_alg | write_to_file "$proc_id"
+  else
+    choose_incoming_graphs "$proc_id" | c_alg | write_to_file "$proc_id"
+  fi
 }
 
 execute() {
+  # Execute with or without progress view
   if [[ "$overview" == true && "$coloring" == all ]]; then
     declare -a colorings=("proper" "odd" "pUMo" "pUMc" "pCFo" "pCFc" "iUMo" "iUMc" "iCFo" "iCFc")
     for i in "${colorings[@]}"; do
       coloring="$i"
-      execute_M -1
+      execute_M -1 "$num_graphs"
     done
   else
-    execute_M -1
+    execute_M -1 "$num_graphs"
   fi
 }
 
-### EXECUTION
-if [[ "$number_of_processes" -eq 1 || -n "$file_name" ]]; then
-  execute | show_func "$show"
-else
-  # We check if the number of graphs is set
-  [[ -v num_graphs ]] && val=1 || val=0
+###             ###
+###  Execution  ###
+###             ###
 
+# We ignore the multithreading when an input file is given
+if [[ "$number_of_processes" -eq 1 || "$file_name" != "" ]]; then
+
+  execute | show_func "$show"
+
+else
   # We split up the execution, only using pv on the first process
-  execute_M 0 "$val" &
+  execute_M 0 "$num_graphs" &
+
+  # Create all other processes
   for i in $(seq 1 $(("$number_of_processes" - 1)));
   do
     execute_M "$i" 0 2>/dev/null &
   done
+
+  # Wait for all processes to finish
   wait
+
+  # Combine the outputs and write + show graphs
   combine_outputs_M | write_to_file -1 | show_func "$show"
-  
+
+  # When overview is required, we use a different specialised python script
   if [[ "$overview" == true ]]; then
     # We first combine the overviews and then read the output
     combine_overviews_M
@@ -156,7 +192,9 @@ else
 
 fi
 
-
+###         ###
+###  Other  ###
+###         ###
 
 # Extra output for show functionality to signal the end of the generation.
 if [[ "$show" != "" ]]; then
@@ -164,7 +202,7 @@ if [[ "$show" != "" ]]; then
 fi
 
 
-# If we're profiling, the gcda files need to be moved
+# When we're profiling, the gcda files need to be moved
 if [[ "$profiling" == "true" ]]; then
   gcov graphs/build-vertex.gcno
   gcov graphs/build-graph.gcno

@@ -118,12 +118,6 @@ get_cached_count() {
 	fi
 }
 
-read_stdin() {
-	while IFS= read -r line; do
-		echo "$line"
-	done
-}
-
 # Function to find the max index of processes
 get_highest_process_val() {
     local folder=$1
@@ -157,6 +151,8 @@ plantri_options="-g"
 output_path=outputs/$(date +"%F-%H-%M-%S").txt
 profiling=false
 offset=0
+file_name=""
+num_graphs=0
 
 ############################
 #### NUMBER OF VERTICES ####
@@ -227,7 +223,7 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQn:" opt; do
     filter=$OPTARG
     ;;
 	p)
-		num_graphs=0
+		num_graphs=1
 		;;
   P)
     profiling=true
@@ -294,7 +290,7 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQn:" opt; do
 done
 
 ### VERTICES-CHECK
-if [[ "$noVerticesGiven" == "true" && "$manual" == "" && -v "$file_name" && "$filter" == "" ]]; then
+if [[ "$noVerticesGiven" == "true" && "$manual" == "" && "$file_name" == "" && "$filter" == "" ]]; then
 	# No manual graph given and no vertices given.
 	echo "Error: Number of vertices not set." >&2
 	exit 1
@@ -308,7 +304,7 @@ if [[ "$show" != "" ]]; then
 fi
 
 ### GRAPH COUNTING
-if [[ -v "$num_graphs" ]]; then
+if [[ "$num_graphs" -eq 1 ]]; then
 	echo "Calculating or retrieving graph counts." >&2
 
 	# Ensure jq is installed
@@ -322,7 +318,7 @@ if [[ -v "$num_graphs" ]]; then
 	# Calculate range and use the caching function
 	if [[ "$manual" != "" ]]; then
 		num_graphs=0 # Manual/Pipe input cannot be pre-counted
-	elif [[ -n "$file_name" ]]; then
+	elif [[ "$file_name" != "" ]]; then
 	  # When reading from a file, this is only the word count
 	  read -r num_graphs rest < <(wc -l < "$file_name")
 	else
