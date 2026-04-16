@@ -448,6 +448,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\end{itemize}
 		
 	\end{frame}
+
 	
 	\section{Methodologie}
 	
@@ -459,7 +460,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			\begin{itemize}
 				\item Backtracking
 				\item Houdt mogelijke kleuren bij\pause
-				\item Java $\rightarrow$ C\pause
+				\item geschreven in C\pause
 				\item Voorbeeld met pUMo
 			\end{itemize}
 			\vspace{\fill}\null
@@ -905,6 +906,71 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 %		\end{algorithm}
 %		
 %	\end{frame}
+
+	\section{Resultaten}
+
+\begin{frame}
+	\frametitle{Resultaten}
+	
+	
+	
+	\begin{multicols}{2}
+		\begin{itemize}
+			\item Performant algoritme die kleuren van grafen centraliseert\pause
+			\item Vermoedens bewezen voor planaire triangulaties $\le 20 v$
+		\end{itemize}
+		\vspace{\fill}\null
+		\begin{center}
+			\begin{tikzpicture}[
+				% Define the style for the nodes
+				every node/.style={circle, draw, thick, minimum size=5mm}
+				]
+				
+				% --- VERTICES ---
+				% Format: \node (internal_name) at (x,y) [fill=color] {number};
+				
+				\node (v1) at (0, 0) [fill=black]  {};
+				\node (v2) at (6, 0) [fill=black] {};
+				\node (v3) at (3, 5.19615) [fill=black]{};
+				\node (v4) at (3, 1.026) [fill=black]{};
+				\node (v5) at (2.42836, 2.0376) [fill=black]{};
+				\node (v6) at (3.571639, 2.0376) [fill=black]{};
+				
+				% --- EDGES ---
+				% In a K4, there are 6 possible edges. 
+				% We omit one (e.g., the diagonal between v1 and v4).
+				
+				\draw[thick] (v1) -- (v2);
+				\draw[thick] (v1) -- (v3);
+				\draw[thick] (v1) -- (v4);
+				\draw[thick] (v1) -- (v5);
+				
+				\draw[thick] (v2) -- (v3);
+				\draw[thick] (v2) -- (v4);
+				\draw[thick] (v2) -- (v6);
+				
+				\draw[thick] (v3) -- (v5);
+				\draw[thick] (v3) -- (v6);
+				
+				\draw[thick] (v4) -- (v5);
+				\draw[thick] (v4) -- (v6);
+				
+				\draw[thick] (v5) -- (v6);
+				
+				
+				% Note: The edge (v1) -- (v4) is omitted to make it non-K4.
+				
+			\end{tikzpicture}
+		\end{center}
+		
+	\end{multicols}
+	
+	
+	
+	
+	
+	
+\end{frame}
 	
 	\begin{frame}
 		\frametitle{Threats to validity}
@@ -920,20 +986,6 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	\end{frame}
 	
 	\section{Planning}
-	
-	\begin{frame}
-		\frametitle{Planning}
-		\begin{itemize}
-			\item Optimaliseren
-			\item Patronen in grafen met groot chromatisch getal zoeken
-			\begin{itemize}
-				\item Gadgets voor het weerleggen van vermoedens zoeken
-			\end{itemize}
-			\item Algoritme laten lopen
-			\item Bewijzen correctheid naïef algoritme
-			\item Verslag schrijven
-		\end{itemize}
-	\end{frame}
 	
 	\section{Vragen}
 	
