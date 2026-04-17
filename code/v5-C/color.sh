@@ -62,6 +62,15 @@ exit_on_multiprocessing() {
   fi
 }
 
+read_input_file() {
+  if [[ "$number_of_processes" -ne 1 ]]; then
+    formatted=$(printf "%04d" "$1")
+    cat "chunks/part_$formatted.g6"
+  else
+    cat "$file_name"
+  fi
+}
+
 
 choose_incoming_graphs() {
 	# First we check whether we have a filter file
@@ -78,7 +87,7 @@ choose_incoming_graphs() {
 
     echo >&2 "Reading the input file."
 	  # We read the file as a different process
-	  exec < "$file_name" && cat
+	  read_input_file "$1"
 
 	# We don't have a filter file
 	else
@@ -161,12 +170,21 @@ execute() {
 ###  Execution  ###
 ###             ###
 
-# We ignore the multithreading when an input file is given
-if [[ "$number_of_processes" -eq 1 || "$file_name" != "" ]]; then
+# We ignore the multithreading when it's not needed
+if [[ "$number_of_processes" -eq 1 ]]; then
 
   execute | show_func "$show"
 
 else
+
+  # There is an input file: first we split up the inputs
+  if [[ "$file_name" != "" ]]; then
+    mkdir -p chunks
+    # Count the number of lines
+    read -r number_of_graphs rest < <(wc -l < "$file_name")
+    split -l $(((number_of_graphs / number_of_processes) + 1)) -a 4 -d --additional-suffix=.g6 "$file_name" chunks/part_
+  fi
+
   # We split up the execution, only using pv on the first process
   execute_M 0 "$num_graphs" &
 
@@ -188,6 +206,11 @@ else
     combine_overviews_M
     cat "$output_path"
     rm "$output_path"
+  fi
+
+  # When we used an input file, we created a chunk directory, we remove this
+  if [[ "$file_name" != "" ]]; then
+    rm -rf chunks
   fi
 
 fi
