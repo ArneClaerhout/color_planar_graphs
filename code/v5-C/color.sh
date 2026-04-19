@@ -40,7 +40,7 @@ filter_file_parse() {
   # Check if venv has been created
   activate_venv
 
-  "venv/bin/python" scripts/parseFilter.py "$filter" | while read -r line; do
+  "venv/bin/python" scripts/parse_filter.py "$filter" | while read -r line; do
     # We first parse the line
     read -r n rest <<<"$line"
 
@@ -111,7 +111,7 @@ choose_incoming_graphs() {
 
 show_func() {
   if [[ "$1" != "" ]]; then
-  	./scripts/showGraph6.sh "$1"
+  	./scripts/show_graph6.sh "$1"
   else
     cat
   fi
@@ -130,12 +130,12 @@ combine_outputs_M() {
 
 combine_overviews_M() {
   activate_venv
-  "venv/bin/python" scripts/parseMultiOutput.py "$output_path"
+  "venv/bin/python" scripts/parse_multi_output.py "$output_path"
   deactivate
 }
 
 c_alg() {
-  ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition"
+  ./graphs/build "$coloring" "$overview" "$raw" "$min_chrom" "$method" "$check_condition" "$subdivide"
 }
 
 execute_M() {

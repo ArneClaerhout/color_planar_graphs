@@ -1,6 +1,6 @@
 #include "colorings.h"
 #include "graph.h"
-#include "counterInput.h"
+#include "gadget_finder_input.h"
 #include "vertex.h"
 #include "types.h"
 
@@ -50,7 +50,7 @@ graph* createGraph(graph* g, char graphString[]) {
         // There wasn't a graph before, we create one
         g = (graph*) malloc(sizeof(graph));
         // We immediately set the counter to zero, we can't have any freeing problems later
-        g->counter = 0;
+        g->gadget_finder = 0;
         g->changed = malloc(sizeof(bitset_t[MAX_VERTICES][10]));
         for (int i = 0; i < MAX_VERTICES; i++) {
             g->verticesIndexed[i].index = i;
@@ -115,7 +115,7 @@ void resetGraph(graph* graph, int n) {
     // Set the changed 2D-array to zeroes
     memset(graph->changed,0, sizeof(bitset_t[n][10]));
 
-    startCounter(graph, n);
+    startGadgetFinder(graph, n);
 
     // for (int i = 0; i < n; i++) {
     //     g->verticesIndexed[i].color = 0;
@@ -439,7 +439,7 @@ void subdivide(graph* g, int removeOriginalEdge) {
     g->numberOfVertices = count; // We update the number of vertices
     g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
     g->availableVertices = g->maxColoringMask;
-    startCounter(g, count);
+    startGadgetFinder(g, count);
 }
 
 

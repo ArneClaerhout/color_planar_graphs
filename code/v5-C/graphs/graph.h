@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "counter.h"
+#include "gadget_finder.h"
 #include "vertex.h"
 #include "types.h"
 
@@ -16,7 +16,7 @@ typedef struct graph {
     int chromaticNumber;
     bitset_t maxColoringMask;
     int numberOfVertices;
-    counter* counter;
+    gadget_finder* gadget_finder;
     vertex verticesIndexed[MAX_VERTICES];
 } graph;
 

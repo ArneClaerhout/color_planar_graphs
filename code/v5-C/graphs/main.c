@@ -7,8 +7,8 @@
 #include <string.h>
 #include <time.h>
 #include "main.h"
-#include "counter.h"
-#include "counterInput.h"
+#include "gadget_finder.h"
+#include "gadget_finder_input.h"
 #include "types.h"
 
 
@@ -21,6 +21,7 @@ int checkCondition;
 int isOpenColoring;
 int isProperColoring;
 int isUMColoring;
+int doSubdivide;
 
 int lengthOfGraph;
 
@@ -156,8 +157,8 @@ int parseBoolean(char* str) {
 }
 
 void parseArguments(int argc, char **argv) {
-    if (argc < 7 || argc > 7) {
-        fprintf(stderr, "Expected exactly 6 arguments.\n");
+    if (argc < 8 || argc > 8) {
+        fprintf(stderr, "Expected exactly 7 arguments.\n");
         exit(1);
     }
     coloring = getColoring(argv[1]);
@@ -165,6 +166,7 @@ void parseArguments(int argc, char **argv) {
     raw = parseInt(argv[3]);
     minChrom = parseInt(argv[4]);
     checkCondition = parseInt(argv[6]);
+    doSubdivide = parseBoolean(argv[7]);
 }
 
 
@@ -208,6 +210,10 @@ graph* performComputation(graph* g, char line[]) {
         handler = &handleCF;
     }
 
+    if (doSubdivide) {
+        subdivide(g, 1);
+    }
+
     int c = findChromaticNumberOptimized(g, max(minChrom - 1, 1));
 
     // fprintf(stderr, "%d\n", checkCondition);
@@ -235,7 +241,7 @@ graph* performComputation(graph* g, char line[]) {
                 char *extraInfo = "";
                 if (checkCondition != 0) {
                     getColoringAfterCheck(g, c, colors);
-                    extraInfo = getExtraInfoText(g->counter);
+                    extraInfo = getExtraInfoText(g->gadget_finder);
                 } else {
                     getColors(g, colors);
                 }
@@ -256,8 +262,8 @@ graph* performComputation(graph* g, char line[]) {
 }
 
 void freeGraph(graph* graph) {
-    if (graph->counter)
-        free(graph->counter);
+    if (graph->gadget_finder)
+        free(graph->gadget_finder);
     free(graph->changed);
     free(graph);
 

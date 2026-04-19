@@ -16,8 +16,7 @@ CACHE_FILE="graph_counts.json"
 pattern="nauty"
 nauty_path=$(find ../../.. -maxdepth 2 -type d -name "*${pattern}*" | head -n 1)
 if [[ -z "$nauty_path" ]]; then
-	echo >&2 "Error: Nauty not found."
-	exit 1
+	echo >&2 "Nauty not found. This will not be able to use it."
 fi
 
 pattern="plantri"
@@ -153,6 +152,7 @@ profiling=false
 offset=0
 file_name=""
 num_graphs=0
+subdivide=false
 
 ############################
 #### NUMBER OF VERTICES ####
@@ -178,7 +178,7 @@ fi
 #### OPTIONS ####
 #################
 
-while getopts ":hCcm:f:porsPLBaxM:F:PQn:" opt; do
+while getopts ":hCcm:f:porsPLBaxM:F:PQn:S" opt; do
 	case $opt in
 	h)
 		show_help
@@ -282,6 +282,10 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQn:" opt; do
 		# We also find the offset for the outputs
 		offset=$(get_highest_process_val "outputs")
 		offset=$((offset + 1))
+		;;
+	S)
+		echo >&2 "Subdividing all input graphs."
+		subdivide=true
 		;;
 	\?)
 		exit 3 #invalid option
