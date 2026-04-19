@@ -1,33 +1,28 @@
-\begin{tikzpicture}[scale=2]
+\begin{tikzpicture}[
+	% Define the style for the nodes
+	every node/.style={circle, draw, thick, minimum size=5mm}
+	]
 	
-	% ---- Adjustable colors ----
-	\def\centerColor{white}
-	\def\colorA{purple}
-	\def\colorB{orange}
-	\def\colorC{cyan}
-	\def\colorD{black}
-	\def\colorE{orange}
-	\def\colorF{purple}
+	% --- VERTICES ---
+	% Format: \node (internal_name) at (x,y) [fill=color] {number};
 	
-	% ---- Positions of outer vertices (6 around a circle) ----
-	\foreach \angle/\name/\col in {
-		90/A/\colorA,
-		30/B/\colorB,
-		-30/C/\colorC,
-		-90/D/\colorD,
-		-150/E/\colorE,
-		150/F/\colorF
-	}
-	{
-		\node[fill=\col, circle, inner sep=4pt] (v\name) at (\angle:1.7) {};
-	}
+	\node (v1) at (0, 0) [fill=white]  {};
+	\node (v2) at (0, 3) [fill=red] {};
+	\node (v3) at (2.598, 1.5) [fill=orange]{};
+	\node (v4) at (-2.598, 1.5) [fill=green]{};
+	\node (v5) at (2.598, -1.5) [fill=blue!50]{};
+	\node (v6) at (-2.598, -1.5) [fill=orange]{};
+	\node (v7) at (0, -3) [fill=green]{};
 	
-	% ---- Center vertex ----
-	\node[fill=\centerColor, circle, inner sep=4pt] (center) at (0,0) {};
+	% --- EDGES ---
+	% In a K4, there are 6 possible edges. 
+	% We omit one (e.g., the diagonal between v1 and v4).
 	
-	% ---- Edges to center ----
-	\foreach \name in {A,B,C,D,E,F}
-	\draw (center) -- (v\name);
+	\draw[thick] (v1) -- (v2);
+	\draw[thick] (v1) -- (v3);
+	\draw[thick] (v1) -- (v4);
+	\draw[thick] (v1) -- (v5);
+	\draw[thick] (v1) -- (v6);
+	\draw[thick] (v1) -- (v7);
 	
 \end{tikzpicture}
-

@@ -128,7 +128,40 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			\vspace*{\fill}\null
 			
 			\pause
-			\input{simpleProper.tex}
+			\begin{center}
+				\begin{tikzpicture}[
+					% Define the style for the nodes
+					every node/.style={circle, draw, thick, minimum size=5mm}
+					]
+					
+					% --- VERTICES ---
+					% Format: \node (internal_name) at (x,y) [fill=color] {number};
+					
+					\node (v1) at (0, 0) [fill=blue!50]  {};
+					\node (v2) at (6, 0) [fill=orange] {};
+					\node (v3) at (3, 5.19615) [fill=green]{};
+					\node (v4) at (3, 1.73205) [fill=green]{};
+					\node (v5) at (3, 3.4641) [fill=red]{};
+					
+					% --- EDGES ---
+					% In a K4, there are 6 possible edges. 
+					% We omit one (e.g., the diagonal between v1 and v4).
+					
+					\draw[thick] (v1) -- (v2);
+					\draw[thick] (v1) -- (v3);
+					\draw[thick] (v1) -- (v4);
+					\draw[thick] (v1) -- (v5);
+					
+					\draw[thick] (v2) -- (v3);
+					\draw[thick] (v2) -- (v4);
+					\draw[thick] (v2) -- (v5);
+					
+					\draw[thick] (v3) -- (v5);
+					
+					\draw[thick] (v4) -- (v5);
+					
+				\end{tikzpicture}
+			\end{center}
 			
 		\end{multicols}
 		
@@ -198,18 +231,18 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			\begin{itemize}
 				\item Proper colouring
 				\item Odd colouring
-				\item Conflict free colouring (CF)
+				\item Conflict-free colouring (CF)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
-					\item Proper $\longleftrightarrow$ Improper
+					\item Open $\longleftrightarrow$ Closed
 				\end{itemize}
 			\end{itemize}
 			
 			\vspace*{\fill}\null
 
 			\begin{center}
-				\scalebox{.75}{\input{exampleCF.tex}}
+				\scalebox{.75}{\input{exampleCFopen.tex}}
 			\end{center}
 			
 			\vspace*{\fill}\null
@@ -229,18 +262,18 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			\begin{itemize}
 				\item Proper colouring
 				\item Odd colouring
-				\item Conflict free colouring (CF)
+				\item Conflict-free colouring (CF)
 				\begin{itemize}
 					\item 4 opsplitsingen
-					\item Proper $\longleftrightarrow$ Improper
 					\item Open $\longleftrightarrow$ Closed
+					\item Proper $\longleftrightarrow$ Improper					
 				\end{itemize}
 			\end{itemize}
 			
 			\vspace*{\fill}\null
 			
 			\begin{center}
-				\scalebox{.75}{\input{exampleCFopen.tex}}
+				\scalebox{.75}{\input{exampleCF.tex}}
 			\end{center}
 			
 			\vspace*{\fill}\null
@@ -272,13 +305,13 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			\begin{itemize}
 				\item Proper colouring
 				\item Odd colouring
-				\item Conflict free colouring (CF)
+				\item Conflict-free colouring (CF)
 				\item Unique-Maximum colouring (UM)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
-					\item Proper $\longleftrightarrow$ Improper
 					\item Open $\longleftrightarrow$ Closed
+					\item Proper $\longleftrightarrow$ Improper		
 					\item pUMo, pUMc, iUMo, iUMc
 				\end{itemize}
 			\end{itemize}
@@ -301,7 +334,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{itemize}
 			\item Draadloze netwerken: versturen signaal van zendmast zonder interferentie 
 			
-			$\rightarrow$ Conflict free colouring
+			$\rightarrow$ Conflict-free colouring
 			\item Vertex ranking: kleuring waarbij paden tussen knopen met zelfde kleur een knoop bevatten met grotere kleur
 			
 			$\rightarrow$ Unique-Maximum colouring
@@ -360,7 +393,6 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 					& 5 \leq \chi_{\mathrm{O}}(\mathcal{P}) \leq 8 \\
 				\end{aligned}
 				&
-				\pause
 				\Large \rightarrow
 				&
 				\begin{aligned}
@@ -370,7 +402,6 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			\end{array}
 			$
 		\end{block}
-		\pause
 		\begin{block}{Proper colourings}
 			$
 			\begin{array}{c@{\hspace{2.35cm}}c@{\hspace{2cm}}c}
@@ -382,7 +413,6 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 					 & 6 \leq \chi_{\mathrm{pUMc}}(\mathcal{P}) \leq 8
 				\end{aligned}
 				&
-				\pause
 				\Large \rightarrow
 				&
 				\begin{aligned}
@@ -396,25 +426,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			$
 		\end{block}
 	\end{frame}
-	
-	\begin{frame}
-		\frametitle{Vermoedens 2}		
-		\begin{block}{Improper colourings}
-			$
-			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
-				\begin{aligned}
-					& \textit{Bewezen grenzen:} \\
-					& 4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5 \\ 
-					& 3 \le \chi_{\mathrm{iCFc}}(\mathcal{P}) \le 4 \\ 
-					& 5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10 \\ 
-					&4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6
-				\end{aligned}
-			\end{array}
-			$
-		\end{block}
-		
-	\end{frame}
-	
+
 	\begin{frame}
 		\frametitle{Vermoedens 2}
 		\setcounter{footnote}{3} 
@@ -424,7 +436,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 				\begin{aligned}
 					& \textit{Bewezen grenzen:} \\
 					& 4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5 \\ 
-					& 3 \le \chi_{\mathrm{iCFc}}(\mathcal{P}) \le 4 \\ 
+					& \chi_{\mathrm{iCFc}}(\mathcal{P}) = 4 \\ 
 					& 5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10 \\ 
 					&4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6
 				\end{aligned}
@@ -434,7 +446,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 				\begin{aligned}
 					& \textit{Vermoedens:} \\
 					& \chi_{\mathrm{iCFo}}(\mathcal{P}) = 4 \\ 
-					& \chi_{\mathrm{iCFc}}(\mathcal{P}) = 3 \\ 
+					&  \\ 
 					& \chi_{\mathrm{iUMo}}(\mathcal{P}) = 5 \\ 
 					& \chi_{\mathrm{iUMc}}(\mathcal{P}) = 4
 				\end{aligned}
@@ -442,10 +454,10 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			$
 		\end{block}
 		
-		\begin{itemize}
-			\item Conjecture van $\chi_{\mathrm{iCFc}}(\mathcal{P})$ is al weerlegd\footcite{Malik2023thesis}.
-			\item $\chi_{\mathrm{iCFc}}(\mathcal{P}) = 4$
-		\end{itemize}
+%		\begin{itemize}
+%			\item Conjecture van $\chi_{\mathrm{iCFc}}(\mathcal{P})$ is al weerlegd\footcite{Malik2023thesis}.
+%			\item $\chi_{\mathrm{iCFc}}(\mathcal{P}) = 4$
+%		\end{itemize}
 		
 	\end{frame}
 
@@ -459,8 +471,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{multicols}{2}
 			\begin{itemize}
 				\item Backtracking
-				\item Houdt mogelijke kleuren bij\pause
-				\item geschreven in C\pause
+				\item Geschreven in C\pause
 				\item Voorbeeld met pUMo
 			\end{itemize}
 			\vspace{\fill}\null
@@ -850,6 +861,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{itemize}
 			\item High-level
 			\begin{itemize}
+				\item Bijhouden mogelijke kleuren
 				\item Bit-sets
 				\item Parallellisatie
 				\item $\dots$
@@ -965,12 +977,17 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		
 	\end{multicols}
 	
-	
-	
-	
-	
-	
 \end{frame}
+
+\begin{frame}
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\textwidth]{github.png}
+	\end{figure}
+\end{frame}
+
+\section{Threats to validity}
 	
 	\begin{frame}
 		\frametitle{Threats to validity}
