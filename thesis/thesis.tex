@@ -28,28 +28,6 @@
 % the following package is optional:
 %\usepackage{latexsym}
 
-% Following comment is from ijcai97-submit.tex:
-% The preparation of these files was supported by Schlumberger Palo Alto
-% Research, AT\&T Bell Laboratories, and Morgan Kaufmann Publishers.
-% Shirley Jowell, of Morgan Kaufmann Publishers, and Peter F.
-% Patel-Schneider, of AT\&T Bell Laboratories collaborated on their
-% preparation.
-
-% These instructions can be modified and used in other conferences as long
-% as credit to the authors and supporting agencies is retained, this notice
-% is not changed, and further modification or reuse is not restricted.
-% Neither Shirley Jowell nor Peter F. Patel-Schneider can be listed as
-% contacts for providing assistance without their prior permission.
-
-% To use for other conferences, change references to files and the
-% conference appropriate and use other authors, contacts, publishers, and
-% organizations.
-% Also change the deadline and address for returning papers and the length and
-% page charge instructions.
-% Put where the files are available in the appropriate places.
-
-%PDF Info Is REQUIRED.
-% Please **do not** include Title and Author information
 \pdfinfo{
 /TemplateVersion (IJCAI.2022.0)
 }
@@ -80,33 +58,96 @@ jan.goedgebeur@kuleuven.be
 
 \section{Introduction}
 
-A graph $G = (V, E)$ is a pair of collections of vertices ($V$) and edges ($E$), where edges are pairs of vertices, linking them. In this paper, the focus is solely laid on \textit{planar graphs}, a variant of graphs with the added property of having a planar embedding. Meaning the graph can be displayed in the plane without any crossing edges.
+Graph theory is a field of research in computer science that is older than the computer. It's conception happening in the 18th century \cite{euler1741solutio}. 
 
-Additionally, a vertex coloring of a graph is the assigning of colors to all vertices in the graph. The proper coloring of a graph is a coloring of vertices such that all neighboring vertices have different colors.
+A \textit{graph} $G = (V, E)$ is defined as a pair, containing a collection of vertices ($V$) and edges ($E$). Each edge is an unordered pair of unique vertices. A \textit{planar graph} is a variant of graphs such that a planar embedding is possible. Planar graphs and graphs is be used interchangeably. The \textit{class of planar graphs} $\mathcal{P}$ is defined as the set of all planar graphs.
 
+The coloring of graphs is one of the most well-known fields in graph theory. A coloring of a graph is an image assigning each vertex a color. The most famous of these colorings is the proper coloring. This states that two adjacent vertices -- vertices sharing an edge -- never share the same color. 
 
+The chromatic number $\chi(G)$ of a graph $G$ is minimal number of colors needed to color the graph. A generalization of this being the chromatic number $\chi(\mathcal{P})$ for the class of planar graphs. Which is the minimum needed colors to color any planar graph. For the proper coloring, it was proven that four colors always suffice \cite{appel1976every}. Which was an extraordinary feat, as this was the first proof verified using a computer program.
 
+Coloring of graphs has various applications, with uses including: the assigning of frequencies to radio stations, the coloring of maps, scheduling and more.
 
-Here, simple undirected graphs are used, graphs without loops nor directed edges.
+There exist many variants of colorings of graphs. One variant is the \textit{odd coloring}, which was recently introduced by Petruševski and Škrekovski \cite{PETRUSEVSKI2022385} in 2022. A proper coloring of a graph is said to be odd if for each non-isolated vertex $v \in V$ there exists a color occurring an odd amount of times in the neighborhood of that vertex $N(v)$. The \textit{odd chromatic number} $\chi_{\mathrm{O}}(\mathcal{P})$ is the minimal number of colors needed to color any graph with an odd coloring.
 
+Other variants include the conflict-free and unique-maximum colorings. 
 
+The \textit{conflict-free coloring}, introduced in 2003 by Even, Lotker, Ron, and Smorodinsky \cite{even2003conflict}, is a coloring such that there is at least one color for each vertex that occurs exactly once in its neighborhood. 
+
+Now consider a \textit{proper conflict-free coloring} with respect to open- or closed neighborhoods -- a conflict-free coloring with a proper constraint. Each have a \textit{chromatic number} $\chi_{\mathrm{pCFo}}(\mathcal{P})$ and $\chi_{\mathrm{pCFc}}(\mathcal{P})$ respectively.
 An open neighborhood of a vertex $v$ is defined as $N(v) = \{w | (v, w) \in E\}$. This does therefore not include the vertex $v$ itself. A closed neighborhood of a vertex $v$ is $N[v] = N(v) \cup \{v\}$, the open neighborhood of $v$, including the vertex itself. 
 
-A \textit{conflict-free coloring with respect to open neighborhoods} (respectively \textit{closed nighborhoods}) is an image $C: V  \rightarrow \{1, ..., k\}$, an assignment of colors to all vertices, such that there is at least one color $c$ with $|N(v) \cap C^{-1}(c)| = 1$ (respectively $|N[v] \cap C^{-1}(c)| = 1$) for all vertices $v \in V$. 
-This can be further split up into 2 seperate colorings, a proper and improper variant,
+Similarly, an \textit{improper conflict-free coloring} with respect to open- or closed neighborhoods can be defined. These are the same colorings, without the proper constraint. Again, \textit{chromatic numbers} $\chi_{\mathrm{iCFo}}(\mathcal{P})$ and $\chi_{\mathrm{iCFc}}(\mathcal{P})$ respectively can be defined for both.
+
+\textit{Unique-maximum colorings}, introduced originally as ordered colorings \cite{KATCHALSKI1995141}, and studied further in the context of open- and closed neighbourhoods by Fabrici, Lužar, Rindošová and Soták \cite{fabrici2023proper}, are colorings where the maximum color appearing in the neighborhood of each vertex appears exactly once in that vertex's neighborhood.
+
+Using the same versions as before, four variants of this coloring can be defined. A proper unique-maximum coloring with respect to open- and closed neighborhoods, and an improper unique-maximum coloring with respect to open- and closed neighborhoods. Each respectively having their own \textit{chromatic number} for the class of planar graphs, $\chi_{\mathrm{pUMo}}(\mathcal{P})$, $\chi_{\mathrm{pUMc}}(\mathcal{P})$, $\chi_{\mathrm{iUMo}}(\mathcal{P})$ and $\chi_{\mathrm{iUMc}}(\mathcal{P})$.
+
+\subsection{Known bounds}
+
+Not all of the chromatic numbers of these previously mentioned colorings are known. For most, only some bounds have been found, proving some upper bound always suffices to color all graphs, while the maximum needed colors found are equals to the lower bound. As stated previously, the proper coloring's exact chromatic number is known to be $4$ \cite{appel1976every}. 
+
+Note that the $\mathrm{pCFc}$ coloring is exactly the same as the proper coloring, as the unique color can always be the color of the vertex itself. Therefore, $\chi_{\mathrm{pCFc}}(\mathcal{P})$ is also equal to $4$.
+
+The other bounds are as follows:
+
+For the odd coloring:
+\begin{itemize}
+	\item $5 \leq \chi_{\mathrm{O}}(\mathcal{P}) \leq 8$ (\textit{proven by \cite{petr2023odd} for upper bound, lower bound is $\mathit{C_5}$})
+\end{itemize}
+
+For conflict-free colorings:
+\begin{itemize}
+	\item $6 \leq \chi_{\mathrm{pCFo}}(\mathcal{P}) \leq 8$ (\textit{proven by \cite{fabrici2023proper}})
+	\item $\chi_{\mathrm{pCFc}}(\mathcal{P}) = 4$
+	\item $4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5$ (\textit{proven by \cite{abel2018conflict} for lower bound and \cite{huang2020short} for upper bound})
+	\item $\chi_{\mathrm{iCFc}}(\mathcal{P}) = 4$ (\textit{proven by \cite{Malik2023thesis}})
+\end{itemize}
+
+For unique-maximum colorings (all \textit{proven by \cite{fabrici2023proper}}):
+\begin{itemize}
+	\item $6 \leq \chi_{\mathrm{pUMo}}(\mathcal{P}) \leq 10$
+	\item $6 \leq \chi_{\mathrm{pUMc}}(\mathcal{P}) \leq 8$
+	\item $5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10$
+	\item $4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6$
+\end{itemize}
 
 
-\subsection{Q}
 
-Can we design an algorithm for coloring planar graphs, faster than or just as fast as the existing coloring algorithms, that is -- at the same time -- easily expandable to new variants?
 
-In what way is this algorithm useful in helping to prove or disprove conjectures surrounding these coloring variants?
+
+
+
+
+\subsection{Research Problem}
+
+In this paper, two research questions are considered:
+
+\begin{itemize}
+	\item \textbf{Can we design an algorithm for coloring planar graphs, faster than or just as fast as the existing coloring algorithms, that is also easily expandable to new coloring variants?}
+	\item \textbf{In what way is this algorithm useful in helping to prove or disprove conjectures surrounding these coloring variants?}
+\end{itemize}
+
+The focus is thus laid on the coloring of graphs using a coloring algorithm. 
+
+
 
 
 \section{Algorithm}
 
+\section{Results}
 
-	\begin{algorithm}[tb]
+\section{Threats to validity}
+
+\section{Conclusion}
+
+\subsection{Future work}
+
+
+
+
+
+	\begin{algorithm}[tb!]
 		\caption{Kleuren van grafen}
 		\begin{algorithmic}[1]
 			\STATE $\mathcal{G} \gets \text{graphs generated by \textit{plantri}}$
@@ -124,7 +165,9 @@ In what way is this algorithm useful in helping to prove or disprove conjectures
 
 	
 	\begin{algorithm}[tb]
-		\caption{\texttt{colorGraph}($G, maxColor, index$)}
+		\caption{\texttt{colorGraph}}
+		\textbf{Parameters}: The graph $G$, the maxColor and index\\
+		\textbf{Output}: Coloring achieved
 		\begin{algorithmic}[1]
 		\IF{All vertices colored}
 		\RETURN True
@@ -132,7 +175,6 @@ In what way is this algorithm useful in helping to prove or disprove conjectures
 		\STATE $vertex \gets $ \texttt{vertices}[$index$]
 		\FOR{Each available $color$ of $vertex$}
 		\STATE \texttt{color}($vertex, color$)
-		\STATE \texttt{col}($vertex, color$)
 		\IF{\texttt{neighbourhood}($vertex$) is fully colored $\land$ $\neg$\texttt{isCorrectlyColored}($vertex$)}
 		
 		\RETURN False
@@ -143,10 +185,9 @@ In what way is this algorithm useful in helping to prove or disprove conjectures
 		
 		\RETURN True
 		\ENDIF
-		\STATE \texttt{uncolor}($vertex, color$)
 		\ENDFOR
 		
-		\STATE \texttt{uncol}($vertex, color$)
+		\STATE \texttt{uncolor}($vertex, color$)
 		\STATE \textbf{return} False
 		\end{algorithmic}
 	\end{algorithm}
@@ -162,7 +203,7 @@ In what way is this algorithm useful in helping to prove or disprove conjectures
 			
 			\RETURN \texttt{isCorrectlyColored}($neighbour$)
 			\ELSIF{\texttt{neighbourhood}($neighbour$) contains only \textit{one} uncolored vertex}
-			\STATE \texttt{removeAvailableColorsForColoring}($uncoloredNeighbour$)
+			\STATE \texttt{handle}($uncoloredNeighbour$)
 			
 			\ELSIF{$coloring$ is proper}
 			\STATE \texttt{removeAvailableColor}($neighbour, color$)

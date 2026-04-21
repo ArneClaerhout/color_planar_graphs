@@ -1,5 +1,48 @@
-[1] Config.pm:307> INFO - This is Biber 2.19
-[2] Config.pm:310> INFO - Logfile is 'thesis.blg'
-[387] biber-MSWIN64:340> INFO - === 
-[1731] Utils.pm:410> ERROR - Cannot find 'thesis.bcf'!
-[1732] Biber.pm:136> INFO - ERRORS: 1
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: thesis.aux
+The style file: plain.bst
+Database file #1: references.bib
+Warning--empty journal in appel1976every
+You've used 10 entries,
+            2118 wiz_defined-function locations,
+            564 strings with 5702 characters,
+and the built_in function-call counts, 3481 in all, are:
+= -- 344
+> -- 178
+< -- 1
++ -- 72
+- -- 60
+* -- 262
+:= -- 602
+add.period$ -- 31
+call.type$ -- 10
+change.case$ -- 61
+chr.to.int$ -- 0
+cite$ -- 11
+duplicate$ -- 115
+empty$ -- 247
+format.name$ -- 60
+if$ -- 702
+int.to.chr$ -- 0
+int.to.str$ -- 10
+missing$ -- 9
+newline$ -- 54
+num.names$ -- 20
+pop$ -- 47
+preamble$ -- 1
+purify$ -- 50
+quote$ -- 0
+skip$ -- 82
+stack$ -- 0
+substring$ -- 235
+swap$ -- 17
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 40
+warning$ -- 1
+while$ -- 34
+width$ -- 12
+write$ -- 112
+(There was 1 warning)

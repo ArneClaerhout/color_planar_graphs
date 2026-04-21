@@ -1,0 +1,60 @@
+\begin{thebibliography}{10}
+
+\bibitem{abel2018conflict}
+Zachary Abel, Victor Alvarez, Erik~D Demaine, S{\'a}ndor~P Fekete, Aman Gour,
+  Adam Hesterberg, Phillip Keldenich, and Christian Scheffer.
+\newblock Conflict-free coloring of graphs.
+\newblock {\em SIAM Journal on Discrete Mathematics}, 32(4):2675--2702, 2018.
+
+\bibitem{appel1976every}
+Kenneth Appel and Wolfgang Haken.
+\newblock Every planar map is four colorable.
+\newblock 1976.
+
+\bibitem{euler1741solutio}
+Leonhard Euler.
+\newblock Solutio problematis ad geometriam situs pertinentis.
+\newblock {\em Commentarii academiae scientiarum Petropolitanae}, pages
+  128--140, 1741.
+
+\bibitem{even2003conflict}
+Guy Even, Zvi Lotker, Dana Ron, and Shakhar Smorodinsky.
+\newblock Conflict-free colorings of simple geometric regions with applications
+  to frequency assignment in cellular networks.
+\newblock {\em SIAM Journal on Computing}, 33(1):94--136, 2003.
+
+\bibitem{fabrici2023proper}
+Igor Fabrici, Borut Lu{\v{z}}ar, Simona Rindo{\v{s}}ov{\'a}, and Roman
+  Sot{\'a}k.
+\newblock Proper conflict-free and unique-maximum colorings of planar graphs
+  with respect to neighborhoods.
+\newblock {\em Discrete Applied Mathematics}, 324:80--92, 2023.
+
+\bibitem{huang2020short}
+Fei Huang, Shanshan Guo, and Jinjiang Yuan.
+\newblock A short note on open-neighborhood conflict-free colorings of graphs.
+\newblock {\em SIAM Journal on Discrete Mathematics}, 34(3):2009--2015, 2020.
+
+\bibitem{KATCHALSKI1995141}
+Meir Katchalski, William McCuaig, and Suzanne Seager.
+\newblock Ordered colourings.
+\newblock {\em Discrete Mathematics}, 142(1):141--154, 1995.
+
+\bibitem{Malik2023thesis}
+Lukáš Málik.
+\newblock Conflict-free colouring of planar graphs.
+\newblock Bakalářská práce, Masarykova univerzita, Fakulta informatiky
+  Brno, 2023.
+\newblock Online; accessed 2025-11-26. Supervisor: Petr Hliněný.
+
+\bibitem{petr2023odd}
+Jan Petr and Julien Portier.
+\newblock The odd chromatic number of a planar graph is at most 8.
+\newblock {\em Graphs and Combinatorics}, 39(2):28, 2023.
+
+\bibitem{PETRUSEVSKI2022385}
+Mirko Petruševski and Riste Škrekovski.
+\newblock Colorings with neighborhood parity condition.
+\newblock {\em Discrete Applied Mathematics}, 321:385--391, 2022.
+
+\end{thebibliography}
