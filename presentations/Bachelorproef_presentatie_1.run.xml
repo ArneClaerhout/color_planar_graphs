@@ -41,10 +41,11 @@
   >
 ]>
 <requests version="1.0">
-  <internal package="biblatex" priority="9" active="1">
+  <internal package="biblatex" priority="9" active="0">
     <generic>latex</generic>
     <provides type="dynamic">
-      <file>Bachelorproef_presentatie_1.bcf</file>
+      <file>Bachelorproef_presentatie_1.aux</file>
+      <file>Bachelorproef_presentatie_1-blx.bib</file>
     </provides>
     <requires type="dynamic">
       <file>Bachelorproef_presentatie_1.bbl</file>
@@ -52,6 +53,7 @@
     <requires type="static">
       <file>blx-dm.def</file>
       <file>blx-compat.def</file>
+      <file>blx-bibtex.def</file>
       <file>biblatex.def</file>
       <file>standard.bbx</file>
       <file>authortitle.bbx</file>
@@ -61,14 +63,15 @@
       <file>dutch.lbx</file>
     </requires>
   </internal>
-  <external package="biblatex" priority="5" active="1">
-    <generic>biber</generic>
+  <external package="biblatex" priority="5" active="0">
+    <generic>bibtex</generic>
     <cmdline>
-      <binary>biber</binary>
+      <binary>bibtex</binary>
+      <option>-min-crossrefs 2</option>
       <infile>Bachelorproef_presentatie_1</infile>
     </cmdline>
     <input>
-      <file>Bachelorproef_presentatie_1.bcf</file>
+      <file>Bachelorproef_presentatie_1.aux</file>
     </input>
     <output>
       <file>Bachelorproef_presentatie_1.bbl</file>
@@ -77,10 +80,14 @@
       <file>Bachelorproef_presentatie_1.bbl</file>
     </provides>
     <requires type="dynamic">
-      <file>Bachelorproef_presentatie_1.bcf</file>
+      <file>Bachelorproef_presentatie_1.aux</file>
+      <file>Bachelorproef_presentatie_1-blx.bib</file>
     </requires>
     <requires type="editable">
       <file>Citations.bib</file>
+    </requires>
+    <requires type="static">
+      <file>biblatex.bst</file>
     </requires>
   </external>
 </requests>

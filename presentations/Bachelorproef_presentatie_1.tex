@@ -1,3 +1,4 @@
+\PassOptionsToPackage{style=verbose, backend=bibtex}{biblatex}
 \documentclass
 [kulak] % [kulak|kul|kuleuven-brugge,handout|outline|]
 {kulakbeamer}
@@ -34,7 +35,9 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 
 \renewcommand{\outlineTitle}{Overzicht} % enkel met optie outline
 
+\usepackage{biblatex}
 \addbibresource{Citations.bib}
+%\bibliographystyle{unsrtd}
 
 \addtobeamertemplate{footnote}{}{\vspace{2ex}}
 
@@ -93,17 +96,25 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			Het chromatisch getal $\chi(G)$ van een (vlakke) graaf $G$ is het kleinst aantal benodigde kleuren voor het kleuren van de knopen van $G$ zonder twee naburige knopen met eenzelfde kleur.
 		\end{definition}
 		\begin{itemize}
+			\item Andere kleuringsvarianten met andere eisen
 			\item Uitbreiden naar $\chi_{K}(G)$
 			\item Minimaal aantal benodigde kleuren om $G$ te kleuren voor een kleuring $K$
-			\pause
-			\item Algemener: $\chi_{K}(\mathcal{P})$
-			\item Minimaal benodigd aantal kleuren om een willekeurige graaf binnen de klasse van de vlakke grafen te kunnen kleuren voor een kleuring $K$.
+			
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Chromatische getallen}
+		\begin{itemize}
+			\begin{definition}
+				Het chromatisch getal $\chi_{K}(\mathcal{P})$ voor een kleuring $K$ voor de klasse van vlakke grafen $\mathcal{P}$, is het minimaal benodigd aantal kleuren om een willekeurige graaf binnen die klasse te kunnen kleuren voor de kleuring $K$.
+			\end{definition}
 			\pause
 			\item Bijvoorbeeld: $K_4$ heeft $4$ kleuren bij klassieke kleuring $\implies$ $\chi(\mathcal{P}) \ge 4$. 
 			
 			Daarna ook bewijs voor volstaan van $4$ kleuren.
-			
 		\end{itemize}
+		
 	\end{frame}
 	
 	\begin{frame}
@@ -122,7 +133,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{multicols}{2}
 
 			\begin{itemize}
-				\item Proper colouring
+				\item Proper coloring
 			\end{itemize}
 			
 			\vspace*{\fill}\null
@@ -174,10 +185,10 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper colouring
-				\item Odd colouring
+				\item Proper coloring
+				\item Odd coloring
 				\begin{itemize}
-					\item Proper colouring
+					\item Proper coloring
 					\item ``Oneven'' kleur
 				\end{itemize}
 			\end{itemize}
@@ -202,10 +213,10 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper colouring
-				\item Odd colouring
+				\item Proper coloring
+				\item Odd coloring
 				\begin{itemize}
-					\item Proper colouring
+					\item Proper coloring
 					\item ``Oneven'' kleur
 				\end{itemize}
 			\end{itemize}
@@ -229,9 +240,9 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper colouring
-				\item Odd colouring
-				\item Conflict-free colouring (CF)
+				\item Proper coloring
+				\item Odd coloring
+				\item Conflict-free coloring (CF)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
@@ -260,9 +271,9 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper colouring
-				\item Odd colouring
-				\item Conflict-free colouring (CF)
+				\item Proper coloring
+				\item Odd coloring
+				\item Conflict-free coloring (CF)
 				\begin{itemize}
 					\item 4 opsplitsingen
 					\item Open $\longleftrightarrow$ Closed
@@ -303,10 +314,10 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{multicols}{2}
 			
 			\begin{itemize}
-				\item Proper colouring
-				\item Odd colouring
-				\item Conflict-free colouring (CF)
-				\item Unique-Maximum colouring (UM)
+				\item Proper coloring
+				\item Odd coloring
+				\item Conflict-free coloring (CF)
+				\item Unique-Maximum coloring (UM)
 				\pause
 				\begin{itemize}
 					\item 4 opsplitsingen
@@ -334,10 +345,10 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\begin{itemize}
 			\item Draadloze netwerken: versturen signaal van zendmast zonder interferentie 
 			
-			$\rightarrow$ Conflict-free colouring
+			$\rightarrow$ Conflict-free coloring
 			\item Vertex ranking: kleuring waarbij paden tussen knopen met zelfde kleur een knoop bevatten met grotere kleur
 			
-			$\rightarrow$ Unique-Maximum colouring
+			$\rightarrow$ Unique-Maximum coloring
 			\begin{itemize}
 				\item Toepassingen bij parallel factoriseren matrices en meer
 			\end{itemize}
@@ -346,46 +357,19 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	
 	\section{Literatuur}
 	
-	\begin{frame}
-		\frametitle{Literatuur}
-		
-			% Define the content of the footnotes once at the frame start
-		% (We use \footnotetext inside the frame, defining the content for the 
-		% next available footnote counter, which we control.)
-		
-		% Footnote 1 Content (CFenUMConjectures)
-		\stepcounter{footnote}\footnotetext{\cite{CFenUMConjectures}}
-		% Footnote 2 Content (PETRUSEVSKI2022385)
-		\stepcounter{footnote}\footnotetext{\cite{PETRUSEVSKI2022385}}
-		% Footnote 3 Content (oddMax8)
-		\stepcounter{footnote}\footnotetext{\cite{oddMax8}}
-		
-		% Reset the counter back to the first defined number (1)
-		\setcounter{footnote}{1} 
-		
+	\begin{frame}{Literatuur}
 		\begin{itemize}
-			% --- FIRST LIST ITEM (Markers 1, 2, 3) ---
-			\item Brengen resultaten samen en bewijzen nieuwe grenzen%
-			\textsuperscript{\thefootnote,}%  <-- Prints 1
-			\stepcounter{footnote}\textsuperscript{\thefootnote,}%  <-- Prints 2
-			\stepcounter{footnote}\textsuperscript{\thefootnote} % <-- Prints 3
+			% biblatex handles the numbering automatically
+			\item Brengen resultaten samen en bewijzen nieuwe grenzen\footcite{FABRICI202380} \footcite{PETRUSEVSKI2022385}\footcite{oddMax8}
 			
-			% --- SECOND LIST ITEM (Markers 1, 2) ---
-			% Reset the counter back to 1 before starting the second item's markers
-			\setcounter{footnote}{1} 
-			\item Formuleren vermoedens%
-			\textsuperscript{\thefootnote,}%  <-- Prints 1
-			\stepcounter{footnote}\textsuperscript{\thefootnote} % <-- Prints 2
+			\item Formuleren vermoedens$^{\text{1}\text{2}}$
 		\end{itemize}
-
-		
-		
 	\end{frame}
 	
 	\begin{frame}
 		\frametitle{Vermoedens}
 		\vspace{0.5em}
-		\begin{block}{Odd colouring}
+		\begin{block}{Odd coloring}
 			$
 			\begin{array}{c@{\hspace{2.8cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
@@ -402,7 +386,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 			\end{array}
 			$
 		\end{block}
-		\begin{block}{Proper colourings}
+		\begin{block}{Proper colorings}
 			$
 			\begin{array}{c@{\hspace{2.35cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
@@ -430,7 +414,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	\begin{frame}
 		\frametitle{Vermoedens 2}
 		\setcounter{footnote}{3} 
-		\begin{block}{Improper colourings}
+		\begin{block}{Improper colorings}
 			$
 			\begin{array}{c@{\hspace{2cm}}c@{\hspace{2cm}}c}
 				\begin{aligned}
@@ -928,8 +912,8 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	
 	\begin{multicols}{2}
 		\begin{itemize}
-			\item Performant algoritme die kleuren van grafen centraliseert\pause
-			\item Vermoedens bewezen voor planaire triangulaties $\le 20 v$
+			\item Performant algoritme dat kleuren van grafen voor deze kleuringsvarianten mogelijk maakt\pause
+			\item Vermoedens bewezen voor planaire triangulaties met $\le 20$ knopen
 		\end{itemize}
 		\vspace{\fill}\null
 		\begin{center}
@@ -979,12 +963,30 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	
 \end{frame}
 
+%\begin{frame}
+%	
+%	\begin{figure}
+%		\centering
+%		\includegraphics[width=0.9\textwidth]{github.png}
+%	\end{figure}
+%\end{frame}
+
 \begin{frame}
+	\frametitle{Onderzoeksprobleem}
 	
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.9\textwidth]{github.png}
-	\end{figure}
+	\begin{enumerate}
+		\item Kunnen we een algoritme ontwerpen voor het kleuren van vlakke grafen dat minstens even snel is als de bestaande kleuringsalgoritmes voor algemene grafen en dat efficiënt uitgebreid kan worden voor verschillende grafenkleuringsproblemen?\pause
+		\begin{itemize}
+			\item Efficiënt opgesteld algoritme (+ uitbreidbaar)
+			\item Trager dan alternatieven voor proper coloring
+			\item Eerste algoritme voor andere kleuringen\pause
+		\end{itemize}
+		\item In welke mate kan dit algoritme helpen om vermoedens rond grafenkleuringsproblemen te ontkrachten of bevestigen?\pause
+		\begin{itemize}
+			\item Vermoedens bewezen voor bepaalde grafen
+			\item Helpt gadgets (hulpgrafen met bepaalde eigenschappen, gebruikt in constructie grotere grafen) vinden
+		\end{itemize}
+	\end{enumerate}
 \end{frame}
 
 \section{Threats to validity}
@@ -1002,7 +1004,16 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 		\end{itemize}
 	\end{frame}
 	
-	\section{Planning}
+	\section{Future work}
+	
+	\begin{frame}
+	\frametitle{Future work}
+	\begin{itemize}
+		\item Toevoegen extra kleuringen aan algoritme (bv. edge colorings)
+		\item Verdere optimalisatie algoritme (bv. multithreading)
+		\item Bewijzen of weerleggen van vermoedens
+	\end{itemize}
+	\end{frame}
 	
 	\section{Vragen}
 	
