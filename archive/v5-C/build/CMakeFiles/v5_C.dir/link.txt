@@ -1,0 +1,1 @@
+/usr/bin/gcc -O3 -DNDEBUG CMakeFiles/v5_C.dir/graphs/colorings.c.o CMakeFiles/v5_C.dir/graphs/vertex.c.o CMakeFiles/v5_C.dir/graphs/main.c.o CMakeFiles/v5_C.dir/graphs/graph.c.o CMakeFiles/v5_C.dir/graphs/counter.c.o -o v5_C 

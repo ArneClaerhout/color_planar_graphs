@@ -1,0 +1,343 @@
+%%%% ijcai22-multiauthor.tex
+
+\typeout{IJCAI--22 Multiple authors example}
+
+% These are the instructions for authors for IJCAI-22.
+
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+% The file ijcai22.sty is NOT the same as previous years'
+\usepackage{ijcai22}
+
+% Use the postscript times font!
+\usepackage{times}
+\renewcommand*\ttdefault{txtt}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\urlstyle{same}
+\usepackage{xcolor}
+\usepackage{multicol}
+
+\newcommand\todo[1]{\textcolor{red}{#1}}
+
+% the following package is optional:
+%\usepackage{latexsym}
+
+\pdfinfo{
+/TemplateVersion (IJCAI.2022.0)
+}
+
+
+\title{A computational approach for variants of coloring planar graphs}
+
+\author{
+Arne Claerhout$^1$\and
+Jorik Jooken$^1$\And
+Jan Goedgebeur$^1$\\
+\affiliations
+$^1$KU Leuven KULAK
+\emails
+arne.claerhout@student.kuleuven.be,
+jorik.jooken@kuleuven.be,
+jan.goedgebeur@kuleuven.be
+}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	In this paper, we study the coloring of planar graphs for different variants of graph colorings. In particular the proper, odd, conflict-free and unique-maximum vertex colorings. We provide an algorithm that allows for the coloring of graphs for these variants.
+\end{abstract}
+
+\section{Introduction}
+
+Graph theory is a field of research in computer science that is older than the computer. It's conception happening in the 18th century \cite{euler1741solutio}. 
+
+A \textit{graph} $G = (V, E)$ is defined as a pair, containing a collection of vertices ($V$) and edges ($E$). Each edge is an unordered pair of unique vertices. A \textit{planar graph} is a variant of graphs such that a planar embedding is possible. Planar graphs and graphs is be used interchangeably. The \textit{class of planar graphs} $\mathcal{P}$ is defined as the set of all planar graphs.
+
+The coloring of graphs is one of the most well-known fields in graph theory. A coloring of a graph is an image assigning each vertex a color $1, \dots, k$. The most famous of these colorings is the proper coloring. This states that two adjacent vertices -- vertices sharing an edge -- never share the same color. 
+
+The chromatic number $\chi(G)$ of a graph $G$ is minimal number of colors needed to color the graph. A generalization of this being the chromatic number $\chi(\mathcal{P})$ for the class of planar graphs. Which is the minimum needed colors to color any planar graph. For the proper coloring, it was proven that four colors always suffice \cite{appel1976every}. Which was a special result, as this was the first proof verified using a computer program.
+
+Coloring of graphs has various applications, with uses including: the assigning of frequencies to radio stations, the coloring of maps, scheduling and more.
+
+There exist many variants of colorings of graphs. One variant is the \textit{odd coloring}, which was recently introduced by Petruševski and Škrekovski \cite{PETRUSEVSKI2022385} in 2022. A proper coloring of a graph is said to be odd if for each non-isolated vertex $v \in V$ there exists a color occurring an odd amount of times in the neighborhood of that vertex $N(v)$. The \textit{odd chromatic number} $\chi_{\mathrm{O}}(\mathcal{P})$ is the minimal number of colors needed to color any graph with an odd coloring.
+
+Other variants include the conflict-free and unique-maximum colorings. 
+
+The \textit{conflict-free coloring}, introduced in 2003 by Even, Lotker, Ron, and Smorodinsky \cite{even2003conflict}, is a coloring such that there is at least one color for each vertex that occurs exactly once in its neighborhood. 
+
+Now consider a \textit{proper conflict-free coloring} with respect to open- or closed neighborhoods -- a conflict-free coloring with a proper constraint. Each have a \textit{chromatic number} $\chi_{\mathrm{pCFo}}(\mathcal{P})$ and $\chi_{\mathrm{pCFc}}(\mathcal{P})$ respectively.
+An open neighborhood of a vertex $v$ is defined as $N(v) = \{w | (v, w) \in E\}$. This does therefore not include the vertex $v$ itself. A closed neighborhood of a vertex $v$ is $N[v] = N(v) \cup \{v\}$, the open neighborhood of $v$, including the vertex itself. 
+
+Similarly, an \textit{improper conflict-free coloring} with respect to open- or closed neighborhoods can be defined. These are the same colorings, without the proper constraint. Again, \textit{chromatic numbers} $\chi_{\mathrm{iCFo}}(\mathcal{P})$ and $\chi_{\mathrm{iCFc}}(\mathcal{P})$ respectively can be defined for both.
+
+\textit{Unique-maximum colorings}, introduced originally as ordered colorings \cite{KATCHALSKI1995141}, and studied further in the context of open- and closed neighborhoods by Fabrici, Lužar, Rindošová and Soták \cite{fabrici2023proper}, are colorings where the maximum color appearing in the neighborhood of each vertex appears exactly once in that vertex's neighborhood. 
+
+Using the same versions as before, four variants of this coloring can be defined. A proper unique-maximum coloring with respect to open- or closed neighborhoods, and an improper unique-maximum coloring with respect to open- or closed neighborhoods. Each respectively having their own \textit{chromatic number} for the class of planar graphs: $\chi_{\mathrm{pUMo}}(\mathcal{P})$, $\chi_{\mathrm{pUMc}}(\mathcal{P})$, $\chi_{\mathrm{iUMo}}(\mathcal{P})$ and $\chi_{\mathrm{iUMc}}(\mathcal{P})$.
+
+\subsection{Known bounds}
+
+Not all of the chromatic numbers of these previously mentioned colorings are known. For most, only some bounds have been found, proving some upper bound always suffices to color all graphs, while the maximum needed colors found are equals to the lower bound. As stated previously, the proper coloring's chromatic number is $4$ \cite{appel1976every}. 
+
+As the unique color for each vertex $v$ in the $\mathrm{pCFc}$-coloring can always be the color of $v$ itself, this coloring is equal to the proper coloring. Therefore, $\chi_{\mathrm{pCFc}}(\mathcal{P})$ is also equal to $4$.
+
+The bounds for all colorings are as follows:
+
+
+\begin{itemize}
+	\item For the odd coloring:
+	\begin{itemize}
+		\item $5 \leq \chi_{\mathrm{O}}(\mathcal{P}) \leq 8$ (\textit{proven by \cite{petr2023odd} for upper bound, lower bound is $\mathit{C_5}$})
+	\end{itemize}
+	
+	\item For conflict-free colorings:
+	\begin{itemize}
+		\item $6 \leq \chi_{\mathrm{pCFo}}(\mathcal{P}) \leq 8$ (\textit{proven by \cite{fabrici2023proper}})
+		\item $\chi_{\mathrm{pCFc}}(\mathcal{P}) = 4$
+		\item $4 \le \chi_{\mathrm{iCFo}}(\mathcal{P}) \le 5$ (\textit{proven by \cite{abel2018conflict} for lower bound and \cite{huang2020short} for upper bound})
+		\item $\chi_{\mathrm{iCFc}}(\mathcal{P}) = 4$ (\textit{proven by \cite{Malik2023thesis}})
+	\end{itemize}
+	
+	\item For unique-maximum colorings (all \textit{proven by \cite{fabrici2023proper}}):
+	\begin{itemize}
+		\item $6 \leq \chi_{\mathrm{pUMo}}(\mathcal{P}) \leq 10$
+		\item $6 \leq \chi_{\mathrm{pUMc}}(\mathcal{P}) \leq 8$
+		\item $5 \le \chi_{\mathrm{iUMo}}(\mathcal{P}) \le 10$
+		\item $4 \le \chi_{\mathrm{iUMc}}(\mathcal{P}) \le 6$
+	\end{itemize}
+\end{itemize}
+
+
+
+\subsection{Conjectures}
+\label{sect:Conjectures}
+
+As most of the chromatic numbers are not known. Some authors started formulating conjectures on this problem.
+
+Petruševski and Škrekovski, the originators of the odd coloring, conjectured $\chi_{\mathrm{O}}(\mathcal{P}) = 5$. Other conjectures introduced by Fabrici, Lužar, Rindošová and Soták \cite{fabrici2023proper} include:
+
+\begin{minipage}{0.45\textwidth}
+	\raggedcolumns
+	\begin{multicols}{2}
+		\begin{itemize}
+			\item $\chi_{\mathrm{pUMo}}(\mathcal{P}) \leq 7$
+			\item $\chi_{\mathrm{pUMc}}(\mathcal{P}) = 6$
+			\item $\chi_{\mathrm{iUMo}}(\mathcal{P}) = 5$
+			\item $\chi_{\mathrm{iUMc}}(\mathcal{P}) = 4$
+			\item $\chi_{\mathrm{pCFo}}(\mathcal{P}) = 6$
+			\item $\chi_{\mathrm{iCFo}}(\mathcal{P}) = 4$
+			\item $\chi_{\mathrm{iCFc}}(\mathcal{P}) = 3$
+		\end{itemize}
+	\end{multicols}
+\end{minipage}
+\vspace{0.4cm}
+
+Since then, the conjecture for the chromatic number of the $\mathrm{iCFc}$-coloring has been disproven.
+
+
+\subsection{Research Problem}
+
+In this paper, two research questions are considered:
+
+\begin{itemize}
+	\item \textbf{Can we design an algorithm for coloring planar graphs, faster than or just as fast as the existing coloring algorithms, that is also easily expandable to new coloring variants?}
+	\item \textbf{In what way is this algorithm useful in helping to prove or disprove conjectures surrounding these coloring variants?}
+\end{itemize}
+
+The focus is thus laid on the coloring of graphs using a coloring algorithm.  Another goal starting this research was the disproving or supporting of the conjectures found in Section \ref{sect:Conjectures}.
+
+The structure of this paper is as follows. First \todo{Verder aanvullen met wat er gebeurt.}
+
+
+\section{Algorithm}
+
+In this section the developed algorithm is discussed. A backtracking algorithm was used, coloring in the vertices one-by-one and pruning where possible. The pseudo-code is found in Algorithms \ref{alg:search}, \ref{alg:check}, \ref{alg:updateN} and \ref{alg:special}. 
+
+Starting with Algorithm \ref{alg:search}, this is the `overseer' of the algorithm, only choosing a maximum color for the graph, and letting the recursive algorithm check if the coloring is possible with only allowing that maximum color.
+This is also reflected in the pseudo-code. Before checking the maximum color, the available colors of the vertices are reset to reflect the maximum color (\textit{e.g., if the maximum color is 3, the available colors are ${1, 2 \text{ and } 3}$}).
+
+Algorithm \ref{alg:check} is the main checking algorithm. It checks whether the given graph $G$ is able to be colored given a maximum color $max\_c$. It does this in multiple steps, starting with the base case, where if all vertices are colored, a valid coloring is reached and the previous recursion step is notified of this. 
+
+Otherwise, it loops over all available colors of the given vertex. 
+
+This is immediately using an optimization, where -- for non-unique-maximum colorings -- permutations of already tried colorings of the graph are prohibited. As for these colorings, swapping colors (e.g., changing all vertices colored $2$ to color $3$ and vice versa) still yields a valid coloring. This isn't the case for a unique-maximum coloring because the for example swapping the maximum color and color $1$ will probably not result in a valid coloring. Therefore, all possible colorings should get checked for the unique-maximum colorings.
+
+Next, the $vertex$ is colored in the available color $c$, and all neighbors of that $vertex$ are updated using the \texttt{update\_neighbors} function. This will essentially update the available colors of all neighbors and those neighbors' neighbors, and check if the coloring is still possible. If not, the progress made this recursion step is reset, and the next available color is tried. If the coloring is \textit{still} possible, the next recursion step is called with a new $index$ and $depth$. If this also doesn't yield a valid coloring, reset as well, and try the next available color.
+
+After trying all available colors without results, the vertex color is reset and the previous recursion step is notified of failure.
+
+The $depth$ variable is used in the \texttt{add\_colors\_back} function. All of the changes in the entire algorithm, i.e. for all vertices and all recursion steps, are kept track of, the depth is used to log changes and restoring them.
+
+Lastly, Algorithm \ref{alg:updateN} updates neighbors of a given $vertex$ for a given color $c$, the color assigned to $vertex$. Here, the available colors of all uncolored neighbors of $vertex$ are updated when the coloring $K$ is proper (\textit{e.g., $\mathrm{pUMo}$, odd, $\dots$}). If this leads to a neighbor having no available colors, the coloring isn't valid and the pruning starts.
+
+Otherwise, the neighborhood of the neighbors are checked. If these are fully colored (because the last vertex $vertex$ was colored in just now), the correctness is checked for coloring $K$, again, if this isn't valid, prune, otherwise, keep going. 
+
+Finally, if the neighborhood of the neighbor still has one vertex left to color, the available colors for this vertex are updated. This is achievable for most colorings, except the proper coloring. A concrete example is worked out in Algorithm \ref{alg:special} for the odd coloring. Here, all other vertices' colors are used to check compatibility with the available colors of the uncolored vertex $u$. In this case, the odd constraint is checked, if only one color appears an odd amount of times, $u$ can't have this color.
+For the other colorings, similar rules are applied to update the vertex $u$.
+
+% Search
+\begin{algorithm}[tb]
+	\caption{\texttt{searchChromaticNumber}}
+	\label{alg:search}
+	\textbf{Parameters}: The coloring $K$
+	\textbf{Output}: Chromatic number
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{G} \gets \text{graphs generated by \textit{plantri}}$
+		\FOR{\texttt{$G \in \mathcal{G}$}}
+		\FOR{\text{$max\_c$ $ \le $ $10$}}
+		\STATE \texttt{set\_max\_color\_for\_vertices}($G$)
+		\IF{\texttt{can\_color\_with\_max\_c}($G, K, 0, max\_c, 0, 0$)} 
+		
+		\RETURN $max\_c$
+		\ENDIF
+		\ENDFOR
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
+% Check
+\begin{algorithm}[tb]
+	\caption{\texttt{can\_color\_with\_max\_c}}
+	\label{alg:check}
+	\textbf{Parameters}: The graph $G$, coloring $K$, max. color in graph $max\_c\_in\_g$, max. color $max\_c$, $index$ and $depth$\\
+	\textbf{Output}: Coloring achieved
+	\begin{algorithmic}[1]
+		\IF{All vertices colored}
+		\RETURN true
+		\ENDIF
+		\STATE $vertex \gets $ \texttt{$G$.vertices}[$index$]
+		\FOR{available color $c$ of $vertex$}
+		\IF{$\neg$\texttt{is\_UM}($K$) and $c > max\_c\_in\_g + 1$}
+		
+		\STATE continue
+		\ENDIF
+		
+		\STATE $vertex.color \gets c$
+		\STATE $new\_max\_c\_in\_g \gets \max(max\_c\_in\_g, c + 1)$
+
+		\IF{\texttt{update\_neighbors}($G, K, vertex, c, depth$)}
+		
+		\STATE \texttt{add\_colors\_back}($G, depth$)
+		\STATE continue
+		\ENDIF
+		\IF{\texttt{can\_color\_with\_max\_c}($G, K, new\_max\_c\_in\_g,$ $max\_c, $ \texttt{getBestIndex}()$, depth + 1$)}
+		
+		\RETURN true
+		\ENDIF
+		\STATE \texttt{add\_colors\_back}($G, depth$)
+		
+		\ENDFOR
+		
+		\STATE $vertex.color \gets 0$
+		\RETURN false
+	\end{algorithmic}
+\end{algorithm}
+
+% update neighbors
+\begin{algorithm}[tb]
+	\caption{\texttt{update\_neighbors}}
+	\label{alg:updateN}
+	\textbf{Parameters}: The graph $G$, coloring $K$, vertex $v$ to update, color $c$ of $v$ and $depth$ of algorithm \\
+	\textbf{Output}: Coloring impossible
+	\begin{algorithmic}[1]
+		\FOR{$n \in $ $vertex.neighbors$}
+		
+		\IF{\texttt{is\_proper}(coloring $K$) and $n.color = 0$}
+		
+			\IF{\texttt{remove\_available\_c}($G, n, c, depth$)}
+			
+				\RETURN true 
+			\ENDIF
+		\ENDIF
+		
+		\IF{$n.neighbors$ is fully colored and $\neg$\texttt{isCorrectlyColored}($K, n$)}
+		
+		\RETURN True
+		\ELSIF{$n.neighbors$ contains only \textbf{one} uncolored vertex $u$}
+		\IF{\texttt{handle\_special\_case}($K, u, n.neighbors,$ $ depth$)}
+		
+		\RETURN true
+		
+		\ENDIF
+		\ENDIF
+		\ENDFOR
+		\RETURN false
+	\end{algorithmic}
+\end{algorithm}
+
+% handler
+\begin{algorithm}[tb]
+	\caption{\texttt{handle\_special\_case\_odd}}
+	\label{alg:special}
+	\textbf{Parameters}: The coloring $K = $ odd, vertex to update $u$, $neighbors$ and $depth$ \\
+	\textbf{Output}: Coloring impossible
+	\begin{algorithmic}[1]
+		\STATE $colors\_odd = \{\}$
+		\FOR{$neighbor \in neighbors \setminus \{u\}$}
+		
+		\IF{$neighbor.color \in colors\_odd$}
+		
+		\STATE $colors\_odd = colors\_odd \setminus \{neighbor.color\}$
+		
+		\ELSE 
+		
+		\STATE $colors\_odd = colors\_odd \cup \{neighbor.color\}$
+		\ENDIF
+		
+		\ENDFOR
+		
+		\IF{$\left| colors\_odd \right| = 1$}
+		
+		\RETURN \texttt{remove\_available\_c}($G, u, colors\_odd, depth$)
+		\ENDIF
+		\RETURN false
+	\end{algorithmic}
+\end{algorithm}
+
+It is clear that the algorithm can color in graphs, and find the chromatic number of that graph for a given coloring, since all possible colorings are tried except those that can be pruned.
+
+\section{Implementation}
+
+The development of the algorithm happened by working out the code for an optimal backtracking algorithm. This was done in multiple stages. First, this was developed in Java to test out different techniques and data structures, and optimize the algorithm. Afterwards, the optimal implementation found in Java, reflecting the algorithm discussed, was then ported over to C. The 
+
+\subsection{Optimizations}
+
+\subsection{Correctness}
+
+The correctness of the implemented algorithm is never guaranteed. This is different for very simple versions of the algorithm. By comparing a naive implementation to the final implementation in C, discrepancies in coloring results can get found and resolved. This naive implementation only 
+
+\section{Results}
+
+\section{Threats to validity}
+
+\section{Conclusion}
+
+\subsection{Future work}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% The file named.bst is a bibliography style file for BibTeX 0.99c
+%\bibliographystyle{named}
+\bibliographystyle{unsrt}
+%\bibliographystyle{amsplain}
+\bibliography{references}
+
+
+\end{document}
+

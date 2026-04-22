@@ -1,0 +1,20 @@
+#ifndef COUNTER_H
+#define COUNTER_H
+#include <stdint.h>
+
+#include "types.h"
+#include "vertex.h"
+
+
+#define MAX_STRING_LENGTH 65
+
+typedef struct gadget_finder {
+    int firstInput;
+    bitset_t condition[MAX_VERTICES];
+    bitset_t conditionVertices;
+    int numberOfVertices;
+    char extraInfo[MAX_STRING_LENGTH];
+    bitset_t maxColoringMask;
+} gadget_finder;
+
+#endif //COUNTER_H

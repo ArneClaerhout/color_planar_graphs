@@ -1,0 +1,3 @@
+/home/arne/Bachelorproef/code/v5-C/build/CMakeFiles/v5_C.dir
+/home/arne/Bachelorproef/code/v5-C/build/CMakeFiles/edit_cache.dir
+/home/arne/Bachelorproef/code/v5-C/build/CMakeFiles/rebuild_cache.dir
