@@ -3,88 +3,145 @@
 A repository used for keeping track of code and reports for my undergraduate thesis in Computer Science. The main goal is the **coloring of planar graphs using a backtracking algorithm**. 
 We use C as our main programming language. Unix is also used to allow the use of the planar graph generator _plantri_.
 
+The possible colorings this program can do are these _vertex_ colorings:
+- Proper colorings
+- Odd colorings
+- Conflict-free colorings (4 variants: open/closed neighborhood, proper/improper constraint)
+- Unique-maximum colorings (4 variants: open/closed neighborhood, proper/improper constraint)
+
 ## Setup
 
 Firstly, make sure you are working in a Unix-like environment.
 
-### Plantri
+To check all graphs, we will use a planar graph generator called `plantri`. It can be installed from [here](https://users.cecs.anu.edu.au/~bdm/plantri/).
+The algorithm can use plantri if it is installed in the _main_ directory (_color_planar_graphs_ directory). So please install it there before doing anything else.
 
-To check all graphs, we will use a planar graph generator called `plantri`.
-The algorithm can use plantri if it is installed in the _main_ directory. So please install it there.
+Some parts of the program may need the use of nauty. This can be installed from [here](https://users.cecs.anu.edu.au/~bdm/nauty/) and should also be put in the _main_ directory.
 
-
-Afterwards, go straight to the source directory of the latest version.
+Afterwards, go straight to the code source directory.
 
 ```
-cd code/v5-C/
+cd code/
 ```
 
 Make sure a python virtual environment is created by running the following command:
 
 ```
-./setupVenv.sh
+./scripts/setup_venv.sh
 ```
 
-This will create the venv and install all needed libraries.
+This will create a virtual environment and install all needed libraries inside it.
 Now you're ready to use the coloring algorithm!
 
 ## General Usage
 
-The algorithm is easily usable, starting with the two first options:
+The algorithm is easily usable by using the `./color.sh` program. Different options are possible:
 
-- **NUMBER_OF_VERTICES**: The amount of vertices of the graphs that are to be checked is a mandatory argument.
+- **Compiling**: The code is automatically compiled when using the `-C` option.
+  This option is needed when using the program for the first time.
+  When inputting larger graphs ($63 <$ # vertices $< 127$), a 2 can be added as an extra argument to compile using different datastructures.
+
+- **NUMBER_OF_VERTICES**: Only when inputting your own graphs into the program does it not require the number of vertices (how this is done is explained [later](#input)).
   This should always be a value between 3 and 63, but this can also be written as a range of vertices.
-  For example: `3:6`, the graphs with vertices between 3 and 6.
+  For the program to pick this up, the number of vertices should **always** be the first argument.
+  For example: $3:6$, the graphs with vertices between 3 and 6 (including 3 and 6).
 
-- **COLORING_METHOD**: (optional option) The default coloring method to be used is proper coloring,
-  this can be changed by using the flag _-c_ with the coloring method as value.
+- **COLORING_METHOD**: The default coloring method to be used is proper coloring,
+  this can be changed by using the flag `-c` with the coloring method as value.
   This coloring method should be like the following: `proper, odd, pCFo, iUMc, ...`.
 
-When using the algorithm for the first time, be sure to also compile the code by adding the `-C` option to the `color` command.
+This will output the graph6 strings of the graphs and their corresponding chromatic number of the coloring for this graph.
+
+_The outputs provided will almost always be written to a file, which can be found in the `outputs/` directory.
+Each file getting a name corresponding to the time of when the file was created. This is useful for the reusing of outputs._
 
 Example usage:
 
 ```
 ./color.sh NUMBER_OF_VERTICES -c COLORING_METHOD -C
+./color.sh 64 -c iCFo -C 2
 ```
 
-This will print out the graph6 strings of the graphs and the corresponding chromatic number of the coloring for this graph.
-It will also output the overall time it took to calculate everyting.
+## Output
 
-_The outputs provided will almost always be written to a file, which can be found in the `outputs/` directory.
-Each file getting a name corresponding to the time of when the file was created._
+The output for `color.sh` can be altered by using some other flags:
 
-### Output
-
-The output for `color.sh` can be altered in three ways:
-
-- The first way is by using the flag `-r`.
-  This will make sure the only output outputted to the standard out are the corresponding chromatic numbers for the colorings.
-  One can also give this option a value: 1, 2 or 3.
+- `-r`: The 'raw' option.
+  
+  This will make sure the output is only the corresponding chromatic numbers for the colorings. Therefore, only outputting the raw data.
+  You can also give this option a value: 1, 2 or 3.
   - A value of 1 makes sure the output is only the chromatic numbers of the graphs.
-  - A value of 2 only outputs the graph6 strings of the graphs (only useful when filtering, explained later in this section).
-  - A value of 3 only outputs the graph6 strings followed by the used colors ordered by index
-    (this is used by the show function, also explained [later](#showing-graphs)).
-- The second way is by using a different flag, `-o`.
+  - A value of 2 only outputs the graph6 strings of the graphs (useful after filtering to reuse the output).
+  - A value of 3 only outputs the graph6 strings followed by a valid coloring of the graph
+    (this is used when generating images, also explained [later](#graph-images)).
+- `-o`: The overview option.
+  
   This will give an overview of the corresponding chromatic numbers for the colorings of the graphs.
-  Showing the amount of graphs with a certain chromatic number, similar to how _nauty_ does it with `countg`.
+  Showing the amount of graphs with a certain chromatic number, similar to how _nauty_ does this with `countg`.
   _(Choosing this option will not create a file containing the output)._
-- And lastly, one can also use the flag `-f`, followed by a value.
-  This will make it so that only the graphs with a minimum chromatic number, specified by the value, will be shown.
+- `-f`: The filtering option.
+  
+  This always requires a value. Only graphs with a minimal chromatic of the given value are actually processed. Others are discarded.
+- `-n`: The filter file option. _(uses nauty)_
+  
+  This option will use a filter file, the relative path given as the value, to filter graphs before coloring.
+  An example filtering file is [this file](code/example_filter.json).
+  Most options allow the adding of the number of vertices as a value. Options include:
+  - Number of vertices: _n_ (again possible in a range)
+  - Number of edges: _e_
+  - Number of cycles: _cycles_
+  - Minimum degree: _min_degree_
+  - Maximum degree: _max_degree_
+  - Girth: _girth_
+  - And more...
+ 
+> **_NOTE:_** The order of flags doesn't matter, only the position of the number of vertices is important.
 
 Example usages:
 
 ```
 ./color.sh 6 -c proper -r
 ./color.sh 9 -c iCFo -o
-./color.sh 10 -of4
+./color.sh 10 -o -f 4
+./color.sh -n 'example_filer.json' -f 4 -c iCFc
 ```
 
-> **_NOTE:_** When giving flags to the program, the order doesn't matter.
+## Input
 
-### Progress in generation
+The input to the program is automatically configured to use plantri. The default option for the program will only use planar triangluations.
+This can be changed by the user when using the following options:
 
-Instead of just computing graphs without knowing when it would end, the progress view can be used.
+- `-a`: The all planar graphs option.
+  
+  This option will, instead of only processing planar triangulations, make the program process _all_ planar graphs.
+- `-m`: The manual option.
+  
+  This option allows you to enter a single graph you wish to color as the value.
+  Additionally, this can also be used with the `"pipe"` value to input your own pipe input.
+  Do note that the piped strings should also be _graph6_ strings and should be divided by new lines (\n).
+- `-F`: The input file option.
+  
+  This option with a given file name (relative to `./color.sh`) option will use that file's graphs instead of _plantri_.
+  **Multiprocessing** is also supported for this option.
+
+- `-S`: The subdivide option.
+
+  This option will automatically subdivide all graphs that are being used as input.
+  This could be used to disprove conjectures.
+
+
+Example usage:
+
+```
+./color.sh -m 'H|tIIL|' -c proper
+echo 'H~eKMD^' | ./color.sh -m pipe -c odd -o
+./color.sh 3:10 -c proper -a -o
+./color.sh -F 'input.g6' -c pCFo -r
+```
+
+## Progress in Generation
+
+Instead of just computing graphs without knowing when the program would end, the progress view can be used.
 This will use the `pv` command, which can be installed with:
 
 ```aiignore
@@ -92,23 +149,23 @@ sudo apt install pv
 ```
 
 Using this progress view with the program is done with the `-p` option.
-This will also generate an extra file: `graph_counts.json`.
+This will use an extra file: `graph_counts.json`.
 This keeps track of the amount of graphs so it can quite accurately predict the needed time.
 
-> **_NOTE:_** When first using this option, it will have to start by counting and therefore take longer to start.
+> **_NOTE:_** This doesn't always work, for example when using an input file using `-F`.
 
-After counting, a progress view is shown in the command view.
+## Graph Images
 
-### Showing graphs
-
-One can choose to generate graph images for the outputted graphs by `color.sh`.
+You can choose to generate graph images for the outputted graphs by `color.sh`.
 This can be done by using the flag `-s`, followed by an optional value.
-This value should be the format for the graph images.
-Possible formats for these images include: _emf, eps, pdf, png, ps, raw, rgba, svg, svgz, tex_.
-The default value for show is _png_.
+The images generated can be found in the directory `images/`, this will get created at start.
 
-Note that the first run using this option will take some time as
-it has to install all the needed libraries in the used python virtual environment.
+The value is the format for the graph images.
+Possible formats for these images include: _emf, eps, pdf, png, ps, raw, rgba, svg, svgz, tex_.
+The default value for the show option is _png_.
+
+> **_WARNING:_**
+> Each time this option is chosen, all the existing images already in `images/` are removed.
 
 Example usage:
 
@@ -118,222 +175,55 @@ Example usage:
 ./color.sh 8 -f 4 -c odd -s tex
 ```
 
-The images the script creates can be found in the directory `images/`, this will get created on launch.
-
-> **_WARNING:_**
-> Each time this option is chosen, all the existing images already in `images/` are removed.
-
-### Faster computation
+## Faster Computation
 
 Parallelism of a computer can be used to speed up the computation process of coloring graphs.
-This is done by splitting the given graphs (by plantri) up in multiple disjoint portions,
+This is done by splitting the given graphs (given by plantri) up in multiple disjoint portions,
 where each is then fed into their own process.
-With modern-day computers, this dramatically speeds things up.
+With modern-day computers, this dramatically speeds up the coloring process.
 
-This multiprocessing can be done using the option `-M` with the amount of processes as the argument.
+This multiprocessing can be done using the option `-M` with the amount of processes as the value.
 
 > **_NOTE:_** The usage of a progress view together with multiprocessing may not accurately predict the needed time.
+> 
+> Also, ending the program prematurely while this option is enabled may leave some used files in the `outputs/` directory.
 
 Example usage:
 
 ```
-./color.sh 3:10 -c pUMo -f6M4o
+./color.sh 3:10 -c pUMo -f 6 -M 4 -o
 ./color.sh 6 -c odd -M 2 -p
 ```
 
-### Manual usage
+## Gadget Finding
 
-If one wants to manually enter a graph into the program, one can do so by using the flag `-m`, followed by the _graph6_ string.
-Here it is important to always enter the _graph6_ string as a string.
-Giving the amount of vertices is not mandatory as this isn't used in the computation.
+The program can also be used to find gadgets. Functionality was added to check all possible colorings of a graph. This makes the checking for certain conditions on graphs possible.
+This option is accessed with `-x`, and checks the following things:
 
-One can also choose to pipe their own graphs into the algorithm.
-This is possible by giving a specific value with the manual option.
-This value being `"pipe"`.
-Do note that the piped strings should also be _graph6_ strings and should be divided by new lines (\n).
-_(Choosing this option will not create a file containing the output)._
+- For **Odd** coloring:
+  
+  It checks whether there are vertices that 'see' all other colors an odd amount of times.
+- For **Conflict-free** colorings:
+  
+  It checks whether there are any vertices that 'see' all other colors at least once for every possible coloring.
+- For **Unique-maximum** colorings:
+  
+  It checks whether there are vertices in the graph that always or never have a certain color
+  (with both being checked when no value is given, only the first being checked with a value of 1, and the latter being checked with a value of 2).
 
-Example usage:
-
-```
-./color.sh --manual "H|tIIL|" -c proper
-./color.sh -m "I|tYJL`LO" -c pUMc -r
-echo "H~eKMD^" | ./color.sh -m pipe -c odd -o
-```
-
-## Checking Correctness
-
-> **_NOTE:_** For this section, nauty should be installed in the main directory. Nauty can be installed [here](https://users.cecs.anu.edu.au/~bdm/nauty/).
-
-If one wants to check the correctness of the output of the program. This can be done by using the other programs `checkOutputs.sh` and `checkCycles.sh`. These bash-scripts do the following:
-
-- `checkOutputs.sh` compares the output from our own program in two ways:
-  - If a proper coloring is given to be compared. Our own output is compared to that of the nauty file _countg_.
-    This is only done for the (normal) chromatic numbers, as _countg_ doesn't support other types.
-  - If other colorings are given, we compare the optimized script to the output of a previously checked implementation, this implementation is in turn checked with the naive algorithm.
-    This is done by using `checkCorrectOutputs.sh`, found in scripts/.
-
-  The script should be run with multiple arguments: the number of vertices and then each coloring method one wishes to use as a different argument. If all colorings should get checked, use `all` instead as an argument.
-
-- `checkCycles.sh` checks the other coloring methods, by finding the amount of colors used in cycle graphs ($C_i$).
-  These can then be compared to the known values for these types of graphs.
-  This lets us check whether the other colorings are also correct.
-  An overview of how the cycle graphs should be colored can be found [here](#overview-cycle-graphs)
-
-The number of vertices or the coloring method should still be given to the program as explained before.
-
-Usage:
-
-```
-./checkOutputs.sh NUMBER_OF_VERTICES COLORING_METHOD1 COLORING_METHOD2 ...
-./checkOutputs.sh NUMBER_OF_VERTICES all
-./checkCycles.sh COLORING_METHOD
-./checkNaiveOutputs.sh NUMBER_OF_VERTICES -c COLORING_METHOD
-```
+These rules were used in the construction of graphs with the best-known lower bounds. Using these rules could therefore maybe lead to a new lower bound.
 
 Example usage:
 
 ```
-./checkOutputs.sh 11 proper iUMo iCFo iCFc odd
-./checkOutputs.sh 5:13 proper odd pCFc iUMc
-./checkNaiveOutputs.sh 3:11 -c pUMo
-./checkNaiveOutputs.sh 10
-./checkCycles.sh pUMc
+./color.sh 3:10 -c pUMo -f 6 -M 4 -x 1
+./color.sh 14 -c iCFo -M 10 -p -x -f 3
 ```
 
-### Overview cycle graphs
+### Extra
 
-Here one can find a quick overview of how cycle graphs ($C_i$) should be colored, ordered by coloring method, in the section below.
+Some code in the `code/` directory has also been provided to construct bigger graphs given gadgets and smaller graphs. 
+These are the <tt>addGraphToIndex</tt> and <tt>replaceEdgeByGraph</tt> methods found in `code/graph.c`. 
+They can be used in the finding of new gadgets, or when constructing bigger graphs.
 
-> <details>
-> <summary>General other chromatic numbers for cycle graphs</summary>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Odd coloring</summary>
->
-> | Number of vertices  | Odd chromatic number |
-> | ------------------- | -------------------- |
-> | `n` multiple of `3` | 3                    |
-> | `n = 5`             | 5                    |
-> | other               | 4                    |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Improper conflict-free coloring (open neighbourhood)</summary>
->
-> | Number of vertices  | iCFo chromatic number |
-> | ------------------- | --------------------- |
-> | `n` multiple of `4` | 2                     |
-> | other               | 3                     |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Improper conflict-free coloring (closed neighbourhood)</summary>
->
-> | Number of vertices | iCFc chromatic number |
-> | ------------------ | --------------------- |
-> | all                | 2                     |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Proper conflict-free coloring (open neighbourhood)</summary>
->
-> | Number of vertices  | pCFo chromatic number |
-> | ------------------- | --------------------- |
-> | `n` multiple of `3` | 3                     |
-> | `n = 5`             | 5                     |
-> | other               | 4                     |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Proper conflict-free coloring (closed neighbourhood)</summary>
->
-> | Number of vertices  | pCFc chromatic number |
-> | ------------------- | --------------------- |
-> | `n` multiple of `2` | 2                     |
-> | other               | 3                     |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Improper unique-maximum coloring (open neighbourhood)</summary>
->
-> | Number of vertices  | iUMo chromatic number |
-> | ------------------- | --------------------- |
-> | `n` multiple of `4` | 2                     |
-> | other               | 3                     |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Improper unique-maximum coloring (closed neighbourhood)</summary>
->
-> | Number of vertices  | iUMo chromatic number |
-> | ------------------- | --------------------- |
-> | `n` multiple of `3` | 2                     |
-> | other               | 3                     |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Proper unique-maximum coloring (open neighbourhood)</summary>
->
-> | Number of vertices  | Odd chromatic number |
-> | ------------------- | -------------------- |
-> | `n` multiple of `3` | 3                    |
-> | `n = 5`             | 5                    |
-> | other               | 4                    |
->
-> </details>
->
-> </div>
->
-> <div style="margin-left: 2em;">
->
-> <details>
-> <summary>Proper unique-maximum coloring (closed neighbourhood)</summary>
->
-> | Number of vertices | Odd chromatic number |
-> | ------------------ | -------------------- |
-> | `n = 5`            | 4                    |
-> | other              | 3                    |
->
-> </details>
->
-> </div>
->
-> </details>
+
