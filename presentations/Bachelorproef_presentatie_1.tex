@@ -1,4 +1,3 @@
-\PassOptionsToPackage{style=verbose, backend=bibtex}{biblatex}
 \documentclass
 [kulak] % [kulak|kul|kuleuven-brugge,handout|outline|]
 {kulakbeamer}
@@ -16,7 +15,8 @@
 \usepackage[section]{placeins}
 \usepackage[gen]{eurosym}
 \usepackage{multicol}
-\usepackage[style=verbose]{biblatex}
+\usepackage[utf8]{inputenc}
+\usepackage[style=numeric, backend=biber]{biblatex}
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
@@ -35,7 +35,7 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 
 \renewcommand{\outlineTitle}{Overzicht} % enkel met optie outline
 
-\usepackage{biblatex}
+
 \addbibresource{Citations.bib}
 %\bibliographystyle{unsrtd}
 
@@ -360,9 +360,9 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	\begin{frame}{Literatuur}
 		\begin{itemize}
 			% biblatex handles the numbering automatically
-			\item Brengen resultaten samen en bewijzen nieuwe grenzen\footcite{FABRICI202380} \footcite{PETRUSEVSKI2022385}\footcite{oddMax8}
+			\item Brengen resultaten samen en bewijzen nieuwe grenzen \cite{FABRICI202380, PETRUSEVSKI2022385, oddMax8, Malik2023thesis}
 			
-			\item Formuleren vermoedens$^{\text{1}\text{2}}$
+			\item Formuleren vermoedens \cite{FABRICI202380, PETRUSEVSKI2022385}
 		\end{itemize}
 	\end{frame}
 	
@@ -1020,6 +1020,10 @@ Begeleiders: Jorik Jooken \and Jan Goedgebeur}
 	\begin{frame}
 		\centering
 		\includegraphics[width=0.9\textwidth]{VRAGEN.pdf}
+	\end{frame}
+	
+	\begin{frame}{Referenties}
+		\printbibliography
 	\end{frame}
 	
 \end{document}

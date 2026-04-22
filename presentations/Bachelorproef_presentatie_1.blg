@@ -1,65 +1,15 @@
-This is BibTeX, Version 0.99d (TeX Live 2023)
-Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
-The top-level auxiliary file: Bachelorproef_presentatie_1.aux
-The style file: biblatex.bst
-Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
-Reallocated global_strs (elt_size=200001) to 20 items from 10.
-Reallocated glb_str_end (elt_size=4) to 20 items from 10.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Database file #1: Bachelorproef_presentatie_1-blx.bib
-Database file #2: Citations.bib
-Biblatex version: 3.19
-Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-You've used 4 entries,
-            6399 wiz_defined-function locations,
-            1221 strings with 9513 characters,
-and the built_in function-call counts, 23212 in all, are:
-= -- 1764
-> -- 390
-< -- 80
-+ -- 745
-- -- 153
-* -- 1539
-:= -- 2910
-add.period$ -- 0
-call.type$ -- 4
-change.case$ -- 29
-chr.to.int$ -- 42
-cite$ -- 6
-duplicate$ -- 2543
-empty$ -- 1935
-format.name$ -- 214
-if$ -- 4614
-int.to.chr$ -- 0
-int.to.str$ -- 6
-missing$ -- 0
-newline$ -- 112
-num.names$ -- 123
-pop$ -- 1149
-preamble$ -- 1
-purify$ -- 47
-quote$ -- 0
-skip$ -- 592
-stack$ -- 0
-substring$ -- 3047
-swap$ -- 426
-text.length$ -- 104
-text.prefix$ -- 3
-top$ -- 1
-type$ -- 124
-warning$ -- 0
-while$ -- 400
-width$ -- 0
-write$ -- 109
+[0] Config.pm:307> INFO - This is Biber 2.19
+[0] Config.pm:310> INFO - Logfile is 'Bachelorproef_presentatie_1.blg'
+[157] biber-MSWIN64:340> INFO - === 
+[263] Biber.pm:419> INFO - Reading 'Bachelorproef_presentatie_1.bcf'
+[415] Biber.pm:979> INFO - Found 4 citekeys in bib section 0
+[441] Biber.pm:4419> INFO - Processing section 0
+[455] Biber.pm:4610> INFO - Looking for bibtex file 'Citations.bib' for section 0
+[534] bibtex.pm:1713> INFO - LaTeX decoding ...
+[553] bibtex.pm:1519> INFO - Found BibTeX data source 'Citations.bib'
+[620] UCollate.pm:68> INFO - Overriding locale 'nl-NL' defaults 'variable = shifted' with 'variable = non-ignorable'
+[621] UCollate.pm:68> INFO - Overriding locale 'nl-NL' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[621] Biber.pm:4239> INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'nl-NL'
+[622] Biber.pm:4245> INFO - No sort tailoring available for locale 'nl-NL'
+[627] bbl.pm:660> INFO - Writing 'Bachelorproef_presentatie_1.bbl' with encoding 'UTF-8'
+[630] bbl.pm:763> INFO - Output to Bachelorproef_presentatie_1.bbl
