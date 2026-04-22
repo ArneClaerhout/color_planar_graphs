@@ -34,101 +34,45 @@ uint64_t end;
 
 int main(int argc, char **argv) {
 
-    int debugging = 0;
 
-    if (!debugging) {
-        // First: parse the arguments
-        parseArguments(argc, argv);
+    // First: parse the arguments
+    parseArguments(argc, argv);
 
-        isOpenColoring = coloringIsOpen(coloring);
-        isProperColoring = coloringIsProper(coloring);
-        isUMColoring = coloringIsUM(coloring);
+    isOpenColoring = coloringIsOpen(coloring);
+    isProperColoring = coloringIsProper(coloring);
+    isUMColoring = coloringIsUM(coloring);
 
-        // Then, the coloring of the graphs in stdin starts
-        start = clock();
+    // Then, the coloring of the graphs in stdin starts
+    start = clock();
 
-        ssize_t read = 0;
-        size_t len = 0;
-        char *line = NULL;
+    ssize_t read = 0;
+    size_t len = 0;
+    char *line = NULL;
 
-        graph* g = NULL;
-        // As long as there is something to read from stdin, we read it.
-        while ((read = getline(&line, &len, stdin)) != -1) {
-            // First we remove the \n from the end of the line:
-            line[strcspn(line, "\n")] = 0;
-            g = performComputation(g, line);
-        }
+    graph* g = NULL;
+    // As long as there is something to read from stdin, we read it.
+    while ((read = getline(&line, &len, stdin)) != -1) {
+        // First we remove the \n from the end of the line:
+        line[strcspn(line, "\n")] = 0;
+        g = performComputation(g, line);
+    }
 
-        // Show the overview
-        if (overview) {
-            printOverview();
-        }
+    // The graphs have been processed, output:
+    // Show the overview
+    if (overview) {
+        printOverview();
+    }
+    // We show that we have finished
+    if (raw == 0) {
+        printf("All graphs have been processed.\n");
+    }
 
-        // We show that we have finished
-        if (raw == 0) {
-            printf("All graphs have been processed.\n");
-        }
+    // We don't forget to free line
+    free(line);
 
-        // We don't forget to free line
-        free(line);
-
-        // Only if any graphs were input do we actually free the graph
-        // When no graphs are found in stdin, the graph doesn't get created
-        if (g != NULL) {
-            freeGraph(g);
-        }
-    } else {
-        overview = 1;minChrom = 0;raw = 0;checkCondition = 0;coloring = iCFc;isOpenColoring = coloringIsOpen(coloring);isProperColoring = coloringIsProper(coloring);isUMColoring = coloringIsUM(coloring);
-        start = clock();
-        ssize_t read = 0;
-        size_t len = 0;
-        char* line = NULL;
-        // FILE *fptr = fopen("outputs/chi_pCFo_6.txt", "r");
-
-
-
-        // As long as there is something to read from stdin, we read it.
-        // // while ((read = getline(&line, &len, fptr)) != -1) {
-        // // First we remove the \n from the end of the line:
-        // // line[strcspn(line, "\n")] = 0;
-        // line = "~?@?~e[mf@OI@gDO@O?g?Y?DO?d??I??Y??D??BO?Ai?KOgK_@OO??SO??g???I???@S???[O??@Gc????c???CU???@C????G_????a????BC????DC????Ca_???EGK???@?@_????C@_?C???@??G???@G?G??C?E?G?????AE??????S_??????U???????g???@???G???@???E????g???_???@???C????C???O????G???_????w???_????c???O???Cp????Y????????@o????????E????@?????KG??????????@GG????????EC?????????b?' -c proper~?@?~e[mf@OI@gDO@O?g?Y?DO?d??I??Y??D??BO?Ai?KOgK_@OO??SO??g???I???@S???[O??@Gc????c???CU???@C????G_????a????BC????DC????Ca_???EGK???@?@_????C@_?C???@??G???@G?G??C?E?G?????AE??????S_??????U???????g???@???G???@???E????g???_???@???C????C???O????G???_????w???_????c???O???Cp????Y????????@o????????E????@?????KG??????????@GG????????EC?????????b?";
-        // graph* g = performComputation(NULL, line);
-        // // }
-
-        line = "C~";
-        // previousN = performComputation(previousN, line);
-
-        graph* g = createGraph(NULL, line);
-        for (int i = 0; i < 4; i++) {
-            for (int j = i + 1; j < 4; j++) {
-                if (j != i) {
-                    // We found it should be at index 0 and 4
-                    replaceEdgeByGraph(g, "O|e^kE@ozCK@G@GBb_?B_", i, j, 0, 7);
-                    graph* g2 = g;
-                    to_graph6(g);
-                }
-            }
-        }
-        fprintf(stderr, "%d\n", g->numberOfVertices);
-        to_graph6(g);
-
-
-        colorCheck = &isCorrectlyColoredCF;
-        handler = &handleCF;
-
-        const int c = findChromaticNumberOptimized(g, max(minChrom - 1, 2));
-        fprintf(stderr, "%d\n", c);
-
-        // if (overview) {
-        //     printOverview();
-        // }
-        //
-        // if (raw == 0) {
-        //     printf("All graphs have been processed.\n");
-        // }
-
-        // We don't forget to free line
-        // free(line);
+    // Only if any graphs were input do we actually free the graph
+    // When no graphs are found in stdin, the graph doesn't get created
+    if (g != NULL) {
         freeGraph(g);
     }
 
@@ -214,7 +158,7 @@ graph* performComputation(graph* g, char line[]) {
         subdivide(g, 1);
     }
 
-    int c = findChromaticNumberOptimized(g, max(minChrom - 1, 1));
+    int c = searchChromaticNumber(g, max(minChrom - 1, 1));
 
     // fprintf(stderr, "%d\n", checkCondition);
     // We check if the graph should get printed
@@ -264,9 +208,9 @@ graph* performComputation(graph* g, char line[]) {
 void freeGraph(graph* graph) {
     if (graph->gadget_finder)
         free(graph->gadget_finder);
-    free(graph->changed);
+    if (graph->changed)
+        free(graph->changed);
     free(graph);
-
 }
 
 

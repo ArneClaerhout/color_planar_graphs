@@ -71,7 +71,7 @@ int inputColors(graph* g, const int colors[], int chromaticNumber) {
             // We briefly change the coloring
             coloring = iCFo; isProperColoring = 0; isOpenColoring = 1; isUMColoring = 0;
 
-            int c = findChromaticNumberOptimized(g, 4);
+            int c = searchChromaticNumber(g, 4);
             if (c > 4) {
                 gadget_finder->conditionVertices = 1;
             } else {
@@ -101,8 +101,8 @@ int inputColors(graph* g, const int colors[], int chromaticNumber) {
         }
         return 0;
     }
-    else if (isProperColoring && isOpenColoring) {
-        // This is CF coloring (only useful for pCFo)
+    else {
+        // This is CF coloring
         for (int k = 0; k < gadget_finder->numberOfVertices; k++) {
             int colorsForVertex = 0;
             FOR_EACH_BIT(index, g->verticesIndexed[k].neighbors) {
@@ -116,19 +116,6 @@ int inputColors(graph* g, const int colors[], int chromaticNumber) {
             return 1;
         }
         return 0;
-    } else if (!isProperColoring && !isOpenColoring) {
-        // Here we check if we find two vertices that never have the same color
-        for (int k = 0; k < gadget_finder->numberOfVertices; k++) {
-            for (int j = 0; j < gadget_finder->numberOfVertices; j++) {
-                if (colors[k] == colors[j]) {
-                    gadget_finder->condition[k] |= SHIFTL(j);
-                    gadget_finder->condition[j] |= SHIFTL(k);
-                }
-            }
-        }
-        return 0;
-    } else {
-        return 1;
     }
 
 }
@@ -150,65 +137,9 @@ int isConditionMet(graph* g, int chromaticNumber) {
         return gadget_finder->conditionVertices != 0;
     } else if (coloring == ODD) {
         return gadget_finder->conditionVertices != 0;
-    } else if (isOpenColoring && isProperColoring) {
+    } else {
         return gadget_finder->conditionVertices != 0;
-    } else if (!isOpenColoring && !isProperColoring) {
-        for (int j = 1; j < gadget_finder->numberOfVertices; j++) {
-            if (gadget_finder->condition[j] != gadget_finder->maxColoringMask) {
-                // We check all the possible vertices
-                for (int index2 = 0; index2 < j; index2++) {
-                    // This index has different color than j
-                    if (gadget_finder->condition[j] & SHIFTL(index2)) {
-
-                        // We find two that aren't equal
-                        index1iCFc = j;
-                        index2iCFc = index2;
-
-                        // We get the chromatic number of the graph now to compare later
-                        int c = g->chromaticNumber;
-
-                        // We reset the graph, and colour the two vertices
-                        g->availableVertices = g->maxColoringMask;
-                        g->availableVertices &= ~SHIFTL(index1iCFc);
-                        g->availableVertices &= ~SHIFTL(index2iCFc);
-                        // We give them the same color
-                        g->verticesIndexed[index1iCFc].color = 1;
-                        g->verticesIndexed[index2iCFc].color = 1;
-                        // And now check, using a special colorChecker
-                        colorCheck = &colorCheckiCFc;
-                        for (int j = 0; j < g->numberOfVertices; j++) {
-                            setMaxAvailableColors(&g->verticesIndexed[j], 3);
-                        }
-                        if (optimizedAlgorithm(g, 0, 3, 0, 0)) {
-
-                            // We don't forget to change the colorCheck function back
-                            colorCheck = &isCorrectlyColoredCF;
-
-                            // The graph was colored with only 3 colors, while the two vertices are of equal color
-                            int colors[g->numberOfVertices];
-                            getColors(g, colors);
-                            printColors(g, colors);
-                        } else {
-
-                            // fprintf(stderr, "index1: %d, index2: %d\n", index1iCFc, index2iCFc);
-
-                            // We don't forget to change the colorCheck function back
-                            colorCheck = &isCorrectlyColoredCF;
-
-                            // If we weren't able to color it when both are the same color
-                            // Even if we don't check these vertices in colorCheck
-                            // The condition is met
-                            return 1;
-                        }
-
-
-                    }
-                }
-
-            }
-        }
     }
-    return 0;
 }
 
 

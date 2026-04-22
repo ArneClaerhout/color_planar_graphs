@@ -85,20 +85,6 @@ graph* copyGraph(graph* g);
 void resetGraph(graph* g, int n);
 
 /**
- * The function setting the maximum color for the coloring of the current graph.
- * It also resets the graph for every max. color to try and color it in using the algorithm.
- *
- * @param g The graph.
- * @param startingColor The color to start with when coloring the graph.
- *                      This is useful when you only care about a certain chromatic number,
- *                      starting with that number - 1, will speed up the process, and still gets the results.
- *
- * @return One, if the chromatic number of the graph is found.
- *         Zero, otherwise.
- */
-int findChromaticNumberOptimized(graph* g, int startingColor);
-
-/**
  * The main coloring algorithm responsible for finding a coloring of the current graph.
  * This is a recursive backtracking algorithm working by coloring in vertices one-by-one.
  * It tries all possible colors for a given vertex (kept track of by the vertex in question),
@@ -114,7 +100,21 @@ int findChromaticNumberOptimized(graph* g, int startingColor);
  * @return One, if a coloring of this graph was found.
  *         Zero, otherwise.
  */
-int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth);
+int canColorWithK(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth);
+
+/**
+ * The function setting the maximum color for the coloring of the current graph.
+ * It also resets the graph for every max. color to try and color it in using the algorithm.
+ *
+ * @param g The graph.
+ * @param startingColor The color to start with when coloring the graph.
+ *                      This is useful when you only care about a certain chromatic number,
+ *                      starting with that number - 1, will speed up the process, and still gets the results.
+ *
+ * @return One, if the chromatic number of the graph is found.
+ *         Zero, otherwise.
+ */
+int searchChromaticNumber(graph* g, int startingColor);
 
 /**
  * The starting step in the coloring algorithm.

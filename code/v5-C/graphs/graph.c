@@ -8,14 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <omp.h>
 
 #include "main.h"
 
 int index1iCFc;
 int index2iCFc;
-
-int found = 0;
 
 void getColors(graph* g, int colors[]) {
     for (int i = 0; i < g->numberOfVertices; i++) {
@@ -123,7 +120,7 @@ void resetGraph(graph* graph, int n) {
 }
 
 
-int findChromaticNumberOptimized(graph* g, int startingColor) {
+int searchChromaticNumber(graph* g, int startingColor) {
     for (int i = startingColor; i <= 10; i++) {
         // fprintf(stderr, "%d\n", i);
         for (int j = 0; j < g->numberOfVertices; j++) {
@@ -133,7 +130,7 @@ int findChromaticNumberOptimized(graph* g, int startingColor) {
         g->availableVertices = g->maxColoringMask;
 
         // Otherwise, color it in normally
-        if (optimizedAlgorithm(g, 0, i, 0, 0)) {
+        if (canColorWithK(g, 0, i, 0, 0)) {
             g->chromaticNumber = i;
             return i;
         }
@@ -146,9 +143,7 @@ int findChromaticNumberOptimized(graph* g, int startingColor) {
     return 0;
 }
 
-int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index, int depth) {
-
-    if (found) return 0;
+int canColorWithK(graph* g, int maxColorInGraph, int maxColor, int index, int depth) {
 
     if (g->availableVertices == 0) {
         return startingStep(g, maxColor);
@@ -157,11 +152,11 @@ int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index,
     vertex* v = &g->verticesIndexed[index];
     int colors = v->availableColors;
 
+    // We remove the colors that aren't possible
     // Every coloring should be tried for um, as this is different then other colorings
-    int maxLoop = (isUMColoring || checkCondition != 0) ? maxColor : min(maxColorCurrGraph + 1, maxColor);
-
-    // We remove the colors that aren't possible (those higher than maxLoop)
-    colors &= SHIFT(maxLoop) - 1;
+    if (!isUMColoring && checkCondition == 0) {
+        colors &= SHIFT((maxColorInGraph + 1)) - 1;
+    }
 
     // This vertex isn't available anymore
     g->availableVertices &= ~(SHIFTL(index));
@@ -170,7 +165,7 @@ int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index,
 
         v->color = color + 1; // + 1 as the actual colors are from 1 to n
 
-        int newMaxColorCurrGraph = max(maxColorCurrGraph, color + 1);
+        int newMaxColorInGraph = max(maxColorInGraph, color + 1);
 
         /**
         There is no check here for when all neighbors are colored.
@@ -178,25 +173,22 @@ int optimizedAlgorithm(graph* g, int maxColorCurrGraph, int maxColor, int index,
         **/
 
         // We also change the available colors for the neighbors
-        if (updateNeighbors(g, v, color, depth, newMaxColorCurrGraph)) {
-            // This is used to skip this color, as it isn't possible
-            continue;
+        if (!updateNeighbors(g, v, color, depth, newMaxColorInGraph)) {
+            // The coloring wasn't pruned
+            int newIndex = getBestIndex(g);
+            if (canColorWithK(g, newMaxColorInGraph, maxColor, newIndex, depth + 1)) {
+                return 1;
+            }
         }
 
-        int newIndex = getBestIndex(g);
-        if (optimizedAlgorithm(g, newMaxColorCurrGraph, maxColor, newIndex, depth + 1)) {
-            return 1;
-        }
-
-        // We add back the available colors if it didn't work out
-        addColorsBack(g, depth, newMaxColorCurrGraph);
+        // It didn't work out, we add back the available colors
+        addColorsBack(g, depth, newMaxColorInGraph);
     }
 
     /**
     No Coloring was found.
     We decolor this vertex.
     **/
-    // v->color = 0; // This actually doesn't matter
     g->availableVertices |= (1L << index);
 
     return 0;
@@ -260,9 +252,7 @@ int updateNeighbors(graph* g, vertex* v, int color, int depth, int maxColorInGra
             // We want to check if the neighbor is CORRECTLY colored
             if (!isOpenColoring && !colorCheck(neighbor, g->verticesIndexed)) {
                 // Early pruning
-                addColorsBack(g, depth, maxColorInGraph);
                 return 1;
-                // We skip the rest, as this color is incorrect
             }
         } else if ((diff & (diff - 1)) == 0) { // bitCount(diff) == 1
             // The one neighbor we still have to color:
@@ -293,7 +283,8 @@ void addColorsBack(graph* g, int depth, int maxColorInGraph) {
                 changedNeighbor->availableColors |= SHIFT(i);
                 changedNeighbor->amountOfAvailableColors++;
             }
-            g->changed[depth][i] = 0; // We reset changed
+            // We reset changed
+            g->changed[depth][i] = 0; 
         }
     }
 }
@@ -383,7 +374,7 @@ int handleOdd(graph* g, int depth, int toColorNeighborIndex, bitset_t neighborho
         // but we want to later on use the colors 0...k-1
     }
 
-    if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // Check whether there's one bit
+    if (colorsOccurOdd != 0 && (colorsOccurOdd & (colorsOccurOdd - 1)) == 0) { // bitcount = 1
         // Don't take this color
         return removeColorMask(g, toColorNeighbor, toColorNeighborIndex, colorsOccurOdd, depth, maxColorInGraph);
     }
@@ -397,8 +388,7 @@ int removeColorMask(graph* g, vertex* v, int index, int color, int depth, int ma
         return 0;
     }
     if (v->availableColors == changedColors) {
-        // It will remove all available colors
-        addColorsBack(g, depth, maxColorInGraph);
+        // It will remove all available colors, we prune
         return 1;
     }
     int count = 0;
@@ -416,10 +406,9 @@ int removeColorMask(graph* g, vertex* v, int index, int color, int depth, int ma
 void subdivide(graph* g, int removeOriginalEdge) {
     // We also reset the graph during this process
     int count = g->numberOfVertices;
-    int index = count; // Keeps track of where to add the newest subdivision
     for (int i = 0; i < g->numberOfVertices; i++) {
         vertex* v = &g->verticesIndexed[i];
-        v->color=0;
+        v->color = 0;
         FOR_EACH_BIT(j, v->neighbors & (SHIFTL(i) - 1)) {
             vertex* neighbor = &g->verticesIndexed[j];
             // Make the new neighbor
@@ -436,7 +425,8 @@ void subdivide(graph* g, int removeOriginalEdge) {
             count++;
         }
     }
-    g->numberOfVertices = count; // We update the number of vertices
+    // We update the number of vertices etc.
+    g->numberOfVertices = count; 
     g->maxColoringMask = SHIFTL(g->numberOfVertices) - 1;
     g->availableVertices = g->maxColoringMask;
     startGadgetFinder(g, count);
