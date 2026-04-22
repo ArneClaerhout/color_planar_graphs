@@ -1,7 +1,7 @@
-# Bachelorproef
+# Bachelor's thesis on the coloring of planar graphs
 
-A repository used for keeping track of code and reports for my undergraduate thesis in Computer Science.
-We use Java as our main programming language. We also use Unix so we can use planar graph generators such as plantri.
+A repository used for keeping track of code and reports for my undergraduate thesis in Computer Science. The main goal is the **coloring of planar graphs using a backtracking algorithm**. 
+We use C as our main programming language. Unix is also used to allow the use of the planar graph generator _plantri_.
 
 ## Setup
 
@@ -10,24 +10,13 @@ Firstly, make sure you are working in a Unix-like environment.
 ### Plantri
 
 To check all graphs, we will use a planar graph generator called `plantri`.
-To be able to use plantri, first, change the directory to plantri55 by executing this command:
+The algorithm can use plantri if it is installed in the _main_ directory. So please install it there.
+
+
+Afterwards, go straight to the source directory of the latest version.
 
 ```
-cd plantri55/
-```
-
-Afterwards, run this command:
-
-```
-cc -o plantri -O4 plantri.c
-```
-
-This will compile plantri and make sure you can use it.
-
-Now, go straight to the source directory.
-
-```
-cd ../code/v5-C/
+cd code/v5-C/
 ```
 
 Make sure a python virtual environment is created by running the following command:
