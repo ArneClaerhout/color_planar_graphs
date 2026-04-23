@@ -16,7 +16,7 @@ Firstly, make sure you are working in a Unix-like environment.
 To check all graphs, we will use a planar graph generator called `plantri`. It can be installed from [here](https://users.cecs.anu.edu.au/~bdm/plantri/).
 The algorithm can use plantri if it is installed in the _main_ directory (_color_planar_graphs_ directory). So please install it there before doing anything else.
 
-Some parts of the program may need the use of nauty. This can be installed from [here](https://users.cecs.anu.edu.au/~bdm/nauty/) and should also be put in the _main_ directory.
+Some parts of the program may need the use of `nauty`. This can be installed from [here](https://users.cecs.anu.edu.au/~bdm/nauty/) and should also be put in the _main_ directory.
 
 Afterwards, go straight to the code source directory.
 
