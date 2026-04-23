@@ -1,0 +1,16 @@
+{
+  "filter1": {
+    "output": {
+      "overview": true
+    },
+    "coloring": "odd",
+    "n": "3:5"
+  },
+  "filter2": {
+    "output": {
+      "overview": true
+    },
+    "coloring": "pUMo",
+    "n": "6:7"
+  }
+}

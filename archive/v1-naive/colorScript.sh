@@ -4,6 +4,12 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
+pattern="plantri"
+plantri_path=$(find ../.. -maxdepth 1 -type d -name "*${pattern}*" | head -n 1)
+if [[ -z "$plantri_path" ]]; then
+  >&2 echo "Error: Plantri not found."
+  exit 1
+fi
 
 # Function that generates the plantri output in a range of vertices
 gen_range_graphs() {
@@ -12,7 +18,7 @@ gen_range_graphs() {
     echo "Generating graphs from $1 to $2 vertices." >&2 # We print to stderr, so this isn't on stdout
   fi
   for num in $(seq "$1" "$2"); do
-    ./../../plantri55/plantri -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
+    "./$plantri_path/plantri" -g "$num" 2>/dev/null # We get rid of the extra printing to the terminal
   done
 }
 
