@@ -23,3 +23,6 @@ chunks/
 graphs/build
 *.out
 analysis.txt
+*.synctex.gz
+*.log
+*.aux
