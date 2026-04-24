@@ -5,10 +5,12 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
-echo "Starting benchmark."
 n="$1"
 path="$2"
 shift 2
+
+echo "Starting benchmark for $path with $@ as arguments."
+echo ""
 
 LOOPS=3
 
@@ -43,5 +45,5 @@ echo "--------------------------------------------------"
 
 end_time=$(date +%s%N)
 
-duration=$(((end_time - start_time) / (1000000 * LOOPS)))
-echo "Total execution time: $duration ms"
+duration=$(((end_time - start_time) / 1000000))
+printf "Total execution time: $duration ms\n\n"
