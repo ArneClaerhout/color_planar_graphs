@@ -19,24 +19,20 @@ echo "--------------------------------------------------"
 
 configs=("proper" "odd" "iUMo" "iUMc" "pUMo" "pUMc" "iCFo" "iCFc" "pCFo")
 
-TIMEFORMAT='%R'
-
 start_time=$(date +%s%N)
 
 
 
 for config in "${configs[@]}"; do
-    TOTAL_TIME=0
-    for ((i=1; i<=LOOPS; i++)); do
-        START=$(date +%s%N)
-        "./$path" "$n" -c "$config" -o "$@" >/dev/null 2>&1
-        END=$(date +%s%N)
-        
-        DIFF=$(( (END - START) / 1000000 ))
-        TOTAL_TIME=$((TOTAL_TIME_NAUTY + DIFF))
-    done
-    AVG_TIME=$(echo "scale=3; $TOTAL_TIME / $LOOPS" | bc)
-    printf "%-15s | %-15s\n" "$config" "$AVG_TIME"
+  TOTAL_TIME=0
+  for ((i=1; i<=LOOPS; i++)); do
+    START=$(date +%s%N)
+    "./$path" "$n" -c "$config" -o "$@" >/dev/null 2>&1
+    END=$(date +%s%N)
+    TOTAL_TIME=$((TOTAL_TIME + (END - START)))
+  done
+  AVG_TIME=$(( TOTAL_TIME / (LOOPS * 1000000) ))
+  printf "%-15s | %-15s\n" "$config" "$AVG_TIME"
 done
 
 
