@@ -6,7 +6,7 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
 path="$1"
-shift 2
+shift 1
 
 echo "Benchmarking $path for multiple vertices."
 echo ""
