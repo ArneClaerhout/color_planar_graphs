@@ -275,13 +275,10 @@ public class Graph {
             // We also change the available colors for the neighbours if the coloring is proper
             ArrayList<Vertex> changed =  new ArrayList<>();
             if (proper) {
-                for (int i = 0; i <= 31 - Integer.numberOfLeadingZeros(v.getOpenNeighbourhood()); i++) {
-                    Vertex neighbour;
-                    if ((v.getOpenNeighbourhood() & 1 << i) > 0) {
-                        neighbour = verticesIndexed[i];
-                    } else {
-                        continue;
-                    }
+                for (int i = v.getOpenNeighbourhood(); i > 0; i &= i - 1) {
+                    neighbourIndex = Integer.numberOfTrailingZeros(i);
+                    Vertex neighbour = verticesIndexed[neighbourIndex];
+
                     if (neighbour.removeColorFromAvailableColors(color)) changed.add(neighbour);
                     if (neighbour.getAmountOfAvailableColors() == 0) {
                         // Early pruning
