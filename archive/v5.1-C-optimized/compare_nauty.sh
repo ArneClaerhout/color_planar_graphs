@@ -30,15 +30,32 @@ gen_range_graphs() {
 	done
 }
 
+
+if [[ "$1" =~ ^[0-9]+(:[0-9]+)?$ ]]; then
+	# Number of vertices
+	# We extract them
+	if [[ "$1" == *:* ]]; then
+		# Split the argument into start and end
+		IFS=':' read -r startn endn <<<"$1"
+	else
+		# Only one value given; use it as both start and end
+		startn="$1"
+		endn="$1"
+	fi
+	shift 1
+else
+	startn=6
+	endn=16
+fi
+
 # Configuration
-VERTICES_LIST=(6 7 8 9 10 11 12 13 14 15 16) # Number of vertices to test
 RUNS=5                        # Number of times to run each test for averaging
 
 # Header for output
-printf "%-10s | %-15s | %-10s | %-10s\n" "Vertices" "Your Program (s)" "Nauty (s)" "Ratio"
+printf "%-10s | %-15s | %-10s | %-10s\n" "Vertices" "Own Program (s)" "Nauty (s)" "Ratio"
 echo "------------------------------------------------------------"
 
-for N in "${VERTICES_LIST[@]}"; do
+for N in $(seq "$startn" "$endn"); do
     # 1. Benchmark Your Program
     TOTAL_TIME_MY=0
     for ((i=1; i<=RUNS; i++)); do
