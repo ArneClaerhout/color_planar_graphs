@@ -26,3 +26,4 @@ analysis.txt
 *.synctex.gz
 *.log
 *.aux
+*.Rhistory
