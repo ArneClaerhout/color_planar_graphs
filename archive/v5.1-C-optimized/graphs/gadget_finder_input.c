@@ -126,7 +126,7 @@ int isConditionMet(graph* g, int chromaticNumber) {
     if (isUMColoring) {
         if ((checkCondition == 1 || checkCondition == 3) && gadget_finder->conditionVertices != 0) {
             return 1;
-        } else if (checkCondition != 1) {
+        } else if (checkCondition == 2 || checkCondition == 3) {
             for (int i = 0; i < chromaticNumber; i++) {
                 if (gadget_finder->condition[i] != gadget_finder->maxColoringMask) {
                     return 1;
@@ -140,6 +140,7 @@ int isConditionMet(graph* g, int chromaticNumber) {
     } else {
         return gadget_finder->conditionVertices != 0;
     }
+    return 0;
 }
 
 
@@ -162,7 +163,7 @@ void getColoringAfterCheck(graph* g, int chromaticNumber, int colors[]) {
                 }
             }
             snprintf(gadget_finder->extraInfo, MAX_STRING_LENGTH, " Vertex always has this color");
-        } else {
+        } else if (checkCondition == 2 || checkCondition == 3) {
             for (int i = 0; i < chromaticNumber; i++) {
                 if (gadget_finder->condition[i] != gadget_finder->maxColoringMask) {
                     FOR_EACH_BIT(index, (gadget_finder->maxColoringMask & ~gadget_finder->condition[i])) {

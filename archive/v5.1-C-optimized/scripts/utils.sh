@@ -268,7 +268,7 @@ while getopts ":hCcm:f:porsPLBaxM:F:PQn:S" opt; do
       OPTIND=$((OPTIND + 1))
     fi
     if [[ "$check_condition" -lt 1 || "$check_condition" -gt 3 ]]; then
-      # We only want certain raw options
+      # We only want certain options
       check_condition=3
     fi
 		;;
