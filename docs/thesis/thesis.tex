@@ -26,6 +26,7 @@
 \urlstyle{same}
 \usepackage{xcolor}
 \usepackage{multicol}
+\usepackage{tikz}
 
 \newcommand\todo[1]{\textcolor{red}{#1}}
 
@@ -463,8 +464,7 @@ Now that the researched problem and the developed algorithm have been discussed,
 
 The only existing coloring algorithm for any of the discussed colorings, is \textit{nauty}, coloring graphs using the proper coloring. No open-source coloring tool for all other colorings exists. This means a comparison between all colorings isn't possible.
 
-Comparing \textit{nauty}'s coloring option against the developed algorithm has expected results. As seen in Table \ref{tab:nauty}, \textit{nauty} is faster in coloring all planar triangulations with some number of vertices. It can be noted that the program developed here is still performing well. Only less than $1.5$ times slower than \textit{nauty}. For higher number of vertices, the ratio between the two is getting smaller, indicating
-
+Comparing \textit{nauty}'s coloring option against the developed algorithm has expected results. As seen in Table \ref{tab:nauty}, \textit{nauty} is faster in coloring all planar triangulations with some number of vertices. It can be noted that the program developed here is still performing well. Only less than $1.5$ times slower than \textit{nauty}. For higher number of vertices, the ratio between the two is getting smaller, indicating this program may be better for graphs with a high number of vertices.
 
 
 \begin{table}
@@ -486,7 +486,7 @@ Comparing \textit{nauty}'s coloring option against the developed algorithm has e
 \end{table}
 
 
-This is, as said before, expected. The proper coloring has existed for over $100$ years, it's normal for a fast coloring algorithm to exist. \textit{Nauty} however does not use a backtracking strategy. As mentioned in the original research \cite{mckay2014practical}, it colors in the entire graph, to then use rules to convert the coloring into a `minimal' coloring. These only work on the proper coloring in particular. For other colorings, completely new rules would have to be developed. Therefore, \textit{nauty} can't be easily expanded to new colorings, such as those discussed here. Something that is possible for the developed algorithm. All coloring-dependent methods can be easily expanded without much added work. This different way of coloring graphs is the biggest reason for the discrepancy here. 
+It is expected that other tools for the proper coloring perform better. The proper coloring has existed for over $100$ years, it's normal for a fast coloring algorithm to exist. \textit{Nauty} however does not use a backtracking strategy. As mentioned in the original research \cite{mckay2014practical}, it colors in the entire graph, to then use rules to convert the coloring into a `minimal' coloring. These only work on the proper coloring in particular. For other colorings, completely new rules would have to be developed. Therefore, \textit{nauty} can't be easily expanded to new colorings, such as those discussed here. Something that is possible for the developed algorithm. All coloring-dependent methods can be easily expanded without much added work. This different way of coloring graphs is the biggest reason for the discrepancy here. 
 Additionally, \textit{nauty} does not automatically support the use of multiprocessing, while this is supported for our implementation. 
 
 The other colorings aren't comparable to other tools. Therefore, profiling the speed or efficiency of the algorithm is hard. But it does compare quite well to \textit{nauty}, and is also very expandable, which does mean it's efficient in that sense.
@@ -496,7 +496,35 @@ The second research question asked in what way this algorithm can be used to inf
 
 Here, all planar triangulations -- graphs with the highest possible number of edges and therefore graphs with a higher average chromatic number -- with vertices $4 \le v \le 20$ were checked. It was found that these graphs all conform to the current conjectures on chromatic numbers for all colorings.
 
-The program can also assist in disproving the conjectures. An option is provided that will check all possible colorings of a given graph. This allows the user to assert of a graph has a certain property (\textit{e.g., a vertex that always has the same color}). These graphs can then be used in the construction of a larger graph, one that can possibly disprove a conjecture. 
+The program can also assist in disproving the conjectures. An option is provided that will check all possible colorings of a given graph. This allows the user to assert if a graph has a certain property, helping in the search for gadgets -- graphs which help in the disproving or proving of some theorem or conjecture. 
+
+The unique-maximum colorings have a property useful in the finding of gadgets, which the program can search for. As visible in Figure \ref{fig:graph}, there exist graphs with vertices that always have a certain color. These are great examples of gadgets, findable by the program.  
+
+\begin{figure}
+	\begin{center}
+		\begin{tikzpicture}[
+			% Define the style for the nodes
+			every node/.style={circle, draw, thick, minimum size=5mm}
+			]
+			
+			\node (v1) at (0, 0) [fill=orange]  {2};
+			\node (v2) at (0, 6) [fill=blue!50] {1};
+			\node (v3) at (-3, 3) [fill=blue!50]{1};
+			\node (v4) at (3, 3) [fill=blue!50]{1};
+			\node (v5) at (0, 3) [fill=green!80]{3};
+			
+			\draw[thick] (v1) -- (v3);
+			\draw[thick] (v1) -- (v4);
+			
+			\draw[thick] (v5) -- (v1);
+			\draw[thick] (v5) -- (v2);
+			\draw[thick] (v5) -- (v3);
+			\draw[thick] (v5) -- (v4);
+			
+		\end{tikzpicture}
+	\end{center}
+	\caption{A colored graph for the $\mathrm{pUMo}$ coloring, where each vertex with color $1$ can only have that color. Giving it any other color would result in an invalid coloring.}\label{fig:graph}
+\end{figure}
 
 
 \section{Threats to validity}
