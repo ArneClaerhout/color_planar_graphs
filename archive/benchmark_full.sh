@@ -5,6 +5,23 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir" || exit 1
 
+if [[ "$1" =~ ^[0-9]+(:[0-9]+)?$ ]]; then
+	# Number of vertices
+	# We extract them
+	if [[ "$1" == *:* ]]; then
+		# Split the argument into start and end
+		IFS=':' read -r startn endn <<<"$1"
+	else
+		# Only one value given; use it as both start and end
+		startn="$1"
+		endn="$1"
+	fi
+	shift 1
+else
+	startn=6
+	endn=14
+fi
+
 path="$1"
 shift 1
 
@@ -12,7 +29,6 @@ echo "Benchmarking $path for multiple vertices."
 echo ""
 
 LOOPS=3
-vertices=(6 7 8 9 10 11 12 13 14)
 configs=("proper" "odd" "iUMo" "iUMc" "pUMo" "pUMc" "iCFo" "iCFc" "pCFo")
 
 printf "%-17s" "Num vertices"
@@ -25,7 +41,7 @@ echo "--------------------------------------------------------------------------
 start_time=$(date +%s%N)
 
 
-for n in "${vertices[@]}"; do
+for n in $(seq "$startn" "$endn"); do
   printf "%-17s" "$n"
   START_TIME_N=$(date +%s%N)
   for config in "${configs[@]}"; do
