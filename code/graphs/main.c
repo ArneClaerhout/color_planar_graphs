@@ -14,7 +14,7 @@
 
 enum colorings coloring;
 int overview;
-int cNumbers[10];
+long long cNumbers[10];
 int minChrom;
 int raw;
 int checkCondition;
@@ -118,7 +118,7 @@ void printOverview() {
     end = clock();
     double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
     for (int chrom = 0; chrom < SIZE(cNumbers); chrom++) {
-        if (cNumbers[chrom]) printf("  %d graphs : chrom=%d\n", cNumbers[chrom], chrom);
+        if (cNumbers[chrom]) printf("  %lld graphs : chrom=%d\n", cNumbers[chrom], chrom);
 
     }
     int sum = 0;
