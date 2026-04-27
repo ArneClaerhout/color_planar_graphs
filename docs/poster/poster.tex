@@ -25,6 +25,11 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{ragged2e}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{float}
 
 
 % INFO 
@@ -33,6 +38,14 @@
 \institute{\large Faculty of Science}
 \date{\large Academic year 2025-2026}
  
+
+\newcommand{\kulline}{%
+	\par\noindent
+	\begin{tikzpicture}[remember picture]
+		\draw[kul-blue, opacity=0.3, line width=1] (0,0) -- (\textwidth,0);
+	\end{tikzpicture}
+	\par
+}
 
 \begin{document}
 \csname beamer@calculateheadfoot\endcsname %recalculate head and foot dimension
@@ -44,12 +57,18 @@
 %%
 \vspace{2.5\baseh} % extra vertical space
 
-\begin{tikzpicture}
-\node [text width=\textwidth, text ragged, inner sep=0pt, outer sep=0, kul-blue, font=\bfseries\fontsize{0.6\baseh pt}{2}\selectfont] 	
-{ \inserttitle } ;
-% This will create title larger than \Huge. Replace with the line below, to make it smaller or fine-tune.
+\begin{tikzpicture}[remember picture, overlay]
+	\node [anchor=north, 
+	text width=\textwidth, 
+	align=center, 
+	inner sep=0pt, 
+	outer sep=0, 
+	kul-blue, 
+	font=\bfseries\fontsize{0.6\baseh pt}{2}\selectfont] 
+	at (0.5\textwidth, 0) % Centers the node at the midpoint of the text width
+	{ \inserttitle };
 \end{tikzpicture}
-
+\vspace{.55\baseh}
 %\textcolor{kul-blue}{\bfseries \Huge \inserttitle}
 
 
@@ -62,88 +81,255 @@
 %COLUMN 1
 	\begin{column}{.49\textwidth}
 	\justifying
-	{\bfseries Title 1}
+	{\bfseries Introduction}
 	
-	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a facilisis lorem. Vivamus nulla ligula, facilisis quis tempor nec, laoreet a neque. Ut eu viverra ligula. Pellentesque lobortis lectus vitae pharetra dictum. Vestibulum lacus urna, congue sed diam non, condimentum fringilla enim. 
-
-	\begin{itemize}
-		\item some item
-        \item other item
+	An algorithm for the coloring of planar graphs for multiple coloring variants is proposed. These coloring variants include:
+	
+	
+		\begin{multicols}{2}
 			\begin{itemize}
-			\item some item
-			\item other item
+				\item Proper coloring:
 				\begin{itemize}
-			\item more items 
+					\item Two adjacent vertices have different colors
 				\end{itemize}
-			\item ...
 			\end{itemize}
-		\item more items 
-		\item ...
-	\end{itemize}
-           	
-	\vspace{0.5em}
-	Aenean ullamcorper vestibulum arcu a porta. Nulla a sapien risus. Aliquam purus mauris, accumsan eget diam id, fringilla sodales dolor. Nullam ullamcorper metus urna, ut tempus velit fringilla id. 
+			
+			\vspace{\fill}\null
+			\begin{figure}
+				\begin{center}
+					\begin{tikzpicture}[
+						every node/.style={circle, draw, thick, minimum size=5mm}
+						]
+						
+						\node (v1) at (0, 0) [fill=blue!50]  {};
+						\node (v2) at (6, 0) [fill=orange] {};
+						\node (v3) at (3, 5.19615) [fill=green]{};
+						\node (v4) at (3, 1.73205) [fill=green]{};
+						\node (v5) at (3, 3.4641) [fill=red]{};
+						
+						\draw[thick] (v1) -- (v2);
+						\draw[thick] (v1) -- (v3);
+						\draw[thick] (v1) -- (v4);
+						\draw[thick] (v1) -- (v5);
+						
+						\draw[thick] (v2) -- (v3);
+						\draw[thick] (v2) -- (v4);
+						\draw[thick] (v2) -- (v5);
+						
+						\draw[thick] (v3) -- (v5);
+						
+						\draw[thick] (v4) -- (v5);
+						
+					\end{tikzpicture}
+				\end{center}
+				\caption{A graph colored with the proper coloring.}
+				\label{fig:g_proper}
+			\end{figure}
+			
+			
+		\end{multicols}
+%		\vspace{1cm}
+		\kulline
+		\begin{multicols}{2}
+			\begin{figure}
+				\begin{center}
+					\begin{tikzpicture}[
+						% Define the style for the nodes
+						every node/.style={circle, draw, thick, minimum size=5mm}
+						]
+						
+						\node (v1) at (0, 3) [fill=blue!50]  {};
+						\node (v2) at (2.853, 0.927) [fill=orange] {};
+						\node (v3) at (-2.853, 0.927) [fill=green]{};
+						\node (v4) at (1.7634, -2.427) [fill=yellow!40]{};
+						\node (v5) at (-1.7634, -2.427) [fill=red]{};
+						
+						\draw[thick] (v1) -- (v2);
+						\draw[thick] (v1) -- (v3);
+						\draw[thick] (v2) -- (v4);
+						\draw[thick] (v4) -- (v5);
+						\draw[thick] (v3) -- (v5);
+						
+					\end{tikzpicture}
+				\end{center}
+				\caption{The graph $C_5$ colored with odd coloring.}
+				\label{fig:g_odd}
+			\end{figure}
+			
+			\vspace{\fill}\null
+			
+			\begin{itemize}
+				\item Odd coloring
+				\begin{itemize}
+					\item Proper coloring where every vertex has at least one color appearing an odd amount of times.
+				\end{itemize}
+			\end{itemize}
+			
+			\vspace{\fill}\null
+			
+			
+		\end{multicols}
+		\vspace{-1cm}
+		\kulline
+		\begin{multicols}{2}
+			\begin{itemize}
+				\item Conflict-free coloring
+				\begin{itemize}
+					\item Every vertex has at least one color occurring only once in its neighborhood.
+					\item Four variants: proper/improper and open/closed neighborhoods
+				\end{itemize} 
+			\end{itemize}
+			
+			
+			\vspace{\fill}\null
+			\begin{figure}
+				\begin{center}
+					\begin{tikzpicture}[
+						% Define the style for the nodes
+						every node/.style={circle, draw, thick, minimum size=5mm}
+						]
+						
+						% --- VERTICES ---
+						% Format: \node (internal_name) at (x,y) [fill=color] {number};
+						
+						\node (v1) at (0, 0) [fill=blue!50]  {};
+						\node (v2) at (6, 0) [fill=orange] {};
+						\node (v3) at (3, 5.19615) [fill=green]{};
+						\node (v4) at (3, 1.73205) [fill=green]{};
+						\node (v5) at (3, 3.4641) [fill=red]{};
+						
+						% --- EDGES ---
+						% In a K4, there are 6 possible edges. 
+						% We omit one (e.g., the diagonal between v1 and v4).
+						
+						\draw[thick] (v1) -- (v2);
+						\draw[thick] (v1) -- (v3);
+						\draw[thick] (v1) -- (v4);
+						\draw[thick] (v1) -- (v5);
+						
+						\draw[thick] (v2) -- (v3);
+						\draw[thick] (v2) -- (v4);
+						\draw[thick] (v2) -- (v5);
+						
+						\draw[thick] (v3) -- (v5);
+						
+						\draw[thick] (v4) -- (v5);
+						
+					\end{tikzpicture}
+				\end{center}
+				\caption{A graph colored for the }
+				\label{fig:g_cf}
+			\end{figure}
+			
+			\vspace{\fill}\null
+			
+		\end{multicols}
+		
+		\vspace{1cm}
+		\kulline
+		\begin{multicols}{2}
+			
+			\begin{figure}
+				\begin{center}
+					\begin{tikzpicture}[
+						every node/.style={circle, draw, thick, minimum size=5mm}
+						]
+						
+						\node (v1) at (0, 3) [fill=blue!50]  {};
+						\node (v2) at (2.853, 0.927) [fill=orange] {};
+						\node (v3) at (-2.853, 0.927) [fill=green]{};
+						\node (v4) at (1.7634, -2.427) [fill=yellow!40]{};
+						\node (v5) at (-1.7634, -2.427) [fill=red]{};
+						
+						\draw[thick] (v1) -- (v2);
+						\draw[thick] (v1) -- (v3);
+						\draw[thick] (v2) -- (v4);
+						\draw[thick] (v4) -- (v5);
+						\draw[thick] (v3) -- (v5);
+						
+					\end{tikzpicture}
+				\end{center}
+				\caption{A colored graph for the }
+				\label{fig:g_um}
+			\end{figure}
+			
+			
+			
+			\vspace{\fill}\null
+			
+			\begin{itemize}
+				\item Unique-maximum coloring
+				\begin{itemize}
+					\item The maximum color in the neighborhood of a vertex occurs exactly once.
+					\item Has same four variants as conflict-free coloring
+				\end{itemize}
+			\end{itemize}
+			
+			
+		\end{multicols}
 	
-		\begin{figure}
-		\begin{beamercolorbox}{whitebox}
-		\centering
-%		\includegraphics[width=0.7\textwidth]{example_figure.pdf}
-
-		\caption{Example figure.}
-		\end{beamercolorbox}
-		\end{figure}
-
-	Fusce vitae imperdiet magna. Etiam semper venenatis ornare. Aenean pretium metus nibh, eu pulvinar velit fringilla eget. Nulla feugiat leo nisi, a facilisis est ultrices a. Aliquam aliquam sodales lorem et porttitor. 
-	
-	\vspace{0.5em}
-	Nulla mattis interdum nibh, eu euismod mauris facilisis sed. Phasellus aliquam mattis sem, in dignissim enim vehicula in. Etiam condimentum efficitur massa at vulputate. Vestibulum eget venenatis ligula. Quisque vel tortor sodales, volutpat nunc eget, tristique quam.
 	\end{column}
 
 
 % COLUMNS 2
 	\begin{column}{.49\textwidth}
 		\justifying
-		Nunc mi felis, mattis eu nunc sit amet, convallis posuere felis. Pellentesque a ligula arcu. Ut viverra ipsum et sodales malesuada. Pellentesque lobortis luctus quam non tincidunt. Praesent in cursus purus. 
+		{\bfseries Chromatic numbers}
 		
-			\begin{block}{Block}
-			\begin{center}
-			Formula 1: \hspace{2em}	$\alpha=\gamma, \sum_{i}$
+		\begin{definition}
+			Chromatic number $\chi_{K}(\mathcal{P})$ for coloring $K$, is the minimum needed number of colors to color in all graph $G \in \mathcal{P}$ according to $K$.
+		\end{definition}
+		
+		Chromatic numbers for these coloring variants are not always known.
+		Conjectures on the chromatic numbers are tested by exhaustively coloring graphs.
+		
+		\vspace{1cm}
+		{\bfseries Algorithm}
+		
+		Algorithm \ref{alg:search} describes a high-level overview of the designed algorithm.This is a backtracking algorithm using multiple optimizations to perform as efficiently as possible.
+		
+		\begin{algorithm}[H]
+			\caption{\texttt{search\_chromatic\_number}}
+			\label{alg:search}
+			\textbf{Parameters}: The coloring $K$ and graph $G$
 			
-			Formula 2:	\hspace{2em} $\beta=\gamma^2+\epsilon$
-			\end{center}
-			\end{block}
-	
-		\vspace{0.5em}
-		{\bfseries Title 2}
+			\textbf{Output}: $\chi_{K}(G)$
+			\begin{algorithmic}[1]
+				\FOR{$max\_c \le MAX$}
+				
+				\WHILE{not all vertices are colored}
+				
+				\STATE $v\gets$ \texttt{get\_optimal\_vertex}($G$)
+				
+				\STATE \texttt{assign\_next\_possible\_color}($v, max\_c$)
+				
+				\STATE \texttt{update\_neighbors}($G, v$)
+				
+				\IF{coloring of $G$ is not possible}
+					\STATE \texttt{remove\_color}($v$)
+				\ENDIF
+				
+				\ENDWHILE
+				
+				\ENDFOR
+			\end{algorithmic}
+		\end{algorithm}
 		
-		Integer erat nibh, fermentum ac sem nec, luctus imperdiet risus. Suspendisse eget velit massa. Pellentesque varius eu nisi sed auctor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Pellentesque a blandit tortor. In at eleifend ante, id bibendum mi. 
+		\vspace{0.5cm}
+		{\bfseries Results \& Conclusion}
 		
-		\begin{proof}{Proof.}
-		Content
-		\end{proof}
+		\vspace{0.5cm}
+		\begin{block}{Proof of conjectures}
+			Conjectures for planar triangulations with number of vertices $n \le 20$ are correct.
+		\end{block}
+		\begin{itemize}
+			\item First open-source algorithm that colors graphs for these variants.
+			\item It only performs around $1.4$ times worse than alternatives for the proper coloring. Tools for other colorings do not exist.
+		\end{itemize}
 		
-		Praesent sit amet molestie enim. Sed laoreet hendrerit leo, in eleifend elit molestie sed. Donec hendrerit tristique enim, vel porttitor dui fringilla aliquet. Nullam at turpis ac dui viverra lacinia. Vivamus rutrum, diam non vehicula sodales, quam enim cursus dolor, id egestas velit elit nec neque. 
 		
-		\begin{alertblock}{Alert block}
-		See beamer template for additional blocks
-		\end{alertblock}
 		
-		\begin{enumerate}
-		\item some item
-		\item other item
-		\item more items 
-			\begin{enumerate}
-			\item some item
-			\item other item
-				\begin{enumerate}
-				\item more items 
-				\end{enumerate}
-			\item ...
-			\end{enumerate}
-		\item ...
-		\end{enumerate}
-	
-		 Nulla mattis interdum nibh, eu euismod mauris facilisis sed. Phasellus aliquam mattis sem, in dignissim enim vehicula in. Etiam condimentum efficitur massa at vulputate.
+		
 	\end{column}
 \end{columns}
 
