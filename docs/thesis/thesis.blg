@@ -3,46 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: thesis.aux
 The style file: unsrt.bst
 Database file #1: references.bib
-Warning--empty journal in appel1976every
 You've used 14 entries,
             1791 wiz_defined-function locations,
-            539 strings with 5898 characters,
-and the built_in function-call counts, 3328 in all, are:
-= -- 310
+            542 strings with 5951 characters,
+and the built_in function-call counts, 3407 in all, are:
+= -- 320
 > -- 139
 < -- 2
 + -- 52
 - -- 38
-* -- 225
-:= -- 534
+* -- 235
+:= -- 544
 add.period$ -- 44
 call.type$ -- 14
 change.case$ -- 14
 chr.to.int$ -- 0
-cite$ -- 15
-duplicate$ -- 145
-empty$ -- 316
+cite$ -- 14
+duplicate$ -- 146
+empty$ -- 325
 format.name$ -- 38
-if$ -- 737
+if$ -- 757
 int.to.chr$ -- 0
 int.to.str$ -- 14
 missing$ -- 14
 newline$ -- 74
 num.names$ -- 14
-pop$ -- 32
+pop$ -- 28
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
 skip$ -- 66
 stack$ -- 0
-substring$ -- 250
-swap$ -- 30
+substring$ -- 271
+swap$ -- 31
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 1
-while$ -- 35
+warning$ -- 0
+while$ -- 36
 width$ -- 16
-write$ -- 156
-(There was 1 warning)
+write$ -- 158

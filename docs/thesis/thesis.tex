@@ -58,13 +58,15 @@
 \maketitle
 
 \begin{abstract}
-	In this paper, we study the coloring of planar graphs for different variants of graph colorings. In particular the proper, odd, conflict-free and unique-maximum vertex colorings. This paper proposes a backtracking algorithm to color in planar graphs.
+	In this paper, we study the coloring of planar graphs for different variants of graph colorings. In particular the proper, odd, conflict-free and unique-maximum vertex colorings are examined. This paper proposes a backtracking algorithm to color planar graphs.
 	
-	Not all chromatic numbers for these colorings variants are known, therefore conjectures on these exist. This algorithm can be used to prove or disprove these conjectures.
+	The chromatic numbers of these coloring variants are also studied further. These are the minimum number of colors needed to color any planar graph.
+	
+	Not all chromatic numbers are known, therefore, conjectures exist. This algorithm can be used to disprove or substantiate these conjectures.
 	
 	The algorithm was constructed by applying optimizations to a naive algorithm. The final implementation is a fully optimized algorithm implemented in C.
 	
-	The proposed algorithm does not outperform alternatives, but is only less than $1.5$ times slower. It also has the added benefit of more expandability for other coloring variants.
+	The proposed algorithm does not outperform alternatives, but is only less than $1.5$ times slower, for the proper coloring. No other programs exist for the other colorings. It also has the added benefit of easy expandability for other coloring variants.
 	
 	It was also found that the conjectures that haven't been disproven yet are correct for all planar triangulations with $20$ or less vertices. 
 	
@@ -72,34 +74,36 @@
 
 \section{Introduction}
 
-Graph theory is a field of research in computer science that is older than the computer. It's conception dating back in the 18th century \cite{euler1741solutio}. 
+Graph theory is a field of research in computer science that is older than the computer. Its conception dating back to the 18th century \cite{euler1741solutio}. 
 
-A \textit{graph} $G = (V, E)$ is defined as a pair, containing a collection of vertices ($V$) and edges ($E$). Each edge is an unordered pair of unique vertices. A \textit{planar graph} is a variant of graphs such that a planar embedding is possible. Planar graphs and graphs will be used interchangeably. The \textit{class of planar graphs} $\mathcal{P}$ is defined as the set of all planar graphs. \textit{Planar triangulations}, a subset of planar graphs, are graphs with the maximum number of edges for some number of vertices, this means the addition of an edge would break the planarity of the graph.
+A \textit{graph} $G = (V, E)$ is defined as a pair, containing a collection of vertices ($V$) and edges ($E$). Each edge is an unordered pair of unique vertices. A \textit{planar graph} is a variant of graphs such that a planar embedding is possible without edges crossing. Planar graphs and graphs will be used interchangeably. The \textit{class of planar graphs} $\mathcal{P}$ is defined as the set of all planar graphs. \textit{Planar triangulations}, a subset of planar graphs, are graphs with the maximum number of edges for some number of vertices, this means the addition of an edge would break the planarity of the graph.
 
-The coloring of graphs is one of the most well-known fields in graph theory. A coloring of a graph is an image assigning each vertex a color $1, \dots, k$. The most famous of these colorings is the proper coloring. This states that two adjacent vertices -- vertices sharing an edge -- never share the same color. 
+The coloring of graphs is one of the most well-known fields in graph theory. A coloring of a graph is a function assigning each vertex a color $1, \dots, k$. The most famous of these colorings is the proper coloring. This states that two adjacent vertices -- vertices sharing an edge -- never share the same color. 
 
-The chromatic number $\chi(G)$ of a graph $G$ is minimal number of colors needed to color the graph. A generalization of this being the chromatic number $\chi(\mathcal{P})$ for the class of planar graphs. Which is the minimum needed colors to color any planar graph. For the proper coloring, it was proven that four colors always suffice \cite{appel1976every}. Which was a special result, as this was the first proof verified using a computer program.
+The chromatic number $\chi(G)$ of a graph $G$ is the minimum number of colors needed to color the graph. A generalization of this is the chromatic number $\chi(\mathcal{P})$ for the class of planar graphs, which is the minimum number of needed colors to color \textit{any} planar graph. For the proper coloring, it was proven that four colors always suffice \cite{appel1976every}. This was a special result, as this was the first proof verified using a computer program.
 
-Coloring of graphs has various applications, with uses including: the assigning of frequencies to radio stations, the coloring of maps, scheduling and more.
+Coloring of graphs has various applications, with uses including: the assignment of frequencies to radio stations, the coloring of maps, scheduling and more.
 
-There exist many variants of colorings of graphs. One variant is the \textit{odd coloring}, which was recently introduced by Petruševski and Škrekovski \cite{PETRUSEVSKI2022385} in 2022. A proper coloring of a graph is said to be odd if for each non-isolated vertex $v \in V$ there exists a color occurring an odd amount of times in the neighborhood of that vertex $N(v)$. The \textit{odd chromatic number} $\chi_{\mathrm{O}}(\mathcal{P})$ is the minimal number of colors needed to color any graph with an odd coloring.
+There exist many variants of graph colorings. One such variant is an \textit{odd coloring}, which was recently introduced by Petruševski and Škrekovski \cite{PETRUSEVSKI2022385} in $2022$. A proper coloring of a graph is said to be odd if for each vertex $v \in V$ there exists a color occurring an odd amount of times in the neighborhood of that vertex $N(v)$. The \textit{odd chromatic number} $\chi_{\mathrm{O}}(\mathcal{P})$ is the minimal number of colors needed to color any graph with an odd coloring.
 
 Other variants include the conflict-free and unique-maximum colorings. 
 
-The \textit{conflict-free coloring}, introduced in 2003 by Even, Lotker, Ron, and Smorodinsky \cite{even2003conflict}, is a coloring such that there is at least one color for each vertex that occurs exactly once in its neighborhood. Useful for having applications in wireless networks \cite{smorodinsky2013conflict}.
+The \textit{conflict-free coloring}, introduced in 2003 by Even, Lotker, Ron, and Smorodinsky \cite{even2003conflict}, is a coloring such that every vertex has at least one unique color in its neighborhood. This is useful because of applications in wireless networks and more \cite{smorodinsky2013conflict}.
 
-Now consider a \textit{proper conflict-free coloring} with respect to open- or closed neighborhoods -- a conflict-free coloring with a proper constraint. Each have a \textit{chromatic number} $\chi_{\mathrm{pCFo}}(\mathcal{P})$ and $\chi_{\mathrm{pCFc}}(\mathcal{P})$ respectively.
+Now consider a \textit{proper conflict-free coloring} with respect to open- or closed neighborhoods -- a conflict-free coloring with an added proper constraint. The conflict-free property is tested on the open- or closed neighborhood of vertices. 
 An open neighborhood of a vertex $v$ is defined as $N(v) = \{w | (v, w) \in E\}$. This does therefore not include the vertex $v$ itself. A closed neighborhood of a vertex $v$ is $N[v] = N(v) \cup \{v\}$, the open neighborhood of $v$, including the vertex itself. 
+Both colorings have \textit{chromatic numbers} $\chi_{\mathrm{pCFo}}(\mathcal{P})$ and $\chi_{\mathrm{pCFc}}(\mathcal{P})$ respectively, with the $o$ and $c$ signaling open- or closed neighborhoods.
+
 
 Similarly, an \textit{improper conflict-free coloring} with respect to open- or closed neighborhoods can be defined. These are the same colorings, without the proper constraint. Again, \textit{chromatic numbers} $\chi_{\mathrm{iCFo}}(\mathcal{P})$ and $\chi_{\mathrm{iCFc}}(\mathcal{P})$ respectively can be defined for both.
 
-\textit{Unique-maximum colorings} stem from ordered colorings \cite{KATCHALSKI1995141}, and were studied further in the context of open- and closed neighborhoods by Fabrici, Lužar, Rindošová and Soták \cite{fabrici2023proper}. This is a coloring where the maximum color appearing in the neighborhood of each vertex appears exactly once in that vertex's neighborhood. 
+\textit{Unique-maximum colorings} stem from ordered colorings \cite{KATCHALSKI1995141}, and were studied further in the context of open- and closed neighborhoods by Fabrici, Lužar, Rindošová and Soták \cite{fabrici2023proper}. This is a coloring where the maximum color appearing in the neighborhood of a vertex appears exactly once in the neighborhood of that vertex.
 
-Using the same versions as before, four variants of this coloring can be defined. A proper unique-maximum coloring with respect to open- or closed neighborhoods, and an improper unique-maximum coloring with respect to open- or closed neighborhoods. Each respectively having their own \textit{chromatic number} for the class of planar graphs: $\chi_{\mathrm{pUMo}}(\mathcal{P})$, $\chi_{\mathrm{pUMc}}(\mathcal{P})$, $\chi_{\mathrm{iUMo}}(\mathcal{P})$ and $\chi_{\mathrm{iUMc}}(\mathcal{P})$.
+Using the same splitting as the conflict-free coloring, four versions of this coloring can be defined. A proper unique-maximum coloring with respect to open- or closed neighborhoods, and an improper unique-maximum coloring with respect to open- or closed neighborhoods. Each respectively having their own \textit{chromatic number} for the class of planar graphs: $\chi_{\mathrm{pUMo}}(\mathcal{P})$, $\chi_{\mathrm{pUMc}}(\mathcal{P})$, $\chi_{\mathrm{iUMo}}(\mathcal{P})$ and $\chi_{\mathrm{iUMc}}(\mathcal{P})$.
 
 \subsection{Known bounds}
 
-Not all chromatic numbers of these colorings are known. For most, there exist only bounds, where some upper bound always suffices to color all graphs, while the lower bound corresponds to some graph with the highest found chromatic number. 
+Not all chromatic numbers of these colorings are known. For most, only bounds exist, where some upper bound always suffices to color all graphs, while the lower bound is derived from a graph with the highest \textit{found} chromatic number. 
 
 As the unique color for each vertex $v$ in the $\mathrm{pCFc}$-coloring can always be the color of $v$ itself, this coloring is exactly equal to the proper coloring. Therefore, $\chi_{\mathrm{pCFc}}(\mathcal{P})$ is, just like the chromatic number of the proper coloring, equal to $4$.
 
@@ -168,38 +172,42 @@ In this paper, two research questions are considered:
 
 The focus is mostly laid on the designing of the algorithm. Further results are also discussed.
 
-The structure of this paper is as follows. First, the algorithm developed is discussed in Section \ref{sec:alg} by examining the the pseudo-code. Afterwards, the implementation of said algorithm is discussed in Section \ref{sec:implementation}. Here, all notable optimizations applied are talked about and studied further. Then, the results of this paper are talked about further in Section \ref{sec:results}. Thereafter, the threats to validity are discussed in Section \ref{sec:threats}, ending with the conclusion in Section \ref{sec:conclusion}.
+The structure of this paper is as follows. First, the algorithm developed is discussed in Section \ref{sec:alg} by examining the the pseudo-code. Afterwards, the implementation of said algorithm is discussed in Section \ref{sec:implementation}. Here, all notable optimizations applied are studied further. Then, the results of this paper are discussed further in Section \ref{sec:results}. Thereafter, the threats to validity are discussed in Section \ref{sec:threats}, ending with the conclusion in Section \ref{sec:conclusion}.
 
 
 \section{Algorithm}
 \label{sec:alg}
 
-In this section the developed algorithm is discussed. A backtracking algorithm was used, coloring in the vertices one-by-one and pruning where possible. The pseudo-code is found in Algorithms \ref{alg:search}, \ref{alg:check}, \ref{alg:updateN} and \ref{alg:special}. 
+In this section the developed algorithm is discussed. A backtracking algorithm was used, coloring the vertices one-by-one and pruning where possible. The pseudo-code is found in Algorithms \ref{alg:search}, \ref{alg:check}, \ref{alg:updateN} and \ref{alg:special}. 
 
 
-Starting with Algorithm \ref{alg:search}, this is the `overseer' of the algorithm, only choosing a maximum color for the graph, and letting the recursive algorithm check if the coloring is possible with only allowing that maximum color.
-This is also reflected in the pseudo-code. Before checking the maximum color, the available colors of the vertices are reset to reflect the maximum color (\textit{e.g., if the maximum color is 3, the available colors are ${1, 2 \text{ and } 3}$}).
+Starting with Algorithm \ref{alg:search}, this is the `overseer' of the algorithm. Only choosing a maximum color for the graph and letting the recursive algorithm check if the coloring is possible for that maximum.
+This is also reflected in the pseudo-code. 
 
-Algorithm \ref{alg:check} is the main checking algorithm. It checks whether the given graph $G$ is able to be colored given a maximum color $max\_c$. This happens in multiple steps, starting with the base case, where if all vertices are colored, a valid coloring is reached and the previous recursion step is notified of this. 
+Before checking the maximum color, the available colors of the vertices are reset to reflect the maximum color (\textit{e.g., if the maximum color is 3, the available colors are ${1, 2 \text{ and } 3}$}).
+
+Algorithm \ref{alg:check} is the main checking algorithm. It checks whether the given graph $G$ is able to be colored given a maximum color $max\_c$. This happens in multiple steps, starting with the base case. If all vertices are colored, a valid coloring is reached and the previous recursion step is notified of this. 
 
 Otherwise, it loops over all available colors of the given vertex, where it checks if that available color is one higher or less than the current maximum color in the graph. This optimization is further discussed in Section \ref{sec:optim}.
 
-Next, the $vertex$ is colored in the available color $c$, and all neighbors of that $vertex$ are updated using the \texttt{update\_neighbors} function. This will essentially update the available colors of all neighbors and those neighbors' neighbors, and check if the coloring is still possible. If not, the progress made this recursion step is reset, and the next available color is tried. If the coloring is \textit{still} possible, the next recursion step is called with a new $index$ and $depth$. If this also doesn't yield a valid coloring, reset as well, and try the next available color.
+Next, the $vertex$ is colored in the available color $c$, and all neighbors of that $vertex$ are updated using the \texttt{update\_neighbors} function. This will essentially update the available colors of all neighbors and those neighbors' neighbors, and check if the coloring is still possible. If not, the progress made this recursion step is reset, and the next available color is tried. If the coloring is \textit{still} possible, the next recursion step is called with a new $index$ and $depth$. 
+
+The \texttt{update\_neighbors} function is therefore the function checking the correctness of the coloring. If the coloring isn't valid, the graph goes back a recursion step, essentially backtracking. All checks are done while the algorithm is coloring, this means no check has to happen in the base case.
 
 After trying all available colors without results, the vertex color is reset and the previous recursion step is notified of failure.
 
-The $depth$ variable is used in the \texttt{add\_colors\_back} function. All of the changes in the entire algorithm, i.e. for all vertices and all recursion steps, are kept track of, the depth is used to log changes and restoring them.
+The $depth$ variable is used in the \texttt{add\_colors\_back} function. All of the changes in the entire algorithm, meaning all updates for all vertices and all recursion steps, are kept track of. The depth is used to log changes and restoring them.
 
 Lastly, Algorithm \ref{alg:updateN} updates neighbors of a given $vertex$ for a given color $c$, the color assigned to $vertex$. Here, the available colors of all uncolored neighbors of $vertex$ are updated when the coloring $K$ is proper (\textit{e.g., $\mathrm{pUMo}$, odd, $\dots$}). If this leads to a neighbor having no available colors, the coloring isn't valid and the pruning starts.
 
 Otherwise, the neighborhood of the neighbors are checked. If these are fully colored (because the last vertex $vertex$ was colored in just now), the correctness is checked for coloring $K$, again, if this isn't valid, prune, otherwise, keep going. 
 
-Finally, if the neighborhood of the neighbor still has one vertex left to color, the available colors for this vertex are updated. This is achievable for most colorings, except the proper coloring. A concrete example is worked out in Algorithm \ref{alg:special} for the odd coloring. Here, all other vertices' colors are used to check compatibility with the available colors of the uncolored vertex $u$. In this case, the odd constraint is checked, if only one color appears an odd amount of times, $u$ can't have this color.
+Finally, if the neighborhood of the neighbor still has one vertex left to color, the available colors for this vertex are updated. This is achievable for most colorings, except the proper coloring. A concrete example is worked out in Algorithm \ref{alg:special} for the odd coloring. Here, all other vertices' colors are used to check compatibility with the available colors of the uncolored vertex $u$. In this case, the odd constraint is checked, if only one color appears an odd amount of times, $u$ can not have this color.
 For the other colorings, similar rules are applied to update the vertex $u$.
 
 % Search
 \begin{algorithm}[tb]
-	\caption{\texttt{searchChromaticNumber}}
+	\caption{\texttt{search\_chromatic\_number}}
 	\label{alg:search}
 	\textbf{Parameters}: The coloring $K$
 	
@@ -317,14 +325,14 @@ For the other colorings, similar rules are applied to update the vertex $u$.
 	\end{algorithmic}
 \end{algorithm}
 
-It is clear that the algorithm can color in graphs, and find the chromatic number of that graph for a given coloring, since all possible colorings are tried except those that can be pruned.
+It is clear that the algorithm can color in graphs, and find the chromatic number of that graph for a given coloring, since all possible colorings are tried and checked except those that can be pruned.
 
 \section{Implementation}
 \label{sec:implementation}
 
-The development of the algorithm happened by working out the code for an optimal backtracking algorithm. This was done in multiple stages. First, this was developed in Java to test out different data structured and techniques, and to optimize the algorithm. Afterwards, the optimal implementation found in Java, reflecting the algorithm discussed, was then ported over to C. All versions of the implementation and other help scripts are found in \footnote{The \href{https://github.com/ArneClaerhout/color_planar_graphs}{GitHub repository} containing the algorithm.}.
+The algorithm was developed by working out the code for an efficient backtracking algorithm. This was done in multiple stages. First, this was developed in Java to test out different data structures and techniques, and to optimize the algorithm. Afterwards, the optimal implementation found in Java, reflecting the algorithm discussed, was then ported over to C. All versions of the implementation and other help scripts are open-source\footnote{The \href{https://github.com/ArneClaerhout/color_planar_graphs}{GitHub repository} containing the algorithm.}.
 
-The implementation uses \textit{plantri}, a fast generator of planar graphs developed by Brinkmann and McKay \cite{brinkmann2007fast}. This allows the program easily generate and color graphs at once when some number of vertices is given. 
+The implementation uses \textit{plantri}, a fast generator of planar graphs developed by Brinkmann and McKay \cite{brinkmann2007fast}. \textit{Plantri} is a tool that is able to generate all planar graphs for a given number of vertices. This allows the program to easily generate and color graphs at once when some number of vertices is given. 
 
 \subsection{Optimizations}
 \label{sec:optim}
@@ -336,25 +344,27 @@ All figures used in this section are using these results. Since there are $9$ un
 
 \subsubsection{Available colors}
 
-The first optimization used, is keeping track of the available colors per vertex. This allows the algorithm to prune early whenever a vertex has no possible colors left. Comparing this to the naive algorithm, yields expected results. Without any other optimizations, this is only applicable for proper colorings, therefore the improper colorings don't get any speedup. 
+The first optimization used, is keeping track of the available colors per vertex. This allows the algorithm to prune early whenever a vertex has no possible colors left. Comparing this to a naive algorithm, yields expected results. Without any other optimizations, this is only applicable for proper colorings (\textit{e.g., $\mathrm{pUMo}$, proper}). Therefore, there is no effect on improper colorings. 
 
 \subsubsection{Permutations}
 
-As illustrated in Algorithm \ref{alg:check}, permutations of already tried colorings of the graph are prohibited, except for unique-maximum colorings. For non-unique-maximum colorings, swapping colors (\textit{e.g., changing all vertices colored $2$ to color $3$ and vice versa}) still yields a valid coloring. This dramatically cuts down the search space. This isn't the case for a unique-maximum coloring because swapping two colors doesn't always yield a valid coloring (\textit{e.g., swapping the maximum color with a color occurring twice in a neighborhood}). Therefore, all possible colorings should get checked for the unique-maximum colorings. 
+As illustrated in Algorithm \ref{alg:check}, permutations of already tried colorings of the graph are prohibited, except for unique-maximum colorings. For non-unique-maximum colorings, swapping colors (\textit{e.g., changing all vertices colored $2$ to color $3$ and vice versa}) still yields a valid coloring. This dramatically cuts down the search space. 
+
+This isn't the case for a unique-maximum coloring because swapping two colors doesn't always yield a valid coloring (\textit{e.g., swapping the maximum color with a color occurring twice in a neighborhood}). Therefore, all possible colorings should get checked for the unique-maximum colorings. 
 
 \subsubsection{Bit-sets}
 \label{sec:bitset}
 
-Another optimization used, which is not visible in the pseudo-code of the algorithm is the use of bit-sets. Instead of each vertex having a list of all neighboring vertices as objects. Only the indices of the vertex's neighbors are stored in one binary number. If a vertex has a neighbor at index $i$, the neighbors bit-set has a $1$ at index $i$, starting from the least significant bit. 
+Another optimization used, which is not visible in the pseudo-code of the algorithm, is the use of bit-sets. Instead of each vertex having a list of all neighboring vertices as objects, only the indices of the neighbors are stored. This is done in a binary number. If a vertex has a neighbor with index $i$, the neighbors bit-set has a $1$ at index $i$, starting from the least significant bit. 
 
-This optimization allows for easier comparison between neighborhoods. Checking if some vertex is present in a neighborhood becomes simple, it happens in constant time instead of worst-case linear time. Looping over all vertices in a neighborhood still takes the same amount of time using some clever binary operation tricks.
+This optimization allows for easier comparison between neighborhoods. Checking if some vertex is present in a neighborhood becomes simple, it happens in constant time instead of worst-case linear time. 
 
-This optimization, together with the available colors optimization make up the optimized implementation found in Figure \ref{fig:general}. Compared to the naive implementation, a version not having these optimizations, these optimizations clearly have effect on the computation time and will therefore be used.
+This optimization, together with the available colors optimization make up the optimized implementation found in Figure \ref{fig:general}. Compared to the naive implementation, a version not having these optimizations, these optimizations clearly have effect on the computation time and are therefore used.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.45\textwidth]{figures/General_comparison.pdf}
-	\caption{A comparison between different versions of the algorithm, tested on planar triangulations for a given number of vertices. The naive algorithm is the simplest algorithm described in Algorithm \ref{alg:naive}. Optimized is the implementation that has implemented the available colors, permutations and bit-sets optimizations. The second order implementation has also implemented the updating of neighbors' neighbors. Lastly, the final and multithreaded implementations are the final C implementation and its multithreaded version using 10 processes respectively. Each implementation performs better than the last.}\label{fig:general}
+	\caption{A comparison between different versions of the algorithm, tested on all planar triangulations for a given number of vertices. The naive algorithm is the simplest algorithm described in Algorithm \ref{alg:naive}. Optimized is the implementation that has implemented the available colors, permutations and bit-sets optimizations. The second order implementation has also implemented the updating of neighbors' neighbors. Lastly, the final and multithreaded implementations are the final C implementation and its multithreaded version using 10 processes respectively. Each implementation performs better than the last.}\label{fig:general}
 \end{figure}
 
 
@@ -363,9 +373,9 @@ This optimization, together with the available colors optimization make up the o
 For the implementation of the algorithm, multiple data structures for monitoring vertices were tested.
 These include a simple list of vertices, a priority queue and a bit-set implementation. The speed of these data structures are tested against each other.
 
-These structures are all considered because of some strengths these seemingly have. The list of vertices is very simple, and could therefore work well. The priority queue is sorting the vertices by the amount of available colors, and therefore has easy look-up of the best vertex to color in. And last but not least, the bit-set data structure, implemented using a list of bit-sets, where each index of the list denotes a number of available colors. 
+These structures are all considered because of some strengths these seemingly have. The list of vertices is very simple, and could therefore work well. The priority queue sorts the vertices by the amount of available colors (from low to high), and therefore has easy look-up for the best vertex to color in. And lastly, the bit-set data structure, implemented using a list of bit-sets, where each index of the list denotes a number of available colors. The bit-sets then indicate if a vertex either has or doesn't have a certain amount of available colors.
 
-The comparison between all datastructures is found in Figure \ref{fig:datastruct}. It is clear the priority queue method performs the worst. Both the bit-set and standard list implementation perform almost equally well. Since the scale of the y-axis in the figure is logarithmic, the difference is still substantial.
+The comparison between datastructures is found in Figure \ref{fig:datastruct}. It is clear the priority queue method performs the worst. This is because updating the number of available colors requires a completely new entry in the queue, which has too much overhead. Both the bit-set and standard list implementation perform almost equally well in the figure. Since the scale of the y-axis in the figure is logarithmic, the difference is still substantial.
 Going forward, the simple list datastructure is used.
 
 \begin{figure}
@@ -382,7 +392,7 @@ These include the two previously-mentioned methods, respectively called Standard
 
 Other methods mentioned by Aslan and Baykan, such as DSATUR and First Fit either had overhead in registering extra data specifically for the technique, or were too simple and therefore performed badly in the original paper. Thus, these are not considered.
 
-Figure \ref{fig:index} shows the comparison of the three discussed techniques. Here, there is no doubt that the standard least amount of available colors performs best. It does look like both curves grow as fast, the growth phase of the standard technique just starts later. Therefore, this index-choosing technique is used from here on out.
+Figure \ref{fig:index} shows the comparison of the three discussed techniques. Here, there is no doubt that the standard least amount of available colors performs best. It does look like both curves grow as fast for the number of vertices, but the growth phase of the standard technique starts later. Therefore, this index-choosing technique is used from here on out. 
 
 \begin{figure}
 	\centering
@@ -394,7 +404,7 @@ Figure \ref{fig:index} shows the comparison of the three discussed techniques. H
 \subsubsection{Second order optimization}
 \label{sec:secondorder}
 
-Instead of only updating the available colors of vertices' neighbors, those of the neighbors' neighbors can also change when coloring in a vertex. Here, this is only done when there is only one uncolored vertex left in the neighborhood of the neighbor. One of those rules is displayed in Algorithm \ref{alg:special} for the odd coloring. As mentioned before, the other colorings also have similar rules.
+Instead of only updating the available colors of vertices' neighbors, those of the neighbors' neighbors can also change when coloring a vertex. Here, this is only done when there is only one uncolored vertex left in the neighborhood of the neighbor. One of those rules is displayed in Algorithm \ref{alg:special} for the odd coloring. As mentioned before, the other colorings also have similar rules.
 
 The rule for the unique-maximum coloring checks the number of times the maximum color occurs, if this is only once, prohibit the use of that color, otherwise, the uncolored vertex needs an even higher color to create a new maximum color.
 
@@ -407,11 +417,13 @@ The effect of using these second-order optimizations is visible in Figure \ref{f
 A simple but effective optimization to apply is the use of parallelization. By using the already defined $RES/MOD$ option in \textit{plantri}, an option to split up the generated graphs into disjoint sets, the coloring of the graphs is easily done using multiprocessing. A procedure where a new process is created for each of the independent sets generated. This allows for a significant speedup dependent on the architecture of the system used (\textit{i.e., number of cores}). Because now more of the cores of the CPU are used, instead of only one.
 All outputs are then generated in different output files and combined at finish time.
 
-A comparison between the normal and multiprocessed implementations is shown in Figure \ref{fig:general}. As expected, for less graphs, splitting up all graphs, and combining the results will take longer than only coloring in the graphs. After planar triangulations with $12$ vertices, the speedup of using multiprocessing does become apparent. 
+A comparison between the normal and multiprocessed implementations is shown in Figure \ref{fig:general}. As expected, for less graphs, splitting up all graphs, and combining the results will take longer than only coloring the graphs. After planar triangulations with $12$ vertices, the speedup of using multiprocessing does become apparent. 
 
 \subsubsection{Porting to C}
 
 The last optimization is the moving of the code from Java to C, a low-level programming language. The difference between the two languages is in the extra overhead found in Java. Java uses features like a garbage collector to monitor memory usage. C does not, which allows it to process graphs faster, but it does call for a more careful approach.
+
+Only the best-performing datastructures and optimizations are added in C. These will therefore not be compared again in C.
 
 Figure \ref{fig:general} shows a comparison between the Java second order implementation and the Final C implementation. The final version does have extra smaller optimizations, but even comparing both on almost the exact same implementation still favours C.
 
@@ -462,7 +474,7 @@ All tests found that the final implementation works correctly.
 
 Now that the researched problem and the developed algorithm have been discussed, the research questions are revisited. 
 
-The only existing coloring algorithm for any of the discussed colorings, is \textit{nauty}, coloring graphs using the proper coloring. No open-source coloring tool for all other colorings exists. This means a comparison between all colorings isn't possible.
+The only existing coloring variant for which any algorithms exist, is the proper coloring. As mentioned before, this includes tools like \textit{nauty}. No open-source coloring tool for the other colorings exists. This means a comparison for efficiency for all coloring variants isn't possible.
 
 Comparing \textit{nauty}'s coloring option against the developed algorithm has expected results. As seen in Table \ref{tab:nauty}, \textit{nauty} is faster in coloring all planar triangulations with some number of vertices. It can be noted that the program developed here is still performing well. Only less than $1.5$ times slower than \textit{nauty}. For higher number of vertices, the ratio between the two is getting smaller, indicating this program may be better for graphs with a high number of vertices.
 
@@ -481,24 +493,25 @@ Comparing \textit{nauty}'s coloring option against the developed algorithm has e
 		$15$ & $2.9$ & $1.9$ & $1.54$ \\
 		$16$ & $22$ & $15$ & $1.49$ \\
 		$17$ & $177$ & $121$ & $1.46$ \\
+		$18$ & $1.4 \times 10^{3}$ & $1.0 \times 10^{3}$ & $1.41$
 	\end{tabular}
-	\caption{A comparison between the program developed in this paper and \textit{nauty}. Compared for all planar triangulations with a given number of vertices. \textit{Nauty} outperforms this program for all number of vertices.}\label{tab:nauty}
+	\caption{A comparison between the program developed in this paper and \textit{nauty}. Compared for all planar triangulations with a given number of vertices. \textit{Nauty} outperforms this program for all number of vertices. The ratio between the two tools goes down for more number of vertices.}\label{tab:nauty}
 \end{table}
 
 
-It is expected that other tools for the proper coloring perform better. The proper coloring has existed for over $100$ years, it's normal for a fast coloring algorithm to exist. \textit{Nauty} however does not use a backtracking strategy. As mentioned in the original research \cite{mckay2014practical}, it colors in the entire graph, to then use rules to convert the coloring into a `minimal' coloring. These only work on the proper coloring in particular. For other colorings, completely new rules would have to be developed. Therefore, \textit{nauty} can't be easily expanded to new colorings, such as those discussed here. Something that is possible for the developed algorithm. All coloring-dependent methods can be easily expanded without much added work. This different way of coloring graphs is the biggest reason for the discrepancy here. 
+\textit{Nauty} is specifically designed for the coloring with the proper coloring. The other colorings discussed here are not supported. These would also require the addition of completely new functions, and a lot of code duplication; or a complete rework of the algorithm. Therefore, \textit{nauty} can not be easily expanded to new colorings, such as those discussed here, whereas this is possible for the developed algorithm. All coloring-dependent methods can be easily expanded without much added work. 
 Additionally, \textit{nauty} does not automatically support the use of multiprocessing, while this is supported for our implementation. 
 
-The other colorings aren't comparable to other tools. Therefore, profiling the speed or efficiency of the algorithm is hard. But it does compare quite well to \textit{nauty}, and is also very expandable, which does mean it's efficient in that sense.
+The other colorings are not comparable to other tools. Therefore, profiling the speed or efficiency of the algorithm is hard. But it does compare quite well to \textit{nauty}, and is also very expandable, which does mean it is efficient in that sense.
 
 
-The second research question asked in what way this algorithm can be used to influence conjectures. This is an exhaustive algorithm, checking all possible graphs. Therefore, by processing all planar graphs for a given number of vertices, conjectures can be proven or disproven.
+The second research question concerned the use of the algorithm for . This is an exhaustive algorithm, checking all possible graphs. Therefore, by processing all planar graphs for a given number of vertices, conjectures can be disproven or substantiated.
 
-Here, all planar triangulations -- graphs with the highest possible number of edges and therefore graphs with a higher average chromatic number -- with vertices $4 \le v \le 20$ were checked. It was found that these graphs all conform to the current conjectures on chromatic numbers for all colorings.
+Here, all planar triangulations -- graphs with the highest possible number of edges and therefore graphs with a higher average chromatic number -- with $n$ vertices were checked ($4 \le v \le 20$). It was found that these graphs all conform to the current conjectures on chromatic numbers for all colorings.
 
 The program can also assist in disproving the conjectures. An option is provided that will check all possible colorings of a given graph. This allows the user to assert if a graph has a certain property, helping in the search for gadgets -- graphs which help in the disproving or proving of some theorem or conjecture. 
 
-The unique-maximum colorings have a property useful in the finding of gadgets, which the program can search for. As visible in Figure \ref{fig:graph}, there exist graphs with vertices that always have a certain color. These are great examples of gadgets, findable by the program.  
+The unique-maximum colorings have a property useful in the finding of gadgets, which the program can search for. As visible in Figure \ref{fig:graph}, there exist graphs with vertices that always have a certain color. These are great examples of gadgets, findable by the program. This is only applicable to these colorings, because as said before, permutations of other colorings still lead to a valid coloring. So no vertex can always have the same color.
 
 \begin{figure}
 	\begin{center}
@@ -531,7 +544,7 @@ The unique-maximum colorings have a property useful in the finding of gadgets, w
 \label{sec:threats}
 
 As explained in Section \ref{sec:correctness}, the correctness of the implementation is never guaranteed. Furthermore, the comparison between implementations also doesn't guarantee correctness for graphs that were never tested, such as graphs with a high number of vertices. 
-There is still a possibility that even the naive implementation isn't implemented correctly. Something that may be unlikely because of the perfect reflection between implementation and algorithm. Still, the \texttt{is\_correctly\_colored}-check, seen in Algorithm \ref{alg:naive}, could also function incorrectly.
+There is still a possibility that even the naive implementation isn't implemented correctly. However, this is unlikely because of the perfect reflection between implementation and algorithm. Still, the \texttt{is\_correctly\_colored}-check, seen in Algorithm \ref{alg:naive}, could function incorrectly.
 
 The output of the proper coloring was tested against \textit{nauty}. There is no guarantee of the correctness of \textit{nauty}'s implementation.
 
@@ -560,14 +573,14 @@ The conjectures surrounding the chromatic numbers for these colorings were exami
 Future work could include the addition of more coloring variants into the program. This would allow the tool to be used for a wide range of problems. 
 Additionally, other versions such as edge-, or face colorings could be included as well.
 
-Next, the algorithm can be more optimized. For example multithreading when coloring in one graph with a high number of vertices could speed up the program even further. Furthermore, other coloring rules, such as those described in Section \ref{sec:secondorder}, can be developed.
+Next, the algorithm can be more optimized. For example multithreading when coloring one graph with a high number of vertices could speed up the program even further. Furthermore, other coloring rules, such as those described in Section \ref{sec:secondorder}, can be developed.
 
 Lastly, further research could further improve bounds of chromatic numbers for the discussed colorings. 
 
 
-\section{Use of genAI}
+\section*{Use of genAI}
 
-For this paper, generative AI was used in the process of creating the figures. Additionally, it was also used in helping the writing process of the helper bash- and python files used in the implementation (\textit{e.g., color.sh}).
+For this paper, generative AI was used for the creation of figures. Additionally, it was also used in helping the writing process of the helper bash- and python files used in the implementation (\textit{e.g., color.sh}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

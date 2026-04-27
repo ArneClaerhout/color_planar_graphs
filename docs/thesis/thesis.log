@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.3)  26 APR 2026 23:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.3)  27 APR 2026 20:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -770,7 +770,7 @@ e
 \titlearea=\box114
 \actualheight=\skip61
 
-Underfull \hbox (badness 3417) in paragraph at lines 87--88
+Underfull \hbox (badness 3417) in paragraph at lines 89--90
 []\OT1/ptm/m/n/10 Other vari-ants in-clude the conflict-free and unique-
  []
 
@@ -781,110 +781,108 @@ Underfull \hbox (badness 3417) in paragraph at lines 87--88
 
 ]
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
-10.
+14.
 
 (c:/texlive/2023/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
 LaTeX Font Info:    Trying to load font information for OT1+txtt on input line 
-187.
+193.
 
 (c:/texlive/2023/texmf-dist/tex/latex/txfonts/ot1txtt.fd
 File: ot1txtt.fd 2000/12/15 v3.1
 ) [2]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 202.
+put line 210.
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 220--220
 [] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 can[]color[]with[]max[]c\OT1/ptm/m/n/1
 0 ($\OML/cmm/m/it/10 G; K; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; max[]c; \OT1/cmr
 /m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 0$\OT1/ptm/m/n/10 )
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 246--246
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 [] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 can[]color[]with[]max[]c\OT1/ptm/m/n/1
 0 ($\OML/cmm/m/it/10 G; K; new[]max[]c[]in[]g;$
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 276--276
+Underfull \hbox (badness 10000) in paragraph at lines 284--284
 [] []\OT1/ptm/b/n/10 if $\OML/cmm/m/it/10 n:neighbors$ \OT1/ptm/m/n/10 is fully
  col-ored and
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 280--280
+Underfull \hbox (badness 10000) in paragraph at lines 288--288
 [] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 handle[]special[]case\OT1/ptm/m/n/10 (
 $\OML/cmm/m/it/10 K; u; n:neighbors;$
  []
 
 
-Overfull \hbox (8.91008pt too wide) in paragraph at lines 314--315
+Overfull \hbox (8.91008pt too wide) in paragraph at lines 322--323
 [] []\OT1/ptm/b/n/10 return  \OT1/txtt/m/n/10 remove[]available[]c\OT1/ptm/m/n/
 10 ($\OML/cmm/m/it/10 G; u; colors[]odd; depth$\OT1/ptm/m/n/10 ) 
  []
 
 [3]
-<figures/General_comparison.pdf, id=196, 526.96875pt x 445.665pt>
+<figures/General_comparison.pdf, id=192, 526.96875pt x 445.665pt>
 File: figures/General_comparison.pdf Graphic file (type pdf)
 <use figures/General_comparison.pdf>
-Package pdftex.def Info: figures/General_comparison.pdf  used on input line 356
+Package pdftex.def Info: figures/General_comparison.pdf  used on input line 366
 .
 (pdftex.def)             Requested size: 227.64894pt x 192.52985pt.
 
-Underfull \hbox (badness 1701) in paragraph at lines 366--367
+Underfull \hbox (badness 1701) in paragraph at lines 376--377
 []\OT1/ptm/m/n/10 These struc-tures are all con-sid-ered be-cause of some
  []
 
-<figures/Datastructures_comparison.pdf, id=200, 526.96875pt x 445.665pt>
+[4 <./figures/General_comparison.pdf>]
+<figures/Datastructures_comparison.pdf, id=236, 526.96875pt x 445.665pt>
 File: figures/Datastructures_comparison.pdf Graphic file (type pdf)
 <use figures/Datastructures_comparison.pdf>
 Package pdftex.def Info: figures/Datastructures_comparison.pdf  used on input l
-ine 373.
+ine 383.
 (pdftex.def)             Requested size: 227.64894pt x 192.52985pt.
 
-Underfull \hbox (badness 1248) in paragraph at lines 379--380
+Underfull \hbox (badness 1248) in paragraph at lines 389--390
 \OT1/ptm/m/n/10 In to-tal, five dif-fer-ent \OT1/txtt/m/n/10 get[]best[]index\O
 T1/ptm/m/n/10 -techniques were
  []
 
-[4 <./figures/General_comparison.pdf>]
-<figures/Index_comparison.pdf, id=243, 526.96875pt x 445.665pt>
+<figures/Index_comparison.pdf, id=239, 526.96875pt x 445.665pt>
 File: figures/Index_comparison.pdf Graphic file (type pdf)
 <use figures/Index_comparison.pdf>
-Package pdftex.def Info: figures/Index_comparison.pdf  used on input line 389.
+Package pdftex.def Info: figures/Index_comparison.pdf  used on input line 399.
 (pdftex.def)             Requested size: 227.64894pt x 192.52985pt.
- [5 <./figures/Datastructures_comparison.pdf> <./figures/Index_comparison.pdf>]
-
-Overfull \hbox (8.58946pt too wide) in paragraph at lines 440--440
+[5 <./figures/Datastructures_comparison.pdf> <./figures/Index_comparison.pdf>]
+Overfull \hbox (8.58946pt too wide) in paragraph at lines 452--452
 [] []\OT1/ptm/b/n/10 if \OT1/txtt/m/n/10 can[]color[]with[]max[]c[]naive\OT1/pt
 m/m/n/10 ($\OML/cmm/m/it/10 G; K; max[]c; index$\OT1/ptm/m/n/10 )
  []
 
 
-Overfull \hbox (8.55182pt too wide) in paragraph at lines 472--485
+Overfull \hbox (10.30077pt too wide) in paragraph at lines 484--498
  [][] 
  []
 
+[6]
+Underfull \vbox (badness 2486) has occurred while \output is active []
 
-Underfull \hbox (badness 1052) in paragraph at lines 492--493
-[]\OT1/ptm/m/n/10 The other col-or-ings aren't com-pa-ra-ble to other tools.
- []
 
-[6] (./thesis.bbl
-Underfull \hbox (badness 2635) in paragraph at lines 20--24
+(./thesis.bbl [7]
+Underfull \hbox (badness 2635) in paragraph at lines 21--25
 []\OT1/ptm/m/n/10 Guy Even, Zvi Lotker, Dana Ron, and Shakhar
  []
 
 
-Underfull \hbox (badness 1371) in paragraph at lines 32--35
+Underfull \hbox (badness 1371) in paragraph at lines 33--36
 \OT1/ptm/m/n/10 ger.  Or-dered colour-ings.  \OT1/ptm/m/it/10 Dis-crete Math-e-
 mat-ics\OT1/ptm/m/n/10 ,
  []
 
-[7]
-Underfull \hbox (badness 3108) in paragraph at lines 49--53
+
+Underfull \hbox (badness 3108) in paragraph at lines 50--54
 []\OT1/ptm/m/n/10 Zachary Abel, Vic-tor Al-varez, Erik D De-maine,
  []
 
@@ -896,16 +894,16 @@ LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2023-08-29>
  ***********
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: D243B11E448EE689C063F489AE0F1788;2485.
+(rerunfilecheck)             Checksum: 6E77778FD466BB6701F543684C541454;2375.
  ) 
 Here is how much of TeX's memory you used:
- 22121 strings out of 474928
- 408840 string characters out of 5763562
+ 22120 strings out of 474928
+ 408831 string characters out of 5763562
  1956785 words of memory out of 5000000
- 43164 multiletter control sequences out of 15000+600000
+ 43163 multiletter control sequences out of 15000+600000
  586125 words of font info for 89 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,9n,87p,881b,771s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,10n,87p,769b,771s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/tex
 live/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2023/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2023/texmf-dist/
@@ -917,10 +915,10 @@ cmti10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti7.pfb
 23/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><c:/texlive/2023/texmf-dist/font
 s/type1/urw/times/utmr8a.pfb><c:/texlive/2023/texmf-dist/fonts/type1/urw/times/
 utmri8a.pfb>
-Output written on thesis.pdf (8 pages, 199909 bytes).
+Output written on thesis.pdf (8 pages, 200986 bytes).
 PDF statistics:
- 384 PDF objects out of 1000 (max. 8388607)
- 339 compressed objects within 4 object streams
+ 380 PDF objects out of 1000 (max. 8388607)
+ 335 compressed objects within 4 object streams
  123 named destinations out of 1000 (max. 500000)
- 196 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 188 words of extra memory for PDF output out of 10000 (max. 10000000)
 
