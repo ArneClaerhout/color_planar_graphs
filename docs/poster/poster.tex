@@ -31,6 +31,12 @@
 \usepackage{algorithmic}
 \usepackage{float}
 
+\definecolor{col1}{cmyk}{54, 16, 0, 67}
+\definecolor{col2}{cmyk}{73, 0, 9, 38}
+\definecolor{col3}{cmyk}{0, 16, 55, 9}
+\definecolor{col4}{cmyk}{0, 34, 60, 4}
+\definecolor{col5}{cmyk}{0, 52, 65, 9}
+
 
 % INFO 
 \title{Coloring of planar graphs}
@@ -38,6 +44,7 @@
 \institute{\large Faculty of Science}
 \date{\large Academic year 2025-2026}
  
+\setbeamertemplate{caption}[numbered]
 
 \newcommand{\kulline}{%
 	\par\noindent
@@ -46,6 +53,54 @@
 	\end{tikzpicture}
 	\par
 }
+
+\newcommand{\testcheck}{\begin{tikzpicture}[
+		every node/.style={
+			circle, 
+			draw, 
+			thick, 
+			fill=white,
+			minimum size=3mm,    % Adjust this to your preferred "standard" size
+			inner sep=0pt,       % Removes extra padding around the number
+			text width=3mm,      % MUST match minimum size to keep the circle perfect
+			align=center,        % Centers the number horizontally
+			font=\small          % Adjust font size so the number fits comfortably
+		}
+		]
+		
+		\node (v1) at (0, 0) [fill=kul-blue]  {};
+		\node (v2) at (0, .35) [fill=kul-blue!50] {};
+		\node (v3) at (.4, .15) [fill=kul-blue!75]{};
+		
+		\draw[thick] (v1) -- (v2);
+		\draw[thick] (v1) -- (v3);
+		\draw[thick] (v2) -- (v3);
+		
+\end{tikzpicture}}
+
+\newcommand{\testflatcheck}{\begin{tikzpicture}[
+		every node/.style={
+			circle, 
+			draw, 
+			thick, 
+			fill=white,
+			minimum size=3mm,    % Adjust this to your preferred "standard" size
+			inner sep=0pt,       % Removes extra padding around the number
+			text width=3mm,      % MUST match minimum size to keep the circle perfect
+			align=center,        % Centers the number horizontally
+			font=\small          % Adjust font size so the number fits comfortably
+		}
+		]
+		
+		\node (v1) at (0, 0) [fill=kul-blue!75]  {};
+		\node (v2) at (.35, 0) [fill=kul-blue]  {};
+		\node (v3) at (-.15, .3) [fill=kul-blue!50]{};
+		%\node (v4) at (.15, .3) [fill=kul-blue!50]{};
+		
+		\draw[thick] (v1) -- (v3);
+		\draw[thick] (v1) -- (v2);
+		
+\end{tikzpicture}}
 
 \begin{document}
 \csname beamer@calculateheadfoot\endcsname %recalculate head and foot dimension
@@ -81,16 +136,21 @@
 %COLUMN 1
 	\begin{column}{.49\textwidth}
 	\justifying
-	{\bfseries Introduction}
+	{\Large\bfseries Introduction}
+	\vspace{.3cm}
 	
-	An algorithm for the coloring of planar graphs for multiple coloring variants is proposed. These coloring variants include:
+	An algorithm for the coloring of planar graphs for multiple \textbf{coloring variants} is proposed. These coloring variants include:
 	
+	\vspace{0.85cm}
 	
 		\begin{multicols}{2}
+			
+			\hspace{.1cm}
+			
 			\begin{itemize}
-				\item Proper coloring:
+				\item[\testcheck] Proper coloring:
 				\begin{itemize}
-					\item Two adjacent vertices have different colors
+					\item[\testflatcheck] Two \textbf{adjacent} vertices have different colors
 				\end{itemize}
 			\end{itemize}
 			
@@ -102,10 +162,10 @@
 						]
 						
 						\node (v1) at (0, 0) [fill=blue!50]  {};
-						\node (v2) at (6, 0) [fill=orange] {};
-						\node (v3) at (3, 5.19615) [fill=green]{};
-						\node (v4) at (3, 1.73205) [fill=green]{};
-						\node (v5) at (3, 3.4641) [fill=red]{};
+						\node (v2) at (6, 0) [fill=orange!80] {};
+						\node (v3) at (3, 5.19615) [fill=green!70]{};
+						\node (v4) at (3, 1.73205) [fill=green!70]{};
+						\node (v5) at (3, 3.4641) [fill=red!70]{};
 						
 						\draw[thick] (v1) -- (v2);
 						\draw[thick] (v1) -- (v3);
@@ -126,7 +186,6 @@
 				\label{fig:g_proper}
 			\end{figure}
 			
-			
 		\end{multicols}
 %		\vspace{1cm}
 		\kulline
@@ -139,10 +198,10 @@
 						]
 						
 						\node (v1) at (0, 3) [fill=blue!50]  {};
-						\node (v2) at (2.853, 0.927) [fill=orange] {};
-						\node (v3) at (-2.853, 0.927) [fill=green]{};
-						\node (v4) at (1.7634, -2.427) [fill=yellow!40]{};
-						\node (v5) at (-1.7634, -2.427) [fill=red]{};
+						\node (v2) at (2.853, 0.927) [fill=orange!80] {};
+						\node (v3) at (-2.853, 0.927) [fill=green!70]{};
+						\node (v4) at (1.7634, -2.427) [fill=yellow!60]{};
+						\node (v5) at (-1.7634, -2.427) [fill=red!70]{};
 						
 						\draw[thick] (v1) -- (v2);
 						\draw[thick] (v1) -- (v3);
@@ -159,9 +218,9 @@
 			\vspace{\fill}\null
 			
 			\begin{itemize}
-				\item Odd coloring
+				\item[\testcheck] Odd coloring
 				\begin{itemize}
-					\item Proper coloring where every vertex has at least one color appearing an odd amount of times.
+					\item[\testflatcheck] Proper coloring where every vertex has at least \textbf{one color} appearing an \textbf{odd} number of times.
 				\end{itemize}
 			\end{itemize}
 			
@@ -169,14 +228,14 @@
 			
 			
 		\end{multicols}
-		\vspace{-1cm}
+		%\vspace{-1cm}
 		\kulline
 		\begin{multicols}{2}
 			\begin{itemize}
-				\item Conflict-free coloring
+				\item[\testcheck] Conflict-free (CF) coloring
 				\begin{itemize}
-					\item Every vertex has at least one color occurring only once in its neighborhood.
-					\item Four variants: proper/improper and open/closed neighborhoods
+					\item[\testflatcheck] Every vertex has at least one \textbf{color} occurring \textbf{only once} in its neighborhood.
+					\item[\testflatcheck] \textbf{Four variants}: proper/improper and open/closed neighborhoods
 				\end{itemize} 
 			\end{itemize}
 			
@@ -186,38 +245,38 @@
 				\begin{center}
 					\begin{tikzpicture}[
 						% Define the style for the nodes
-						every node/.style={circle, draw, thick, minimum size=5mm}
+						every node/.style={circle, draw, thick, minimum size=3mm}
 						]
 						
 						% --- VERTICES ---
 						% Format: \node (internal_name) at (x,y) [fill=color] {number};
 						
 						\node (v1) at (0, 0) [fill=blue!50]  {};
-						\node (v2) at (6, 0) [fill=orange] {};
-						\node (v3) at (3, 5.19615) [fill=green]{};
-						\node (v4) at (3, 1.73205) [fill=green]{};
-						\node (v5) at (3, 3.4641) [fill=red]{};
+						\node (v2) at (5.5, 0) [fill=blue!50] {};
+						\node (v3) at (5.5, 5.5) [fill=blue!50]{};
+						\node (v4) at (0, 5.5) [fill=blue!50]{};
+						\node (v5) at (2.75, 2.75) [fill=orange!80]{};
 						
 						% --- EDGES ---
 						% In a K4, there are 6 possible edges. 
 						% We omit one (e.g., the diagonal between v1 and v4).
 						
 						\draw[thick] (v1) -- (v2);
-						\draw[thick] (v1) -- (v3);
 						\draw[thick] (v1) -- (v4);
 						\draw[thick] (v1) -- (v5);
 						
 						\draw[thick] (v2) -- (v3);
-						\draw[thick] (v2) -- (v4);
+						\draw[thick] (v2) -- (v1);
 						\draw[thick] (v2) -- (v5);
 						
 						\draw[thick] (v3) -- (v5);
+						\draw[thick] (v3) -- (v4);
 						
 						\draw[thick] (v4) -- (v5);
 						
 					\end{tikzpicture}
 				\end{center}
-				\caption{A graph colored for the }
+				\caption{A graph colored with improper CF with respect to closed neighborhoods coloring.}
 				\label{fig:g_cf}
 			\end{figure}
 			
@@ -225,31 +284,43 @@
 			
 		\end{multicols}
 		
-		\vspace{1cm}
+		\vspace{-1cm}
 		\kulline
 		\begin{multicols}{2}
 			
 			\begin{figure}
 				\begin{center}
 					\begin{tikzpicture}[
-						every node/.style={circle, draw, thick, minimum size=5mm}
+						every node/.style={
+							circle, 
+							draw, 
+							thick, 
+							fill=white,
+							minimum size=8.5mm,    % Adjust this to your preferred "standard" size
+							inner sep=0pt,       % Removes extra padding around the number
+							text width=8.5mm,      % MUST match minimum size to keep the circle perfect
+							align=center,        % Centers the number horizontally
+							font=\small          % Adjust font size so the number fits comfortably
+						}
 						]
 						
-						\node (v1) at (0, 3) [fill=blue!50]  {};
-						\node (v2) at (2.853, 0.927) [fill=orange] {};
-						\node (v3) at (-2.853, 0.927) [fill=green]{};
-						\node (v4) at (1.7634, -2.427) [fill=yellow!40]{};
-						\node (v5) at (-1.7634, -2.427) [fill=red]{};
+						\node (v1) at (0, 0) [fill=blue!50]  {2};
+						\node (v2) at (0, 6) [fill=orange!80] {1};
+						\node (v3) at (-3, 3) [fill=orange!80]{1};
+						\node (v4) at (3, 3) [fill=orange!80]{1};
+						\node (v5) at (0, 3) [fill=green!70]{3};
 						
-						\draw[thick] (v1) -- (v2);
 						\draw[thick] (v1) -- (v3);
-						\draw[thick] (v2) -- (v4);
-						\draw[thick] (v4) -- (v5);
-						\draw[thick] (v3) -- (v5);
+						\draw[thick] (v1) -- (v4);
+						
+						\draw[thick] (v5) -- (v1);
+						\draw[thick] (v5) -- (v2);
+						\draw[thick] (v5) -- (v3);
+						\draw[thick] (v5) -- (v4);
 						
 					\end{tikzpicture}
 				\end{center}
-				\caption{A colored graph for the }
+				\caption{A colored graph for the proper UM with respect to open neighborhoods coloring.}
 				\label{fig:g_um}
 			\end{figure}
 			
@@ -258,15 +329,17 @@
 			\vspace{\fill}\null
 			
 			\begin{itemize}
-				\item Unique-maximum coloring
+				\item[\testcheck] Unique-maximum (UM) coloring
 				\begin{itemize}
-					\item The maximum color in the neighborhood of a vertex occurs exactly once.
-					\item Has same four variants as conflict-free coloring
+					\item[\testflatcheck] The \textbf{maximum color} in the neighborhood of a vertex occurs \textbf{exactly once}.
+					\item[\testflatcheck] Has same \textbf{four variants} as conflict-free coloring
 				\end{itemize}
 			\end{itemize}
 			
 			
 		\end{multicols}
+		
+		
 	
 	\end{column}
 
@@ -274,19 +347,21 @@
 % COLUMNS 2
 	\begin{column}{.49\textwidth}
 		\justifying
-		{\bfseries Chromatic numbers}
+		{\Large\bfseries Chromatic numbers}
+		\vspace{.3cm}
 		
 		\begin{definition}
-			Chromatic number $\chi_{K}(\mathcal{P})$ for coloring $K$, is the minimum needed number of colors to color in all graph $G \in \mathcal{P}$ according to $K$.
+			Chromatic number $\chi_{\mathrm{K}}(\mathcal{P})$ for coloring $\mathrm{K}$, is the minimum needed number of colors to color all planar graphs $G \in \mathcal{P}$ according to $\mathrm{K}$.
 		\end{definition}
 		
 		Chromatic numbers for these coloring variants are not always known.
-		Conjectures on the chromatic numbers are tested by exhaustively coloring graphs.
+		\textbf{Conjectures} on the chromatic numbers are tested by exhaustively coloring graphs.
 		
-		\vspace{1cm}
-		{\bfseries Algorithm}
+		\vspace{1.3cm}
+		{\Large\bfseries Algorithm}
+		\vspace{.3cm}
 		
-		Algorithm \ref{alg:search} describes a high-level overview of the designed algorithm.This is a backtracking algorithm using multiple optimizations to perform as efficiently as possible.
+		Algorithm \ref{alg:search} describes a \textbf{high-level overview} of the designed algorithm.This is a \textbf{backtracking} algorithm using a multitude of optimizations to perform as efficiently as possible while preserving \textbf{expandability}.
 		
 		\begin{algorithm}[H]
 			\caption{\texttt{search\_chromatic\_number}}
@@ -295,7 +370,7 @@
 			
 			\textbf{Output}: $\chi_{K}(G)$
 			\begin{algorithmic}[1]
-				\FOR{$max\_c \le MAX$}
+				\FOR{$max\_c$ {from} $1$ {to} $\mathbf{MAX}$}
 				
 				\WHILE{not all vertices are colored}
 				
@@ -315,16 +390,17 @@
 			\end{algorithmic}
 		\end{algorithm}
 		
-		\vspace{0.5cm}
-		{\bfseries Results \& Conclusion}
+		\vspace{0.8cm}
+		{\Large\bfseries Results \& Conclusion}
 		
 		\vspace{0.5cm}
-		\begin{block}{Proof of conjectures}
+		\begin{block}{Computational evidence for conjectures}
 			Conjectures for planar triangulations with number of vertices $n \le 20$ are correct.
 		\end{block}
 		\begin{itemize}
-			\item First open-source algorithm that colors graphs for these variants.
-			\item It only performs around $1.4$ times worse than alternatives for the proper coloring. Tools for other colorings do not exist.
+			\item[\testcheck] First \textbf{open-source} algorithm that colors graphs for these variants.
+			\item[\testcheck] Allows for searching of \textbf{gadgets}, such as the one shown in Figure \ref{fig:g_um}, to construct graphs with high chromatic numbers.
+			\item[\testcheck] It only performs around $1.4$ times worse than alternatives for the proper coloring. Tools for other colorings do not exist.
 		\end{itemize}
 		
 		
