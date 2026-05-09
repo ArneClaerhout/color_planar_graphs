@@ -148,7 +148,7 @@
 			\hspace{.1cm}
 			
 			\begin{itemize}
-				\item[\testcheck] Proper coloring:
+				\item[\testcheck] Proper coloring
 				\begin{itemize}
 					\item[\testflatcheck] Two \textbf{adjacent} vertices have different colors
 				\end{itemize}
@@ -189,6 +189,7 @@
 		\end{multicols}
 %		\vspace{1cm}
 		\kulline
+		\vspace{0.2cm}
 		\begin{multicols}{2}
 			\begin{figure}
 				\begin{center}
@@ -220,7 +221,7 @@
 			\begin{itemize}
 				\item[\testcheck] Odd coloring
 				\begin{itemize}
-					\item[\testflatcheck] Proper coloring where every vertex has at least \textbf{one color} appearing an \textbf{odd} number of times.
+					\item[\testflatcheck] Proper coloring where every vertex has at least \textbf{one color} appearing an \textbf{odd} number of times in its neighborhood.
 				\end{itemize}
 			\end{itemize}
 			
@@ -228,14 +229,15 @@
 			
 			
 		\end{multicols}
-		%\vspace{-1cm}
+		\vspace{-0.5cm}
 		\kulline
+		\vspace{0.5cm}
 		\begin{multicols}{2}
 			\begin{itemize}
 				\item[\testcheck] Conflict-free (CF) coloring
 				\begin{itemize}
 					\item[\testflatcheck] Every vertex has at least one \textbf{color} occurring \textbf{only once} in its neighborhood.
-					\item[\testflatcheck] \textbf{Four variants}: proper/improper and open/closed neighborhoods
+					\item[\testflatcheck] \textbf{Four versions}: proper/improper and open/closed neighborhoods
 				\end{itemize} 
 			\end{itemize}
 			
@@ -284,10 +286,12 @@
 			
 		\end{multicols}
 		
-		\vspace{-1cm}
+		\vspace{-1.2cm}
 		\kulline
+		\vspace{0.4cm}
 		\begin{multicols}{2}
-			
+
+			\vspace{0.2cm}
 			\begin{figure}
 				\begin{center}
 					\begin{tikzpicture}[
@@ -324,15 +328,14 @@
 				\label{fig:g_um}
 			\end{figure}
 			
-			
-			
-			\vspace{\fill}\null
+			\vfill
+			\columnbreak
 			
 			\begin{itemize}
 				\item[\testcheck] Unique-maximum (UM) coloring
 				\begin{itemize}
 					\item[\testflatcheck] The \textbf{maximum color} in the neighborhood of a vertex occurs \textbf{exactly once}.
-					\item[\testflatcheck] Has same \textbf{four variants} as conflict-free coloring
+					\item[\testflatcheck] \textbf{Four versions}: proper/improper and open/closed neighborhoods
 				\end{itemize}
 			\end{itemize}
 			
@@ -357,11 +360,11 @@
 		Chromatic numbers for these coloring variants are not always known.
 		\textbf{Conjectures} on the chromatic numbers are tested by exhaustively coloring graphs.
 		
-		\vspace{1.3cm}
+		\vspace{0.8cm}
 		{\Large\bfseries Algorithm}
 		\vspace{.3cm}
 		
-		Algorithm \ref{alg:search} describes a \textbf{high-level overview} of the designed algorithm.This is a \textbf{backtracking} algorithm using a multitude of optimizations to perform as efficiently as possible while preserving \textbf{expandability}.
+		Algorithm \ref{alg:search} describes a \textbf{high-level overview} of the designed algorithm. This is a \textbf{backtracking} algorithm using a multitude of optimizations (\textit{e.g., second order neighborhood, parallelization}) to perform as efficiently as possible while preserving \textbf{expandability}.
 		
 		\begin{algorithm}[H]
 			\caption{\texttt{search\_chromatic\_number}}

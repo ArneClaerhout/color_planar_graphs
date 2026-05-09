@@ -51,7 +51,7 @@ plot_data = function(input_data, legend_text, title_text) {
   par(family = "serif", mar = c(6, 6, 4, 2) + 0.05)
   
   # Use a professional color palette (ColorBlind Friendly)
-  colors <- c("#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51")
+  colors <- c("#1b9e77", "#FC5F02", "#7570b3", "#e6ab02", "#a6761d")
   
   # Initialize Plot
   plot(1, type = "n", log = "y", 
